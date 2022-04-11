@@ -1,0 +1,15 @@
+<ng-container *ngIf="breadcrumbs.length > 1">
+  <div class="ml-2 mb-2 breadcrumbs">
+    <ng-container *ngFor="let bc of breadcrumbs; let last = last">
+      <small *ngIf="!last">
+        <a [routerLink]="bc.link" class="text-muted">{{
+          bc.label
+        }}</a>
+      </small>
+      <small *ngIf="last" class="font-weight-bold text-muted">
+        {{ bc.label }}
+      </small>
+      <span *ngIf="!last" class="text-muted"> / </span>
+    </ng-container>
+  </div>
+</ng-container>

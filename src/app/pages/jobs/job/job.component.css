@@ -1,0 +1,133 @@
+::ng-deep table {
+  width: 100%;
+}
+
+::ng-deep .table thead th {
+  vertical-align: top;
+}
+
+.table th {
+  border-top: none !important;
+  vertical-align: bottom;
+}
+
+::ng-deep .sorter :hover {
+  color: rgb(33, 37, 41);
+  text-decoration: none;
+}
+
+::ng-deep .sorter {
+  color: rgb(33, 37, 41);
+}
+
+::ng-deep .sorter a {
+  color: rgb(33, 37, 41) !important;
+}
+
+.row-4em {
+  width: 4em;
+  min-width: 4em;
+}
+
+.row-6em {
+  width: 6em;
+  min-width: 6em;
+}
+
+.row-7em {
+  width: 7em;
+  min-width: 7em;
+}
+
+.row-8em {
+  width: 8em;
+  min-width: 8em;
+}
+
+.row-10em {
+  width: 10em;
+  min-width: 10em;
+}
+
+.row-12em {
+  width: 12em;
+  min-width: 12em;
+}
+
+.row-25per {
+  width: 25%;
+}
+
+.subtitle {
+  padding-bottom: 1em;
+  margin-top: -0.7em;
+}
+
+.meta-info {
+  font-size: 0.8em;
+}
+
+.loader {
+  padding-top: 10%;
+}
+
+.card-header {
+  width: 100%;
+}
+
+.class-name {
+  font-family: monospace;
+  font-size: medium;
+}
+
+.no-entries {
+  font-size: 1.2em;
+  margin-top: 1em;
+  text-align: center;
+}
+
+.no-col-padding-left {
+  padding-left: 0;
+}
+
+.counts-chart {
+  position: relative;
+  margin-top: -20px;
+}
+
+.click-action {
+  cursor: pointer;
+  color: rgba(34, 34, 34, 0.2);
+}
+
+.click-action:hover {
+  color: #6c757d;
+}
+
+.card-header {
+  flex-wrap: wrap;
+  display: flex;
+}
+
+.time {
+  display: inline-block;
+  min-width: 10px;
+  padding: 3px 7px;
+  font-weight: 500;
+  line-height: 1;
+  padding: 10px;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  background-color: white;
+}
+
+.time hr {
+  margin-top: 4px;
+  margin-bottom: 4px;
+}
+
+pre {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}

@@ -1,0 +1,148 @@
+::ng-deep input,
+::ng-deep .c-btn {
+    border-radius: 0px !important;
+}
+
+::ng-deep table {
+    width: 100%;
+}
+
+::ng-deep .table thead th {
+  border-bottom: none !important;
+  vertical-align: bottom;
+}
+
+::ng-deep .table thead th:not(.selection-col) {
+  padding-top: 0px !important;
+}
+
+::ng-deep .sorter :hover {
+    color: rgb(33, 37, 41);
+    text-decoration: none;
+}
+
+::ng-deep .sorter {
+    color: rgb(33, 37, 41);
+}
+
+::ng-deep .sorter a {
+    color: rgb(33, 37, 41) !important;
+}
+
+::ng-deep .c-token {
+    padding: 0px 18px 0px 3px !important;
+    background: #6c757d !important;
+    margin-right: 0px !important;
+    margin-top: 1px !important;
+    font-weight: 500 !important;
+}
+
+::ng-deep .c-remove {
+    right: 4px !important;
+    top: 45% !important;
+}
+
+::ng-deep .clear-all {
+    top: 50% !important;
+    right: 30px !important;
+}
+
+::ng-deep .pure-checkbox input[type=checkbox] + label:after {
+    left: 11px !important;
+}
+
+::ng-deep .dropdown-list ul li {
+    padding: 1px !important;
+}
+
+::ng-deep .c-btn {
+    font-weight: lighter;
+}
+
+:host ::ng-deep .date-form-control-group input {
+    width: 80% !important;
+}
+
+tr > th {
+    padding-bottom: 20px;
+}
+
+.row-4em {
+    width: 4em;
+    min-width: 4em;
+}
+
+.row-6em {
+    width: 6em;
+    min-width: 6em;
+}
+
+.row-7em {
+    width: 7em;
+    min-width: 7em;
+}
+
+.row-8em {
+    width: 8em;
+    min-width: 8em;
+}
+
+.row-10em {
+    width: 10em;
+    min-width: 10em;
+}
+
+.row-12em {
+    width: 12em;
+    min-width: 12em;
+}
+
+.row-16em {
+    width: 16em;
+    min-width: 16em;
+}
+
+.row-25per {
+    width: 25%;
+}
+
+.subtitle {
+    padding-bottom: 1em;
+    margin-top: -0.7em;
+}
+
+.meta-info {
+    font-size: 0.8em;
+}
+
+.loader {
+    padding-top: 10%;
+}
+
+.no-entries {
+    font-size: 1.2em;
+    margin-top: 1em;
+    text-align: center;
+}
+
+.link {
+    cursor: pointer;
+}
+
+.status-col {
+    text-align: center;
+}
+
+.card-header {
+    flex-wrap: wrap;
+    display: flex;
+}
+
+pre {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+}
+
+.table th {
+    border-top: none !important;
+}

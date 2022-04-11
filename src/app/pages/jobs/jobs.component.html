@@ -1,0 +1,157 @@
+<div class="row">
+  <div class="col">
+    <div class="card">
+      <div class="card-header d-flex justify-content-between p-3">
+        <h4>Jobs</h4>
+        <div class="actions">
+          <coo-table-counter class="d-inline-block"></coo-table-counter>
+        </div>
+      </div>
+
+      <div class="card-body px-0 pb-0">
+        <form>
+          <coo-table [rows]="rows" [metadata]="metadata" class="table table-hover">
+            <ng-template #filters>
+              <tr class="filter-row">
+                <th *ngIf="rowSelectionEnabled" class="selection-col pt-4">
+                  <coo-table-select-all></coo-table-select-all>
+                </th>
+                <th>
+                  <coo-table-sorter label="Name" column="name"></coo-table-sorter>
+                  <coo-table-filter-text column="name|description"></coo-table-filter-text>
+                </th>
+                <th class="row-10em">
+                  <coo-table-sorter label="Status" column="status"> </coo-table-sorter>
+                  <coo-table-filter-list column="status" [list]="status"></coo-table-filter-list>
+                </th>
+                <th class="row-10em">
+                  <coo-table-sorter label="Schedule" column="schedule"> </coo-table-sorter>
+                  <coo-table-filter-text column="schedule"></coo-table-filter-text>
+                </th>
+                <th class="row-10em">
+                  <coo-table-sorter label="Tags" column="tags"></coo-table-sorter>
+                  <coo-table-filter-text column="tags"></coo-table-filter-text>
+                </th>
+                <th class="row-6em">
+                  <coo-table-sorter label="ID" column="id"></coo-table-sorter>
+                  <coo-table-filter-text column="id"></coo-table-filter-text>
+                </th>
+                <th class="align-middle text-right align-bottom">
+                  <div class="d-flex justify-content-end">
+                    <button
+                      *ngIf="rowSelectionEnabled"
+                      class="btn btn-outline-secondary action-button ml-2"
+                      [ngClass]="{'disabled': selectedRowIds.size === 0}"
+                      [ngbPopover]="selectedRowIds.size > 0 ? 'Activate ' + selectedRowIds.size + ' selected jobs' : ''"
+                      triggers="mouseenter:mouseleave"
+                      placement="left"
+                      (click)="selectedRowIds.size != 0 ? toggleSelectedJobsStatus(false) : undefined"
+                      >
+                      <i class="ion ion-md-play"></i>
+                    </button>
+                    <button
+                      *ngIf="rowSelectionEnabled"
+                      class="btn btn-outline-secondary action-button ml-2"
+                      [ngClass]="{'disabled': selectedRowIds.size === 0}"
+                      [ngbPopover]="selectedRowIds.size > 0 ? 'Deactivate ' + selectedRowIds.size + ' selected jobs' : ''"
+                      triggers="mouseenter:mouseleave"
+                      placement="left"
+                      (click)="selectedRowIds.size != 0 ? toggleSelectedJobsStatus(true) : undefined"
+                      >
+                      <i class="ion ion-md-pause"></i>
+                    </button>
+
+                    <button
+                      class="btn btn-outline-secondary action-button ml-2"
+                      (click)="rowSelectionEnabled = !rowSelectionEnabled"
+                      [ngbPopover]="(rowSelectionEnabled ? 'Disable' : 'Enable') + ' selection'"
+                      triggers="mouseenter:mouseleave"
+                      placement="left"
+                      >
+                      <i class="ion ion-md-checkbox-outline"></i>
+                    </button>
+
+                    <refresh-button class="ml-2 action-button" (click)="list()" [refreshing]="loading"> </refresh-button>
+                  </div>
+                </th>
+              </tr>
+            </ng-template>
+            <ng-template #row let-row="row">
+              <td *ngIf="rowSelectionEnabled" class="align-middle">
+                <coo-table-select [id]="row.id"></coo-table-select>
+              </td>
+              <td colspan="5" (dblclick)="showJob(row)" class="clickable">
+                <job-summary [job]="row"></job-summary>
+              </td>
+              <td class="align-middle">
+                <div class="d-flex justify-content-end">
+                  <button
+                    class="btn btn-outline-secondary action-button"
+                    [routerLink]="'/jobs/' + row.id"
+                    ngbPopover="Job details"
+                    triggers="mouseenter:mouseleave"
+                    placement="left"
+                  >
+                    <i class="ion ion-md-arrow-forward"></i>
+                  </button>
+                  <button
+                    *ngIf="row.status !== 'ACTIVE'"
+                    class="btn btn-outline-secondary action-button ml-2"
+                    (click)="activateJob(row)"
+                    ngbPopover="Activate job"
+                    triggers="mouseenter:mouseleave"
+                    placement="left"
+                  >
+                    <i class="ion ion-md-play"></i>
+                  </button>
+                  <button
+                    *ngIf="row.status === 'ACTIVE'"
+                    class="btn btn-outline-secondary action-button ml-2"
+                    (click)="deactivateJob(row)"
+                    ngbPopover="Deactivate job"
+                    triggers="mouseenter:mouseleave"
+                    placement="left"
+                  >
+                    <i class="ion ion-md-pause"></i>
+                  </button>
+                  <!-- <a
+                    href="javascript:;"
+                    class="btn btn-outline-secondary ml-2"
+                    [routerLink]="'/jobs/' + row.id + '/executions'"
+                    ngbPopover="View executions"
+                    triggers="mouseenter:mouseleave"
+                    placement="left"
+                  >
+                    <i class="ion ion-md-list"></i>
+                  </a> -->
+                  <button
+                    class="btn btn-outline-secondary action-button ml-2"
+                    (click)="createExecution(row)"
+                    ngbPopover="Create execution"
+                    triggers="mouseenter:mouseleave"
+                  >
+                    <i class="ion ion-md-flash"></i>
+                  </button>
+                </div>
+              </td>
+            </ng-template>
+          </coo-table>
+        </form>
+        <div *ngIf="loading" class="d-flex justify-content-center align-items-center p-5">
+          <loading [loadingHorse]="true"></loading>
+        </div>
+      </div>
+
+      <div class="card-body border-top p-3">
+        <div *ngIf="rows.length === 0" class="d-flex justify-content-center align-items-center p-5">No jobs found</div>
+        <div [hidden]="!loading" class="d-flex justify-content-between align-items-center">
+          <coo-table-counter></coo-table-counter>
+          <div class="d-flex">
+            <coo-table-limit></coo-table-limit>
+            <coo-table-pager [contextButtons]="true" class="ml-2"></coo-table-pager>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

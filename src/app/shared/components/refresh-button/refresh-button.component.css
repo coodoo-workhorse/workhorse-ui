@@ -1,0 +1,21 @@
+.disabled {
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  50% {
+    border-color: #faa31b;
+  }
+}
+
+.refreshing {
+  display: inline-block;
+  animation: rotation 1s infinite linear;
+  color: #faa31b;
+}
+
+@keyframes rotation {
+  100% {
+    transform: rotate(360deg);
+  }
+}

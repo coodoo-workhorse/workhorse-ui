@@ -1,0 +1,219 @@
+<div class="row">
+  <div class="col">
+    <div class="card mb-3">
+      <div class="card-header d-flex justify-content-between p-3">
+        <h4 class="d-inline-block">Config</h4>
+        <div class="action-buttons">
+          <button class="btn btn-outline-secondary action-button px-2 w-auto py-0 ml-3" (click)="edit = !edit">
+            <i class="ion ion-md-create"></i><span class="ml-2">{{ edit ? 'End edit' : 'Edit'}} mode</span>
+          </button>
+          <refresh-button class="refresh d-inline-block ml-2" (click)="loadConfig()" [refreshing]="loading"> </refresh-button>
+        </div>
+      </div>
+      <div *ngIf="loading" class="card-body p-5">
+        <loading [loadingHorse]="true"></loading>
+      </div>
+      <div *ngIf="!loading && config" class="card-body pt-0">
+        <div class="mb-3">
+          <strong> Job queue poller </strong>
+          <div>
+            Job executions in status <job-execution-status [status]="'QUEUED'" [link]="false"></job-execution-status> &#160; get polled
+            every <span *ngIf="!edit">{{ config.bufferPollInterval }}</span>
+            <inline-edit
+              *ngIf="edit"
+              [data]="config.bufferPollInterval"
+              type="number"
+              [maxlength]="1000"
+              (focusOut)="updateConfig('Job queue poller interval in seconds', 'bufferPollInterval', $event)"
+            >
+            </inline-edit>
+            seconds
+          </div>
+          <div>
+            One poll adds up to <span *ngIf="!edit">{{ config.bufferMax }}</span>
+            <inline-edit
+              *ngIf="edit"
+              [data]="config.bufferMax"
+              type="number"
+              [maxlength]="100000"
+              (focusOut)="updateConfig('Max amount of executions to load into the memory queue per job', 'bufferMax', $event)"
+            >
+            </inline-edit>
+            executions into the memory queue per job
+          </div>
+          <div>
+            The poller will add more execution to the queue if it contails less than <span *ngIf="!edit">{{ config.bufferMin }}</span>
+            <inline-edit
+              *ngIf="edit"
+              [data]="config.bufferMin"
+              type="number"
+              [maxlength]="100000"
+              (focusOut)="updateConfig('Min amount of executions in memory queue before the poller gets to add more', 'bufferMin', $event)"
+            >
+            </inline-edit>
+            entries
+          </div>
+          <div>
+            Push fallback gets polled every <span *ngIf="!edit">{{ config.bufferPushFallbackPollInterval }}</span>
+            <inline-edit
+              *ngIf="edit"
+              [data]="config.bufferPushFallbackPollInterval"
+              type="number"
+              [maxlength]="100000"
+              (focusOut)="updateConfig('Buffer Push Fallback Poll Interval', 'bufferPushFallbackPollInterval', $event)"
+            >
+            </inline-edit>
+            minutes
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <div>
+            <strong> Time zone </strong>
+          </div>
+          <div *ngIf="!edit">
+            {{ config.timeZone }}
+          </div>
+          <select *ngIf="edit && timezones?.timeZones" (change)="updateConfig('Time zone', 'timeZone', $event.target.value)">
+            <option *ngFor="let t of timezones.timeZones" [attr.value]="t" [attr.selected]="t === config.timeZone ? true : null">
+              {{ t }}
+            </option>
+          </select>
+          <div class="text-muted meta-info" *ngIf="timezones?.systemDefaultTimeZone">
+            System default: {{ timezones.systemDefaultTimeZone }}
+          </div>
+        </div>
+        <div class="mb-3">
+          <strong> Maintenance </strong>
+          <div>
+            Finished or failed executions gets removed after <span *ngIf="!edit">{{ config.minutesUntilCleanup }}</span>
+            <inline-edit
+              *ngIf="edit"
+              [data]="config.minutesUntilCleanup"
+              type="number"
+              [maxlength]="10000000"
+              (focusOut)="updateConfig('Minutes Until Cleanup', 'bufferMax', $event)"
+            >
+            </inline-edit>
+            minutes
+          </div>
+          <div>
+            A zombie is an execution that is stuck in status
+            <job-execution-status [status]="'RUNNING'" [link]="false"> </job-execution-status>&#160; for
+            <span *ngIf="!edit">{{ config.executionTimeout }}</span>
+            <inline-edit
+              *ngIf="edit"
+              [data]="config.executionTimeout"
+              type="number"
+              [maxlength]="1000"
+              (focusOut)="updateConfig('Zombie recognition time', 'executionTimeout', $event)"
+            >
+            </inline-edit>
+            minutes that can be cured by the status
+            <job-execution-status *ngIf="!edit" [status]="config.executionTimeoutStatus" [link]="false"> </job-execution-status>
+            <select *ngIf="edit" (change)="updateConfig('Zombie cure status', 'executionTimeoutStatus', $event.target.value)">
+              <option [attr.value]="'QUEUED'" [attr.selected]="config.executionTimeoutStatus === 'QUEUED' ? true : null">QUEUED</option>
+              <option [attr.value]="'ABORTED'" [attr.selected]="config.executionTimeoutStatus === 'ABORTED' ? true : null">ABORTED</option>
+              <option [attr.value]="'FAILED'" [attr.selected]="config.executionTimeoutStatus === 'FAILED' ? true : null">FAILED</option>
+            </select>
+            <div class="text-muted meta-info">If set to 0 the hunt is off</div>
+          </div>
+        </div>
+        <div class="mb-3">
+          <strong> Logs </strong>
+          <div>
+            Execution Summary is limited to <span *ngIf="!edit">{{ config.maxExecutionSummaryLength }}</span>
+            <inline-edit
+              *ngIf="edit"
+              type="number"
+              [maxlength]="1000"
+              [data]="config.maxExecutionSummaryLength"
+              (focusOut)="updateConfig('Max Execution Summary length', 'maxExecutionSummaryLength', $event)"
+            >
+            </inline-edit>
+            characters
+          </div>
+          <div>
+            Changes get logged as <span class="log-text" *ngIf="!edit">{{ config.logChange }}</span>
+            <inline-edit *ngIf="edit" [data]="config.logChange" (focusOut)="updateConfig('Log change pattern', 'logChange', $event)">
+            </inline-edit>
+            <div class="text-muted meta-info">The log change pattern needs the placeholder %s three times</div>
+          </div>
+          <div>
+            Execution log timestamp
+            <a href="https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html#patterns" target="_blank">pattern</a>
+            is <span class="log-text" *ngIf="!edit">{{ config.logTimeFormat }}</span>
+            <inline-edit
+              *ngIf="edit"
+              [data]="config.logTimeFormat"
+              (focusOut)="updateConfig('Execution log timestamp pattern', 'logTimeFormat', $event)"
+            >
+            </inline-edit>
+            the info marker is
+            <span *ngIf="!edit && !config.logInfoMarker">not set</span>
+            <span *ngIf="!edit && config.logInfoMarker" class="log-text">{{ config.logInfoMarker }}</span>
+            <inline-edit
+              *ngIf="edit"
+              [data]="config.logInfoMarker"
+              (focusOut)="updateConfig('Execution log info marker', 'logInfoMarker', $event)"
+            >
+            </inline-edit
+            >, the warn marker is
+            <span *ngIf="!edit && !config.logWarnMarker">not set</span>
+            <span *ngIf="!edit && config.logWarnMarker" class="log-text">{{ config.logWarnMarker }}</span>
+            <inline-edit
+              *ngIf="edit"
+              [data]="config.logWarnMarker"
+              (focusOut)="updateConfig('Execution log warn marker', 'logWarnMarker', $event)"
+            >
+            </inline-edit>
+            and the error marker is
+            <span *ngIf="!edit && !config.logErrorMarker">not set</span>
+            <span *ngIf="!edit && config.logErrorMarker" class="log-text">{{ config.logErrorMarker }}</span>
+            <inline-edit
+              *ngIf="edit"
+              [data]="config.logErrorMarker"
+              (focusOut)="updateConfig('Execution log error marker', 'logErrorMarker', $event)"
+            >
+            </inline-edit>
+          </div>
+        </div>
+        <div class="mb-3">
+          <strong>Workhorse</strong>
+          <div>
+            Version
+            <span class="log-text">{{ workhorseVersion }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col">
+    <div class="card mb-3">
+      <div class="card-header d-flex justify-content-between p-3">
+        <h4 class="d-inline-block">Persistence</h4>
+      </div>
+      <div *ngIf="!loading && config" class="card-body pt-0">
+        <div class="mb-3">
+          <strong>{{ config.persistenceName }}</strong>
+          <div>
+            Version
+            <span class="log-text">{{ config.persistenceVersion }}</span>
+          </div>
+        </div>
+        <div *ngIf="extraConfigs" class="mb-3">
+          <strong> Config </strong>
+          <ng-container *ngFor="let item of config | keyvalue">
+            <span *ngIf="!configFields.includes(item.key)">
+              <br />
+              {{ item.key }}: <span class="log-text">{{ item.value }}</span>
+            </span>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

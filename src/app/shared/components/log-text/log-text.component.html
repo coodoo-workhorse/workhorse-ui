@@ -1,0 +1,53 @@
+<div class="card mb-3">
+  <div class="card-header d-flex justify-content-between p-3">
+    <h5 *ngIf="!metadata" class="d-inline-block">Log messages</h5>
+    <h5 *ngIf="metadata?.count > 0" class="d-inline-block">{{ metadata.count }} log messages</h5>
+    <h5 *ngIf="metadata?.count === 0" class="d-inline-block">No log messages</h5>
+    <div class="refresh d-inline-block">
+      <log-button [jobId]="jobId" (newLog)="list()" class="ml-2"></log-button>
+      <button
+        class="btn btn-outline-secondary action-button ml-2"
+        [routerLink]="jobId ? '/jobs/' + jobId + '/logs' : '/logs'"
+        ngbPopover="Show all logs"
+        triggers="mouseenter:mouseleave"
+        placement="left"
+      >
+        <i class="ion ion-md-arrow-forward"></i>
+      </button>
+      <refresh-button class="ml-2" (click)="list()" [refreshing]="loading"></refresh-button>
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="card-body p-5">
+    <loading [loadingHorse]="true"></loading>
+  </div>
+
+  <div *ngIf="!loading" class="card-body p-3">
+    <div *ngFor="let row of rows">
+      <div class="log-text">
+        <span ngbPopover="{{ row.createdAt | timeAgoStatic }}" triggers="mouseenter:mouseleave">
+          [{{ row.createdAt | date: 'dd.MM.yyyy HH:mm:ss' }}]</span
+        ><span
+          *ngIf="row.jobId && !jobId"
+          ngbPopover="{{ row.jobName }}"
+          triggers="mouseenter:mouseleave"
+          (click)="showLogs(row.jobId)"
+          class="clickable"
+          >[ID {{ row.jobId }}]</span
+        ><span *ngIf="row.jobId" class="log-label-{{ row.jobStatus }}">[{{ row.jobStatus }}] </span>
+        {{ row.message }}
+        <span *ngIf="row.stacktrace" (click)="showLog(row)" ngbPopover="View stacktrace" triggers="mouseenter:mouseleave">
+          <i class="ion ion-ios-document"></i>
+        </span>
+      </div>
+    </div>
+    <button
+      class="btn btn-outline-secondary mt-3"
+      *ngIf="metadata?.numPages > 1"
+      [hidden]="loading"
+      (click)="listingParameters.limit = listingParameters.limit + metadata.limit; list()"
+    >
+      Show more
+    </button>
+  </div>
+</div>

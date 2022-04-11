@@ -1,0 +1,17 @@
+<div *ngIf="job" class="row">
+  <div class="col-12">
+    <a href="javascript:;" class="clickable font-weight-bold" [routerLink]="'/jobs/' + job.id">{{ job.name }}</a>
+    <span class="badge ml-2"> ID {{ job.id }} </span>
+    <span class="badge ml-2" *ngIf="job.schedule" ngbPopover="{{ job.scheduleDescription }}" triggers="mouseenter:mouseleave">
+      Schedule {{ job.schedule }}
+    </span>
+    <span class="badge ml-2" *ngIf="job.threads > 1"> {{ job.threads }} threads </span>
+    <span class="badge ml-2" *ngIf="job.maxPerMinute"> {{ job.maxPerMinute }}&nbsp;per&nbsp;minute </span>
+    <span class="badge ml-2" *ngIf="job.failRetries > 0"> {{ job.failRetries }}&nbsp;retr{{ job.failRetries === 1 ? 'y' : 'ies' }} </span>
+    <job-tags [tags]="job.tags"></job-tags>
+    <div *ngIf="showStatus">
+      <job-status [status]="job.status" [link]="false" class="mr-2"></job-status>
+      <small>{{ job.description }}</small>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,12 @@
+<div *ngIf="loadingHorse" class="d-flex flex-column justify-content-center align-items-center">
+  <img src="../../../../assets/loading-horse.gif" class="img-fluid" width="140">
+  <span class="ml-4">loading...</span>
+</div>
+
+<div *ngIf="!loadingHorse" class="spinner">
+  <div class="rect1"></div>
+  <div class="rect2"></div>
+  <div class="rect3"></div>
+  <div class="rect4"></div>
+  <div class="rect5"></div>
+</div>

@@ -1,0 +1,21 @@
+<div class="card mb-3">
+  <div class="card-header d-flex justify-content-between p-3 d-inline-block">
+    <h4 class="d-inline-block">Running threads</h4>
+    <div class="action-buttons">
+      <refresh-button class="refresh d-inline-block ml-2" (click)="getRunningThread()" [refreshing]="loading"> </refresh-button>
+    </div>
+  </div>
+  <div *ngIf="loading" class="card-body p-5">
+    <loading [loadingHorse]="true"></loading>
+  </div>
+  <div *ngIf="!loading && jobThreads?.length < 1" class="card-body d-flex justify-content-center">
+    <span>No running thread</span>
+  </div>
+  <div *ngIf="!loading && jobThreads?.length > 0" class="card-body">
+    <ul class="ul-list">
+      <li *ngFor="let jobThread of jobThreads">
+        <span class="badge">{{ jobThread.thread }}</span> {{ jobThread.jobName }}
+      </li>
+    </ul>
+  </div>
+</div>

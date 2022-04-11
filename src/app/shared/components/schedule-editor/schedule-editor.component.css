@@ -1,0 +1,10 @@
+.schedule {
+  border-radius: 0;
+  font-size: larger;
+  font-weight: bold;
+  max-width: 400px;
+}
+
+.paddingdingding {
+  padding-top: 0 !important;
+}

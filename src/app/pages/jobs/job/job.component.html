@@ -1,0 +1,401 @@
+<div class="row mb-3">
+  <div [class.col-8]="lastExecutionsViewEnabled" [class.col-12]="!lastExecutionsViewEnabled">
+    <div class="card h-100">
+      <div class="card-header d-flex justify-content-between px-3 pt-3 pb-0">
+        <h4 *ngIf="loading || !job" class="card-title d-inline-block text-truncate">Job {{ jobId }}</h4>
+        <h4 *ngIf="!loading && job" class="card-title d-inline-block text-truncate pr-3">
+          <span *ngIf="!edit">{{ job.name }}</span>
+          <inline-edit *ngIf="edit" [data]="job.name" [maxlength]="128" (focusOut)="updateJob('Name', 'name', $event)"> </inline-edit>
+        </h4>
+
+        <div *ngIf="!loading && job" class="actions">
+          <!-- Buttons -->
+          <div *ngIf="!hiddeAdvancedFunction">
+            <div>
+              <div class="btn-group icon-btn-group ml-2" role="group">
+                <button
+                  class="btn btn-outline-secondary"
+                  (click)="lastExecutionsViewEnabled = !lastExecutionsViewEnabled; saveJobView()"
+                  ngbPopover="Show last executions"
+                  triggers="mouseenter:mouseleave"
+                  [class.active]="lastExecutionsViewEnabled"
+                >
+                  <i class="ion ion-ios-pie"></i>
+                </button>
+                <button
+                  class="btn btn-outline-secondary"
+                  (click)="executionsViewEnabled = !executionsViewEnabled; saveJobView()"
+                  ngbPopover="Show executions list"
+                  triggers="mouseenter:mouseleave"
+                  [class.active]="executionsViewEnabled"
+                >
+                  <i class="ion ion-ios-list"></i>
+                </button>
+                <button
+                  class="btn btn-outline-secondary"
+                  (click)="logsViewEnabled = !logsViewEnabled; saveJobView()"
+                  ngbPopover="Show logs"
+                  triggers="mouseenter:mouseleave"
+                  [class.active]="logsViewEnabled"
+                >
+                  <i class="ion ion-ios-document"></i>
+                </button>
+              </div>
+              <refresh-button class="refresh d-inline-block ml-2" (click)="loadJob()" [refreshing]="reloading"> </refresh-button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="!loading && job" class="card-body d-flex justify-content-between align-items-end px-3 pb-3 pt-0">
+        <div>
+          <!-- Status -->
+          <div class="mb-2">
+            <job-status [status]="job.status" [link]="false"></job-status>
+            <span class="badge ml-2"> ID {{ job.id }} </span>
+            <span class="badge ml-2" *ngIf="job.schedule" ngbPopover="{{ job.scheduleDescription }}" triggers="mouseenter:mouseleave">
+              Schedule {{ job.schedule }}
+            </span>
+            <span class="badge ml-2"> {{ job.threads }} thread<span *ngIf="job.threads > 1">s</span> </span>
+            <span class="badge ml-2" *ngIf="job.maxPerMinute"> {{ job.maxPerMinute }}&nbsp;per&nbsp;minute </span>
+            <span class="badge ml-2" *ngIf="job.failRetries === 0"> No&nbsp;retry </span>
+            <span class="badge ml-2" *ngIf="job.failRetries === 1"> 1&nbsp;retry </span>
+            <span class="badge ml-2" *ngIf="job.failRetries > 1"> {{ job.failRetries }}&nbsp;retries </span>
+            <job-tags [tags]="job.tags"></job-tags>
+          </div>
+          <!-- Classnames -->
+          <div class="mb-3">
+            <span class="class-name d-inline-flex align-items-center" (click)="copyToClipboard(job.workerClassName)">
+              <i class="ion ion-ios-code" ngbPopover="Worker class" triggers="mouseenter:mouseleave"></i>
+              <span class="ml-2" ngbPopover="{{ job.workerClassName }}" triggers="mouseenter:mouseleave">{{
+                job.workerClassName | javaClassName
+              }}</span>
+            </span>
+            <span
+              *ngIf="job.parametersClassName"
+              class="class-name d-inline-flex align-items-center ml-3"
+              (click)="copyToClipboard(job.parametersClassName)"
+            >
+              <i class="ion ion-ios-code-working" ngbPopover="Parameters class" triggers="mouseenter:mouseleave"></i
+              ><span class="ml-2" ngbPopover="{{ job.parametersClassName }}" triggers="mouseenter:mouseleave">{{
+                job.parametersClassName | javaClassName
+              }}</span>
+            </span>
+          </div>
+
+          <div class="mb-3">
+            <span *ngIf="!edit">{{ job.description }}</span>
+            <inline-edit
+              *ngIf="edit"
+              [data]="job.description"
+              [maxlength]="2028"
+              (focusOut)="updateJob('Description', 'description', $event)"
+            ></inline-edit>
+          </div>
+
+          <div *ngIf="!edit" class="mb-3">
+            <!-- Schedule -->
+            <div *ngIf="job.schedule">
+              <div *ngIf="job.scheduleDescription">Schedule: {{ job.scheduleDescription }}</div>
+              <schedule-timeline [schedule]="job.schedule" [parts]="5"></schedule-timeline>
+            </div>
+          </div>
+
+          <!-- Edit Settings -->
+          <div *ngIf="edit" class="mb-3">
+            <tag-input
+              [ngModel]="job.tags"
+              [ngDefaultControl]
+              [addOnBlur]="true"
+              (onRemove)="removeTag($event)"
+              (onAdd)="addTag($event)"
+              [theme]="'minimal'"
+              [placeholder]="'Add tag'"
+              [secondaryPlaceholder]="'Add tags'"
+            >
+            </tag-input>
+
+            <div>
+              <inline-edit [data]="job.threads" type="number" [maxlength]="1000" (focusOut)="updateJob('Threads', 'threads', $event)">
+              </inline-edit>
+              thread{{ job.threads === 1 ? '' : 's' }}
+              <span
+                [hidden]="job.threads === 1"
+                (click)="updateJob('Threads', 'threads', job.threads - 1)"
+                ngbPopover="Decrease threads"
+                triggers="mouseenter:mouseleave"
+                class="click-action"
+              >
+                <i class="ion-md-remove-circle"></i>
+              </span>
+              <span
+                (click)="updateJob('Threads', 'threads', job.threads + 1)"
+                ngbPopover="Increase threads"
+                triggers="mouseenter:mouseleave"
+                class="click-action"
+              >
+                <i class="ion ion-md-add-circle"></i>
+              </span>
+            </div>
+
+            <div>
+              <span *ngIf="!job.maxPerMinute || job.maxPerMinute === 0">
+                No execution throughput limitation
+                <span
+                  (click)="updateJob('Max per minute', 'maxPerMinute', job.maxPerMinute + 1)"
+                  ngbPopover="Activate throughput limitation"
+                  triggers="mouseenter:mouseleave"
+                  class="click-action"
+                >
+                  <i class="ion ion-ios-checkmark-circle"></i>
+                </span>
+              </span>
+              <span *ngIf="job.maxPerMinute > 0">
+                Max
+                <inline-edit
+                  [data]="job.maxPerMinute"
+                  type="number"
+                  [maxlength]="1000"
+                  (focusOut)="updateJob('Max executions per minute', 'maxPerMinute', $event)"
+                >
+                </inline-edit>
+                execution{{ job.maxPerMinute === 1 ? '' : 's' }}
+                <span
+                  [hidden]="job.maxPerMinute === 0"
+                  (click)="updateJob('Max per minute', 'maxPerMinute', job.maxPerMinute - 1)"
+                  ngbPopover="Decrease max per minute"
+                  triggers="mouseenter:mouseleave"
+                  class="click-action"
+                >
+                  <i class="ion-md-remove-circle"></i>
+                </span>
+                <span
+                  (click)="updateJob('Max per minute', 'maxPerMinute', job.maxPerMinute + 1)"
+                  ngbPopover="Increase max per minute"
+                  triggers="mouseenter:mouseleave"
+                  class="click-action"
+                >
+                  <i class="ion ion-md-add-circle"></i>
+                </span>
+                per minute
+                <span
+                  (click)="updateJob('Max per minute', 'maxPerMinute', null)"
+                  ngbPopover="Deactivate throughput limitation"
+                  triggers="mouseenter:mouseleave"
+                  class="click-action"
+                >
+                  <i class="ion ion-ios-close-circle"></i>
+                </span>
+              </span>
+            </div>
+
+            <div>
+              Executions are <span [hidden]="job.uniqueQueued">not</span> unique
+              <span class="click-action">
+                <span
+                  [hidden]="!job.uniqueQueued"
+                  (click)="updateJob('Unique in queue', 'uniqueQueued', false)"
+                  ngbPopover="Make them not unique"
+                  triggers="mouseenter:mouseleave"
+                >
+                  <i class="ion ion-ios-close-circle"></i>
+                </span>
+                <span
+                  [hidden]="job.uniqueQueued"
+                  (click)="updateJob('Unique in queue', 'uniqueQueued', true)"
+                  ngbPopover="Make them unique"
+                  triggers="mouseenter:mouseleave"
+                >
+                  <i class="ion ion-ios-checkmark-circle"></i>
+                </span>
+              </span>
+              in queue
+            </div>
+
+            <div>
+              <span *ngIf="job.failRetries === 0"> No retry </span>
+              <span *ngIf="job.failRetries === 1">
+                <inline-edit
+                  [data]="job.failRetries"
+                  type="number"
+                  [maxlength]="1000"
+                  (focusOut)="updateJob('Fail retries', 'failRetries', $event)"
+                >
+                </inline-edit>
+                retry
+              </span>
+              <span *ngIf="job.failRetries > 1">
+                <inline-edit
+                  [data]="job.failRetries"
+                  type="number"
+                  [maxlength]="1000"
+                  (focusOut)="updateJob('Fail retries', 'failRetries', $event)"
+                >
+                </inline-edit>
+                retries
+              </span>
+              <span
+                [hidden]="job.failRetries === 0"
+                (click)="updateJob('Fail retries', 'failRetries', job.failRetries - 1)"
+                ngbPopover="Decrease fail retries"
+                triggers="mouseenter:mouseleave"
+                class="click-action"
+              >
+                <i class="ion-md-remove-circle"></i>
+              </span>
+              <span
+                (click)="updateJob('Fail retries', 'failRetries', job.failRetries + 1)"
+                ngbPopover="Increase fail retries"
+                triggers="mouseenter:mouseleave"
+                class="click-action"
+              >
+                <i class="ion ion-md-add-circle"></i>
+              </span>
+              of a failed execution
+              <span *ngIf="job.failRetries > 0">
+                after
+                <inline-edit
+                  [data]="job.retryDelay"
+                  type="number"
+                  [maxlength]="1000"
+                  (focusOut)="updateJob('Retry delay', 'retryDelay', $event)"
+                >
+                </inline-edit
+                >ms <span *ngIf="job.retryDelay >= 1000">({{ job.retryDelay | jobDuration }})</span>
+              </span>
+            </div>
+
+            <div>
+              <span *ngIf="job.minutesUntilCleanUp === 0">
+                No cleanup of done executions
+                <span
+                  (click)="updateJob('Minutes until cleanup', 'minutesUntilCleanUp', 30)"
+                  ngbPopover="Activate cleanup"
+                  triggers="mouseenter:mouseleave"
+                  class="click-action"
+                >
+                  <i class="ion ion-ios-checkmark-circle"></i>
+                </span>
+              </span>
+              <span *ngIf="job.minutesUntilCleanUp > 0">
+                <span *ngIf="job.minutesUntilCleanUp === 1">
+                  <inline-edit
+                    [data]="job.minutesUntilCleanUp"
+                    type="number"
+                    [maxlength]="1000"
+                    (focusOut)="updateJob('Minutes until cleanup', 'minutesUntilCleanUp', $event)"
+                  >
+                  </inline-edit>
+                  day
+                </span>
+                <span *ngIf="job.minutesUntilCleanUp > 1">
+                  <inline-edit
+                    [data]="job.minutesUntilCleanUp"
+                    type="number"
+                    [maxlength]="1000"
+                    (focusOut)="updateJob('Minutes until cleanup', 'minutesUntilCleanUp', $event)"
+                  >
+                  </inline-edit>
+                  minutes
+                </span>
+                <span
+                  [hidden]="job.minutesUntilCleanUp === 0"
+                  (click)="updateJob('Minutes until cleanup', 'minutesUntilCleanUp', job.minutesUntilCleanUp - 1)"
+                  ngbPopover="Decrease minutes until cleanup"
+                  triggers="mouseenter:mouseleave"
+                  class="click-action"
+                >
+                  <i class="ion-md-remove-circle"></i>
+                </span>
+                <span
+                  (click)="updateJob('Minutes until cleanup', 'minutesUntilCleanUp', job.minutesUntilCleanUp + 1)"
+                  ngbPopover="Increase minutes until cleanup"
+                  triggers="mouseenter:mouseleave"
+                  class="click-action"
+                >
+                  <i class="ion ion-md-add-circle"></i>
+                </span>
+                until cleanup of done executions
+                <span
+                  (click)="updateJob('Minutes until cleanup', 'minutesUntilCleanUp', 0)"
+                  ngbPopover="Deactivate cleanup"
+                  triggers="mouseenter:mouseleave"
+                  class="click-action"
+                >
+                  <i class="ion ion-ios-remove-circle"></i>
+                </span>
+              </span>
+            </div>
+
+            <!-- Schedule -->
+            <div>
+              Schedule
+              <inline-edit [data]="job.schedule" [maxlength]="128" (focusOut)="updateJob('Schedule', 'schedule', $event)"> </inline-edit>
+              <schedule-timeline [schedule]="job.schedule" [parts]="5"></schedule-timeline>
+            </div>
+
+            <div class="mb-3 mt-3">
+              <div>Created {{ job.createdAt | timeAgoStatic }}: {{ job.createdAt | date: 'd. MMM yyyy HH:mm:ss' }}</div>
+              <div *ngIf="job.updatedAt">
+                Last updated {{ job.updatedAt | timeAgoStatic }}: {{ job.updatedAt | date: 'd. MMM yyyy HH:mm:ss' }}
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <button
+              class="btn btn-outline-secondary"
+              (click)="navigateBack()"
+              ngbPopover="Back"
+              triggers="mouseenter:mouseleave"
+              placement="left"
+            >
+              <i class="ion ion-md-arrow-back"></i>
+            </button>
+            <button
+              *ngIf="job.status === 'INACTIVE' || job.status === 'ERROR'"
+              class="btn btn-outline-secondary ml-2"
+              (click)="activateJob()"
+            >
+              <i class="ion ion-md-play"></i><span class="ml-2">Activate</span>
+            </button>
+            <button *ngIf="job.status === 'ACTIVE'" class="btn btn-outline-secondary ml-2" (click)="deactivateJob()">
+              <i class="ion ion-md-pause"></i><span class="ml-2">Deactivate</span>
+            </button>
+            <button *ngIf="job.status === 'NO_WORKER'" class="btn btn-outline-secondary ml-2" (click)="deleteJob()">
+              <i class="ion ion-md-trash"></i><span class="ml-2">Delete workerless job</span>
+            </button>
+            <button *ngIf="!hiddeAdvancedFunction" class="btn btn-outline-secondary ml-2" (click)="createExecution()">
+              <i class="ion ion-md-flash"></i><span class="ml-2">Create execution</span>
+            </button>
+            <button *ngIf="!hiddeAdvancedFunction" class="btn btn-outline-secondary ml-2" (click)="triggerScheduledJobExecution()">
+              <i class="ion ion-md-flash"></i><span class="ml-2">Trigger schedule</span>
+            </button>
+            <button *ngIf="!edit && !hiddeAdvancedFunction" class="btn btn-outline-secondary ml-2" (click)="edit = !edit">
+              <i class="ion ion-md-create"></i><span class="ml-2">Edit</span>
+            </button>
+            <button *ngIf="edit && !hiddeAdvancedFunction" class="btn btn-outline-secondary ml-2" (click)="edit = !edit">
+              <i class="ion ion-md-create"></i><span class="ml-2">End edit mode</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="lastExecutionsViewEnabled && !hiddeAdvancedFunction" class="col-4 no-col-padding-left">
+    <execution-count-pie-chart [jobId]="jobId"></execution-count-pie-chart>
+  </div>
+</div>
+
+<div *ngIf="!loading && !job" class="d-flex justify-content-center align-items-center">
+  <figure>
+    <img src="assets/horse-0{{ randomWorkhorse }}.png" class="img-fluid" width="140" alt="No job found" title=" Job does not exist " />
+    <figcaption>The job does not exist</figcaption>
+  </figure>
+</div>
+
+<log-text *ngIf="logsViewEnabled && !hiddeAdvancedFunction" [jobId]="jobId" [limit]="50"></log-text>
+
+<executions *ngIf="executionsViewEnabled && !hiddeAdvancedFunction" [embedded]="true" [hideParameters]="!job?.parametersClassName">
+</executions>

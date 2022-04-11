@@ -1,0 +1,31 @@
+.counts-chart {
+    position: relative;
+    margin-top: -20px;
+}
+
+.click-action {
+    cursor: pointer;
+    color: rgba(34, 34, 34, 0.2);
+}
+
+.click-action:hover {
+    color: #6c757d;
+}
+
+.card-header {
+    flex-wrap: wrap;
+    display: flex;
+}
+
+.time {
+    display: inline-block;
+    min-width: 10px;
+    padding: 3px 7px;
+    font-weight: 500;
+    line-height: 1;
+    padding: 10px;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    background-color: white;
+}

@@ -1,0 +1,81 @@
+<div class="card h-100">
+  <div class="card-header d-flex justify-content-between p-3">
+    <h5 *ngIf="!jobExecutionStatusSummaries" class="d-inline-block">
+      <job-execution-status [status]="this.status" [link]="false" class="mr-2"></job-execution-status>
+    </h5>
+    <h5 *ngIf="jobExecutionStatusSummaries" class="d-inline-block">
+      <job-execution-status
+        [status]="this.status"
+        [count]="jobExecutionStatusSummaries.count"
+        [link]="false"
+        class="mr-2"
+      ></job-execution-status>
+    </h5>
+    <div class="actions">
+      <refresh-button
+      class="refresh d-inline-block"
+      (click)="getJobByExecutionStatusSummary()"
+      [refreshing]="currentlyStatusLoading"
+      ></refresh-button>
+    </div>
+  </div>
+
+  <div *ngIf="jobExecutionStatusSummaries?.count === 0" class="no-work-horse card-content d-flex flex-column justify-content-center">
+    <img src="{{ this.imageSource }}" alt="No job found" class="mx-auto"/>
+    <span class="mx-auto">My work here is done!</span>
+  </div>
+
+  <table *ngIf="!currentlyStatusLoading" class="table table-hover mb-0">
+    <tbody>
+      <tr *ngFor="let summary of showSummaries" class="clickable">
+        <td *ngIf="summary.count" class="text-right" (click)="navigateToJob(summary.job)">
+          <job-execution-status
+            *ngIf="summary.count"
+            [status]="status"
+            [count]="summary.count"
+            [countOnly]="true"
+            [link]="true"
+            [jobId]="summary.job.id"
+            class="mr-2"
+          ></job-execution-status>
+          <br />
+        </td>
+        <td (click)="navigateToJob(summary.job)">
+          <div *ngIf="summary.job" class="row">
+            <div class="col-12">
+              <a href="javascript:;" class="clickable font-weight-bold" [routerLink]="'/jobs/' + summary.job.id">{{ summary.job.name }}</a>
+              <span
+                class="badge ml-2"
+                *ngIf="summary.job.schedule"
+                ngbPopover="{{ summary.job.scheduleDescription }}"
+                triggers="mouseenter:mouseleave"
+              >
+                Schedule {{ summary.job.schedule }}
+              </span>
+              <span class="badge ml-2" *ngIf="summary.job.threads > 1"> {{ summary.job.threads }} threads </span>
+              <span class="badge ml-2" *ngIf="summary.job.maxPerMinute"> {{ summary.job.maxPerMinute }}&nbsp;per&nbsp;minute </span>
+              <span class="badge ml-2" *ngIf="summary.job.failRetries > 0">
+                {{ summary.job.failRetries }}&nbsp;retr{{ summary.job.failRetries === 1 ? 'y' : 'ies' }}
+              </span>
+              <div *ngIf="summary.job.status !== 'ACTIVE'">
+                <job-status [status]="summary.job.status" [link]="false" class="mr-2"></job-status>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr *ngIf="hideSummaries.length > 0">
+        <td colspan="2" (click)="showAll()" class="clickable">
+          Show all
+          <job-execution-status [status]="status" [count]="hiddenExecutions" [link]="false"></job-execution-status>
+          of {{ hiddenJobs }} more jobs...
+        </td>
+        <!-- <td colspan="2">
+          There are
+          <job-execution-status [status]="status" [count]="hiddenExecutions" [link]="false"></job-execution-status>
+          of {{ hiddenJobs }} more jobs...
+        </td> -->
+      </tr>
+    </tbody>
+  </table>
+</div>

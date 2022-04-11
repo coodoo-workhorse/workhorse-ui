@@ -1,0 +1,264 @@
+<div class="row">
+  <div class="col">
+    <div class="card">
+      <div class="card-header p-3">
+        <div class="d-flex justify-content-between w-100">
+          <h4 *ngIf="!embedded" class="card-title">Executions</h4>
+          <h5 *ngIf="embedded">Executions</h5>
+          <coo-table-counter class="d-inline-block ml-2"></coo-table-counter>
+        </div>
+        <job-summary [job]="job"></job-summary>
+      </div>
+
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-12 px-0">
+            <form>
+              <coo-table [rows]="rows" [metadata]="metadata" class="table table-hover">
+                <ng-template #filters>
+                  <tr>
+                    <th *ngIf="rowSelectionEnabled" class="selection-col pt-4">
+                      <coo-table-select-all></coo-table-select-all>
+                    </th>
+                    <th *ngIf="!jobId" class="row-25per">
+                      <coo-table-sorter label="Job" column="jobName"> </coo-table-sorter>
+                      <coo-table-filter-text column="jobId|jobName"></coo-table-filter-text>
+                    </th>
+                    <th class="row-4em">
+                      <coo-table-sorter label="ID" column="id"> </coo-table-sorter>
+                      <coo-table-filter-text column="id|batchId|chainId|failRetryExecutionId"></coo-table-filter-text>
+                    </th>
+                    <th class="row-6em">
+                      <coo-table-sorter label="Status" column="status"> </coo-table-sorter>
+                      <coo-table-filter-list column="status" [list]="status"></coo-table-filter-list>
+                    </th>
+                    <th class="row-8em">
+                      <coo-table-sorter label="Created" column="createdAt"></coo-table-sorter>
+                      <coo-table-filter-date column="createdAt"></coo-table-filter-date>
+                    </th>
+                    <th class="row-8em">
+                      <coo-table-sorter label="Started" column="startedAt"></coo-table-sorter>
+                      <coo-table-filter-date column="startedAt|plannedFor"></coo-table-filter-date>
+                    </th>
+                    <th class="row-8em">
+                      <coo-table-sorter label="Ended" column="endedAt"> </coo-table-sorter>
+                      <coo-table-filter-date column="endedAt|abortedAt"></coo-table-filter-date>
+                    </th>
+                    <th [hidden]="hideParameters" [ngClass]="{ 'row-25per': !jobId }">
+                      <coo-table-sorter label="Parameters" column="parameters"></coo-table-sorter>
+                      <coo-table-filter-text column="parameters"></coo-table-filter-text>
+                    </th>
+                    <th [ngClass]="{ 'row-25per': !jobId }">
+                      <coo-table-sorter label="Summary" column="summary"></coo-table-sorter>
+                      <coo-table-filter-text column="summary"></coo-table-filter-text>
+                    </th>
+                    <th class="align-middle text-right pr-3 align-bottom">
+                      <div class="d-flex justify-content-end">
+                        <button
+                          *ngIf="rowSelectionEnabled"
+                          class="btn btn-outline-secondary action-button ml-2"
+                          [ngClass]="{'disabled': selectedRowIds.size === 0}"
+                          ngbPopover="Redo {{ selectedRowIds.size }} selected executions"
+                          triggers="mouseenter:mouseleave"
+                          placement="left"
+                          (click)="selectedRowIds.size != 0 ? redoSelectedExecutions() : undefined"
+                        >
+                          <i class="ion ion-md-sync"></i>
+                        </button>
+                        <button
+                          *ngIf="rowSelectionEnabled"
+                          class="btn btn-outline-secondary action-button ml-2"
+                          [ngClass]="{'disabled': selectedRowIds.size === 0}"
+                          ngbPopover="Abort {{ selectedRowIds.size }} selected executions"
+                          triggers="mouseenter:mouseleave"
+                          placement="left"
+                          (click)="selectedRowIds.size != 0 ? abortSelectedExecutions() : undefined"
+                        >
+                          <i class="ion ion-md-close"></i>
+                        </button>
+                        <button
+                          *ngIf="rowSelectionEnabled"
+                          class="btn btn-outline-secondary action-button ml-2"
+                          [ngClass]="{'disabled': selectedRowIds.size === 0}"
+                          ngbPopover="Delete {{ selectedRowIds.size }} selected executions"
+                          triggers="mouseenter:mouseleave"
+                          placement="left"
+                          (click)="selectedRowIds.size != 0 ? deleteSelectedExecutions() : undefined"
+                        >
+                          <i class="ion ion-md-trash"></i>
+                        </button>
+                        <button
+                          class="btn btn-outline-secondary action-button ml-2"
+                          (click)="rowSelectionEnabled = !rowSelectionEnabled"
+                          [ngbPopover]="(rowSelectionEnabled ? 'Disable' : 'Enable') + ' selection'"
+                          triggers="mouseenter:mouseleave"
+                          placement="left"
+                          >
+                          <i class="ion ion-md-checkbox-outline"></i>
+                        </button>
+                        <refresh-button class="ml-2" (click)="list()" [refreshing]="loading"> </refresh-button>
+                      </div>
+                    </th>
+                  </tr>
+                </ng-template>
+                <ng-template #row let-row="row">
+                  <td *ngIf="rowSelectionEnabled" class="align-middle">
+                    <coo-table-select [id]="row.id"></coo-table-select>
+                  </td>
+                  <td *ngIf="!jobId" (dblclick)="showExecution(row)" class="clickable">
+                    <span (click)="showJob(row)" class="link" ngbPopover="{{ row.jobDescription }}" triggers="mouseenter:mouseleave">
+                      <job-status [hidden]="row.jobStatus === 'ACTIVE'" [status]="row.jobStatus" [link]="false" class="mr-3"></job-status>
+                      <span>{{ row.jobName }}</span>
+                      <span class="badge clickable ml-1">ID {{ row.jobId }}</span>
+                    </span>
+                  </td>
+                  <td (dblclick)="showExecution(row)" class="clickable">
+                    <div>
+                      <a href="javascript:;" [routerLink]="'/jobs/' + row.jobId + '/executions/' + row.id">{{ row.id }}</a>
+                    </div>
+                    <span *ngIf="row.priority" class="badge mr-2" ngbPopover="Priority" triggers="mouseenter:mouseleave">
+                      <i class="ion ion-ios-star-outline"></i>
+                    </span>
+                    <span
+                      *ngIf="row.batchId"
+                      (dblclick)="showBatch(row)"
+                      class="badge mr-2 clickable"
+                      ngbPopover="Batch"
+                      triggers="mouseenter:mouseleave"
+                    >
+                      <i class="ion ion-md-menu"></i> {{ row.batchId }}
+                    </span>
+                    <span
+                      *ngIf="row.chainId"
+                      (dblclick)="showChain(row)"
+                      class="badge mr-2 clickable"
+                      ngbPopover="Chain"
+                      triggers="mouseenter:mouseleave"
+                    >
+                      <i class="ion ion-ios-link"></i> {{ row.chainId }}
+                    </span>
+                    <span
+                      *ngIf="row.failRetryExecutionId"
+                      (dblclick)="showRetryExecution(row)"
+                      class="badge mr-2 clickable"
+                      ngbPopover="Retry {{ row.failRetry }} of {{ row.jobFailRetries }}"
+                      triggers="mouseenter:mouseleave"
+                    >
+                      <i class="ion ion-md-repeat"></i> {{ row.failRetryExecutionId }}
+                    </span>
+                  </td>
+                  <td (dblclick)="showExecution(row)" class="status-col clickable">
+                    <div>
+                      <job-execution-status [status]="row.status" [link]="false"></job-execution-status>
+                    </div>
+                    <span *ngIf="row.duration" class="badge mr-2" ngbPopover="Duration" triggers="mouseenter:mouseleave">
+                      <i class="ion ion-ios-timer"></i> {{ row.duration | jobDuration }}
+                    </span>
+                  </td>
+                  <td colspan="3" (dblclick)="showExecution(row)" class="clickable">
+                    <job-execution-timeline
+                      [status]="row.status"
+                      [startedAt]="row.startedAt"
+                      [endedAt]="row.endedAt"
+                      [plannedFor]="row.plannedFor"
+                      [createdAt]="row.createdAt"
+                      [updatedAt]="row.updatedAt"
+                      [embedded]="true"
+                    >
+                    </job-execution-timeline>
+                  </td>
+                  <td [hidden]="hideParameters" (dblclick)="showExecution(row)" class="clickable">
+                    <span *ngIf="row.parameters" class="meta-info" ngbPopover="{{ row.parameters }}" triggers="mouseenter:mouseleave">{{
+                      jsonParameters(row)
+                    }}</span>
+                  </td>
+                  <td (dblclick)="showExecution(row)" class="clickable">
+                    <span *ngIf="row.summary" class="meta-info" ngbPopover="{{ row.summary }}" triggers="mouseenter:mouseleave">{{
+                      row.summary
+                    }}</span>
+                  </td>
+                  <td class="align-middle text-right pr-3">
+                    <div class="d-flex justify-content-end">
+                      <button
+                        href="javascript:;"
+                        class="btn btn-outline-secondary action-button ml-3"
+                        [routerLink]="'/jobs/' + row.jobId + '/executions/' + row.id"
+                        ngbPopover="Execution details"
+                        triggers="mouseenter:mouseleave"
+                        placement="left"
+                      >
+                        <i class="ion ion-md-arrow-forward"></i>
+                      </button>
+                      <button
+                        *ngIf="!jobId"
+                        href="javascript:;"
+                        class="btn btn-outline-secondary action-button ml-2"
+                        [routerLink]="'/jobs/' + row.jobId + '/executions'"
+                        ngbPopover="View job executions"
+                        triggers="mouseenter:mouseleave"
+                        placement="left"
+                      >
+                        <i class="ion ion-md-list"></i>
+                      </button>
+                      <button
+                        class="btn btn-outline-secondary action-button ml-2"
+                        (click)="createExecution(row)"
+                        ngbPopover="Clone execution"
+                        triggers="mouseenter:mouseleave"
+                        placement="left"
+                      >
+                        &nbsp;<i class="ion ion-md-flash"></i>&nbsp;
+                      </button>
+                      <button
+                        *ngIf="row.status !== 'PLANNED' && row.status !== 'QUEUED' && row.status !== 'RUNNING'"
+                        class="btn btn-outline-secondary action-button ml-2"
+                        (click)="redoExecution(row)"
+                        ngbPopover="Redo execution"
+                        triggers="mouseenter:mouseleave"
+                        placement="left"
+                      >
+                        <i class="ion ion-md-sync"></i>
+                      </button>
+                      <button
+                        *ngIf="row.status === 'PLANNED' || row.status === 'QUEUED' || row.status === 'RUNNING'"
+                        class="btn btn-outline-secondary action-button ml-2"
+                        (click)="abortExecution(row)"
+                        ngbPopover="Abort execution"
+                        triggers="mouseenter:mouseleave"
+                      >
+                        <i class="ion ion-md-close"></i>
+                      </button>
+                      <button
+                        *ngIf="row.status !== 'PLANNED' && row.status !== 'QUEUED' && row.status !== 'RUNNING'"
+                        class="btn btn-outline-secondary action-button ml-2"
+                        (click)="deleteExecution(row)"
+                        ngbPopover="Delete execution"
+                        triggers="mouseenter:mouseleave"
+                      >
+                        <i class="ion ion-md-trash"></i>
+                      </button>
+                    </div>
+                  </td>
+                </ng-template>
+              </coo-table>
+            </form>
+          </div>
+          <div *ngIf="loading" class="d-flex justify-content-center align-items-center w-100 p-5">
+            <loading [loadingHorse]="true"></loading>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-body border-top p-3">
+        <div *ngIf="!loading && rows.length === 0" class="d-flex justify-content-center align-items-center p-5">No executions</div>
+        <div [hidden]="!loading" class="d-flex justify-content-between align-items-center">
+          <coo-table-counter></coo-table-counter>
+          <div class="d-flex">
+            <coo-table-limit></coo-table-limit>
+            <coo-table-pager class="ml-2"></coo-table-pager>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,52 @@
+.page {
+  margin-top: 85px;
+}
+
+.version {
+  font-size: 0.6rem;
+}
+
+.navbar-text {
+  line-height: 1;
+}
+
+.random-workhorse {
+  width: 60px;
+  height: 60px;
+  margin: -10px;
+}
+
+/* Filter-List Styling */
+::ng-deep .filter-list-dropdown-button-selected-item-QUEUED {
+  color: #209dd7 !important;
+  border: 1px solid #209dd7 !important;
+}
+
+::ng-deep .filter-list-dropdown-button-selected-item-RUNNING {
+  color: #faa31b !important;
+  border: 1px solid #faa31b !important;
+}
+
+::ng-deep .filter-list-dropdown-button-selected-item-FINISHED,
+::ng-deep .filter-list-dropdown-button-selected-item-ACTIVE {
+  color: #5cb85c !important;
+  border: 1px solid #5cb85c !important;
+}
+
+::ng-deep .filter-list-dropdown-button-selected-item-INACTIVE,
+::ng-deep .filter-list-dropdown-button-selected-item-ABORTED {
+  color: #777777 !important;
+  border: 1px solid #777777 !important;
+}
+
+::ng-deep .filter-list-dropdown-button-selected-item-FAILED,
+::ng-deep .filter-list-dropdown-button-selected-item-NO_WORKER,
+::ng-deep .filter-list-dropdown-button-selected-item-ERROR {
+  color: #d9534f !important;
+  border: 1px solid #d9534f !important;
+}
+
+::ng-deep .filter-list-dropdown-button-selected-item-PLANNED {
+  color: #4b0082 !important;
+  border: 1px solid #4b0082 !important;
+}

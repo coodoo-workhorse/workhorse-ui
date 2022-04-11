@@ -1,0 +1,7 @@
+<span *ngFor="let tag of tags">
+  <a *ngIf="tag" href="javascript:;" [routerLink]="'/jobs'" [queryParams]="{'filter-tags': tag}">
+    <span class="badge ml-2 clickable" [ngStyle]="{'background-color':stringToColour(tag),'color':invertColor(stringToColour(tag), true)}">
+      {{tag}}
+    </span>
+  </a>
+</span>

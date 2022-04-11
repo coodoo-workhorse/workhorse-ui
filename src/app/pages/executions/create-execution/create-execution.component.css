@@ -1,0 +1,29 @@
+textarea {
+  height: 12em;
+}
+
+.value-label {
+  padding-left: 12px;
+}
+
+.col-form-label {
+  font-weight: bold;
+}
+
+.error {
+  color: red;
+  font-size: 0.9em;
+}
+
+::ng-deep .modal-md {
+  max-width: 800px !important;
+}
+
+.card-header {
+  flex-wrap: wrap;
+  display: flex;
+}
+
+.meta-info {
+  font-size: 0.8em;
+}

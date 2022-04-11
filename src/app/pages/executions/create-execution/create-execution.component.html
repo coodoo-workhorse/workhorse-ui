@@ -1,0 +1,88 @@
+<div class="modal-header">
+  <h4 class="modal-title modal-header-vertical-center">Create Execution</h4>
+  <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss()">
+    <span aria-hidden="true" class="icon icon ion-md-close"></span>
+  </button>
+</div>
+
+<div *ngIf="loading" class="modal-body">
+  <div class="row justify-content-center">
+    <loading [loadingHorse]="true"></loading>
+  </div>
+</div>
+
+<div *ngIf="!loading" class="modal-body">
+  <!-- Job -->
+  <div class="mb-5">
+    <job-summary [job]="job"></job-summary>
+  </div>
+
+  <form [formGroup]="executionForm">
+    <!-- Priorität -->
+    <div class="form-group row">
+      <label for="priority" class="col-2 col-form-label text-right">Priority</label>
+      <div class="col-10">
+        <app-switch formControlName="priority" id="priority" textOn="Yes" textOff="No"></app-switch>
+        <div
+          class="error"
+          *ngIf="executionForm.get('priority').hasError('required') && (executionForm.get('priority').touched || onExecuted)"
+        >
+          Required
+        </div>
+      </div>
+    </div>
+    <!-- Fälligkeit -->
+    <div class="form-group row">
+      <label for="plannedFor" class="col-2 col-form-label text-right">Planned</label>
+      <input
+        ngbDatepicker
+        formControlName="plannedForDate"
+        placeholder="TT.MM.JJJJ"
+        class="form-control col-3 ml-3"
+        name="dp"
+        id="plannedFor"
+        #d="ngbDatepicker"
+      />
+
+      <div class="input-group-addon pointer input-group-addon-1 col-1" placement="top" (click)="d.toggle()" container="body">
+        <i class="icon ion-ios-calendar" aria-hidden="true"></i>
+      </div>
+
+      <ngb-timepicker
+        style="font-size: 0.5rem; margin-top: -2.5rem"
+        class="mr-auto mb-auto pl-0"
+        formControlName="plannedForTime"
+        [spinners]="true"
+        [seconds]="false"
+        [hourStep]="1"
+        [minuteStep]="5"
+      >
+      </ngb-timepicker>
+      <div
+        class="error"
+        *ngIf="executionForm.get('plannedFor').hasError('required') && (executionForm.get('plannedFor').touched || onExecuted)"
+      >
+        Required
+      </div>
+    </div>
+
+    <div *ngIf="job.parametersClassName" class="form-group row">
+      <label for="parameters" class="col-2 col-form-label text-right">Parameters</label>
+      <div class="col-10">
+        <textarea class="form-control" type="text" id="parameters" formControlName="parameters"></textarea>
+        <div
+          class="error"
+          *ngIf="executionForm.get('parameters').hasError('required') && (executionForm.get('parameters').touched || onExecuted)"
+        >
+          Required
+        </div>
+        <div class="text-muted" *ngIf="isExecution"><small>Prefilled values came from last execution</small></div>
+      </div>
+    </div>
+  </form>
+</div>
+
+<div class="modal-footer d-flex justify-content-end">
+  <button type="button" class="btn btn-outline-secondary mr-2" (click)="activeModal.dismiss()">Cancel</button>
+  <app-save-button (upload)="onExecute()" saveText="Create execution" [loading]="loading"> </app-save-button>
+</div>

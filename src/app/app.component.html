@@ -1,0 +1,34 @@
+<!-- Menu -->
+<div class="navbar navbar-expand navbar-light fixed-top bg-white border-bottom shadow-sm">
+  <div class="collapse navbar-collapse" id="menu">
+    <div class="navbar-nav">
+      <a
+        [routerLink]="['/']"
+        [routerLinkActiveOptions]="{ exact: true }"
+        routerLinkActive="active"
+        class="nav-item nav-link"
+        href="javascript:;"
+        >Dashboard</a
+      >
+      <a [routerLink]="['jobs']" routerLinkActive="active" class="nav-item nav-link" href="javascript:;">Jobs</a>
+      <!-- No global Executions-View?! -->
+      <!-- <a [routerLink]="['executions']" routerLinkActive="active" class="nav-item nav-link" href="javascript:;">Executions</a> -->
+      <a [routerLink]="['schedules']" routerLinkActive="active" class="nav-item nav-link" href="javascript:;">Schedules</a>
+      <a [routerLink]="['logs']" routerLinkActive="active" class="nav-item nav-link" href="javascript:;">Logs</a>
+      <a [routerLink]="['config']" routerLinkActive="active" class="nav-item nav-link" href="javascript:;">Config</a>
+    </div>
+  </div>
+  <div class="navbar-text">
+    <!-- corresponding workhorse version -->
+    <span class="version"> Workhorse Core {{ workhorseVersion }} <br />{{ persistenceName }} {{ persistenceVersion }}</span>
+  </div>
+  <div class="navbar-brand ml-3">
+    <img class="random-workhorse" src="assets/horse-0{{ randomWorkhorse }}.png" />
+  </div>
+</div>
+
+<!-- Content -->
+<div class="container-fluid mb-4 page">
+  <app-breadcrumb></app-breadcrumb>
+  <router-outlet></router-outlet>
+</div>

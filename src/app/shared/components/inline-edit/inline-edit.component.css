@@ -1,0 +1,28 @@
+.cell {
+    border: 2px dotted rgba(34, 34, 34, 0.2);
+    width: 100%;
+    height: 100%;
+}
+
+.cell:hover {
+    cursor: pointer;
+    border: 2px dashed rgba(34, 34, 34, 0.2);
+}
+
+.cellInput {
+    /* border: 1px solid transparent; */
+    border: 1px solid e9e9e9;
+    background-color: #f8f9fa;
+    box-shadow: 0 0 10px 0 #efefef;
+    width: 100% !important;
+    height: 100% !important;
+}
+
+.click-action {
+    cursor: pointer;
+    color: rgba(34, 34, 34, 0.2);
+}
+
+.click-action:hover {
+    color: #6c757d;
+}

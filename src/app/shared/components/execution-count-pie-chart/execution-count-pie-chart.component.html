@@ -1,0 +1,122 @@
+<div class="card h-100" id="execution-count-pie-chart">
+  <div class="card-header d-flex justify-content-between p-3">
+    <h5 class="d-inline-block">
+      <span *ngIf="loading"> Last Executions </span>
+      <span *ngIf="!loading && (!counts || (counts && counts?.total === 0))">
+        <span
+          >No execution{{ counts?.total === 1 ? '' : 's' }}<span *ngIf="timeunit !== 'all'">&nbsp;last {{ timeunit }}</span></span
+        >
+      </span>
+      <span *ngIf="!loading && counts && counts.total > 0">
+        {{ counts?.total }} execution{{ counts?.total === 1 ? '' : 's' }}<span *ngIf="timeunit !== 'all'">&nbsp;last {{ timeunit }}</span>
+      </span>
+    </h5>
+
+    <div class="refresh d-inline-block">
+      <refresh-button class="ml-3" (click)="getCount()" [refreshing]="loading"></refresh-button>
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="card-body p-3 mb-auto">
+    <div class="d-flex justify-content-center align-items-center">
+      <loading></loading>
+    </div>
+  </div>
+
+  <div *ngIf="!loading && counts" class="card-body p-3">
+    <div *ngIf="counts.total > 0" class="row">
+      <div class="col-5">
+        <div [hidden]="counts.planned === 0" class="mb-1">
+          <job-execution-status [status]="'PLANNED'" [count]="counts.planned" [jobId]="jobId" class="ml-3"> </job-execution-status>
+        </div>
+        <div [hidden]="counts.queued === 0" class="mb-1">
+          <job-execution-status [status]="'QUEUED'" [count]="counts.queued" [jobId]="jobId" class="ml-3"> </job-execution-status>
+        </div>
+        <div [hidden]="counts.running === 0" class="mb-1">
+          <job-execution-status [status]="'RUNNING'" [count]="counts.running" [jobId]="jobId" class="ml-3"> </job-execution-status>
+        </div>
+        <div [hidden]="counts.finished === 0" class="mb-1">
+          <job-execution-status [status]="'FINISHED'" [count]="counts.finished" [jobId]="jobId" class="ml-3"> </job-execution-status>
+        </div>
+        <div [hidden]="counts.failed === 0" class="mb-1">
+          <job-execution-status [status]="'FAILED'" [count]="counts.failed" [jobId]="jobId" class="ml-3"> </job-execution-status>
+        </div>
+        <div [hidden]="counts.aborted === 0" class="mb-1">
+          <job-execution-status [status]="'ABORTED'" [count]="counts.aborted" [jobId]="jobId" class="ml-3"> </job-execution-status>
+        </div>
+        <!-- <span *ngIf="counts?.averageDuration > 0" class="badge ml-3" ngbPopover="Average duration"
+          triggers="mouseenter:mouseleave">
+          <i class="ion ion-ios-timer"></i> {{ counts.averageDuration | jobDuration }} average
+        </span> -->
+      </div>
+      <div class="col-7">
+        <div class="counts-chart">
+          <google-chart [data]="pieChart" class="counts-chart"></google-chart>
+        </div>
+      </div>
+    </div>
+
+    <div class="btn-group mt-3" role="group">
+      <button
+        class="btn btn-outline-secondary"
+        (click)="timeunit = 'minute'; getCount()"
+        ngbPopover="Last 60 seconds"
+        triggers="mouseenter:mouseleave"
+        [class.active]="timeunit === 'minute'"
+        [class.disabled]="loading"
+      >
+        Minute
+      </button>
+      <button
+        class="btn btn-outline-secondary"
+        (click)="timeunit = 'hour'; getCount()"
+        ngbPopover="Last 60 minutes"
+        triggers="mouseenter:mouseleave"
+        [class.active]="timeunit === 'hour'"
+        [class.disabled]="loading"
+      >
+        Hour
+      </button>
+      <button
+        class="btn btn-outline-secondary"
+        (click)="timeunit = 'day'; getCount()"
+        ngbPopover="Last 24 hours"
+        triggers="mouseenter:mouseleave"
+        [class.active]="timeunit === 'day'"
+        [class.disabled]="loading"
+      >
+        Day
+      </button>
+      <button
+        class="btn btn-outline-secondary"
+        (click)="timeunit = 'week'; getCount()"
+        ngbPopover="Last 7 days"
+        triggers="mouseenter:mouseleave"
+        [class.active]="timeunit === 'week'"
+        [class.disabled]="loading"
+      >
+        Week
+      </button>
+      <button
+        class="btn btn-outline-secondary"
+        (click)="timeunit = 'month'; getCount()"
+        ngbPopover="Last 30 days"
+        triggers="mouseenter:mouseleave"
+        [class.active]="timeunit === 'month'"
+        [class.disabled]="loading"
+      >
+        Month
+      </button>
+      <button
+        class="btn btn-outline-secondary"
+        (click)="timeunit = 'all'; getCount()"
+        ngbPopover="All existing executions"
+        triggers="mouseenter:mouseleave"
+        [class.active]="timeunit === 'all'"
+        [class.disabled]="loading"
+      >
+        All
+      </button>
+    </div>
+  </div>
+</div>

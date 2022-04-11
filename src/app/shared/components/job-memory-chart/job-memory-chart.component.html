@@ -1,0 +1,11 @@
+<div *ngIf="data" ngbPopover="Trend last hour" triggers="mouseenter:mouseleave">
+  <ngx-trend class="trend trend-queued" [data]="queued" [gradient]="['#2196F3']" strokeWidth="{{strokeWidth}}">
+  </ngx-trend>
+  <ngx-trend class="trend trend-finished" [data]="finished" [gradient]="['#5cb85c']" strokeWidth="{{strokeWidth}}">
+  </ngx-trend>
+  <ngx-trend class="trend trend-failed" [data]="failed" [gradient]="['#d9534f']" strokeWidth="{{strokeWidth}}">
+  </ngx-trend>
+  <div class="trend-count trend-count-queued">{{queuedCount}}</div>
+  <div class="trend-count trend-count-finished">{{finishedCount}}</div>
+  <div class="trend-count trend-count-failed">{{failedCount}}</div>
+</div>

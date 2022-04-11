@@ -1,0 +1,111 @@
+<div class="card mb-3">
+  <div class="card-header d-flex justify-content-between p-3">
+    <h4 class="card-title d-inline-block">
+      <span *ngIf="batchId">Batch {{ batchId }}</span>
+      <span *ngIf="chainId">Chain {{ chainId }}</span>
+    </h4>
+    <refresh-button class="refresh d-inline-block" (click)="init()" [refreshing]="reloading">
+    </refresh-button>
+  </div>
+
+  <div *ngIf="!loading" class="card-body pt-0">
+    <!-- Job -->
+    <div class="mb-3">
+      <job-summary [job]="job"></job-summary>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-7">
+        <div class="row">
+          <div class="col-6"><label for="queued"> Status </label></div>
+          <div class="col-6">
+            <job-execution-status [status]="groupInfo.status" [link]="false"></job-execution-status>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-6"><label for="queued"> Progress </label></div>
+          <div class="col-6">{{ groupInfo.progress }}%</div>
+        </div>
+        <div class="row">
+          <div class="col-6"><label for="total"> Executions </label></div>
+          <div class="col-6">{{ groupInfo.size }}</div>
+        </div>
+
+        <div *ngIf="groupInfo.startedAt" class="row">
+          <div class="col-6"><label for="total"> Started </label></div>
+          <div class="col-6">
+            <span class="text-muted">{{ groupInfo.startedAt | date: 'd. MMM' }}</span>
+            {{ groupInfo.startedAt | date: 'HH:mm:ss' }}
+          </div>
+        </div>
+
+        <div *ngIf="groupInfo.endedAt" class="row">
+          <div class="col-6"><label for="total"> Ended </label></div>
+          <div class="col-6">
+            <span class="text-muted">{{ groupInfo.endedAt | date: 'd. MMM' }}</span>
+            {{ groupInfo.endedAt | date: 'HH:mm:ss' }}
+          </div>
+        </div>
+
+        <div *ngIf="groupInfo.duration" class="row">
+          <div class="col-6">
+            <label for="total"> Duration <i class="ion ion-ios-timer"></i> </label>
+          </div>
+          <div class="col-6">{{ groupInfo.duration | jobDuration }}</div>
+        </div>
+
+        <div *ngIf="groupInfo.expectedEnd" class="row">
+          <div class="col-6"><label for="total"> Expected end </label></div>
+          <div class="col-6">
+            <span class="text-muted">{{ groupInfo.expectedEnd | date: 'd. MMM' }}</span>
+            {{ groupInfo.expectedEnd | date: 'HH:mm:ss' }}
+          </div>
+        </div>
+
+        <div *ngIf="groupInfo.expectedDuration" class="row">
+          <div class="col-6">
+            <label for="total"> Expected duration <i class="ion ion-ios-timer"></i> </label>
+          </div>
+          <div class="col-6">{{ groupInfo.expectedDuration | jobDuration }}</div>
+        </div>
+
+        <div class="row">
+          <div class="col-12 text-right mt-3">
+            <job-execution-status [hidden]="groupInfo.queued === 0" [status]="'QUEUED'" [count]="groupInfo.queued"
+              [jobId]="jobId" [groupId]="groupId" class="ml-3">
+            </job-execution-status>
+            <job-execution-status [hidden]="groupInfo.running === 0" [status]="'RUNNING'" [count]="groupInfo.running"
+              [jobId]="jobId" [groupId]="groupId" class="ml-3">
+            </job-execution-status>
+            <job-execution-status [hidden]="groupInfo.finished === 0" [status]="'FINISHED'" [count]="groupInfo.finished"
+              [jobId]="jobId" [groupId]="groupId" class="ml-3">
+            </job-execution-status>
+            <job-execution-status [hidden]="groupInfo.failed === 0" [status]="'FAILED'" [count]="groupInfo.failed"
+              [jobId]="jobId" [groupId]="groupId" class="ml-3">
+            </job-execution-status>
+            <job-execution-status [hidden]="groupInfo.aborted === 0" [status]="'ABORTED'" [count]="groupInfo.aborted"
+              [jobId]="jobId" [groupId]="groupId" class="ml-3">
+            </job-execution-status>
+          </div>
+        </div>
+      </div>
+      <div class="col-5">
+        <google-chart [data]="pieChart"></google-chart>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="timelineChart3" class="card mb-3" id="timeline">
+  <div class="card-header d-flex justify-content-between p-3">
+    <h5>Timeline</h5>
+  </div>
+  <div class="card-body p-3">
+    <!-- <google-chart [data]="timelineChart"></google-chart> -->
+    <!-- <google-chart [data]="timelineChart2"></google-chart> -->
+    <google-chart [data]="timelineChart3"></google-chart>
+  </div>
+</div>
+
+<executions *ngIf="batchId" [embedded]="true" [batchId]="batchId"></executions>
+<executions *ngIf="chainId" [embedded]="true" [chainId]="chainId"></executions>

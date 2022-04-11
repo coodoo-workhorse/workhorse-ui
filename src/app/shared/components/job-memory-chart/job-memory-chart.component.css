@@ -1,0 +1,38 @@
+.trend {
+    position: absolute;
+    height: 250px;
+}
+
+.trend-queued {
+    margin-top: -4.6px;
+}
+
+.trend-finished {
+    margin-top: -5px;
+    margin-left: 0.2px;
+}
+
+.trend-failed {
+    margin-top: -5.4px;
+    margin-left: 0.4px;
+}
+
+.trend-count {
+    top: 4px;
+    left: 274px;
+    position: relative;
+    font-size: x-small;
+    width: 50px;
+}
+
+.trend-count-queued {
+    color: #2196F3;
+}
+
+.trend-count-finished {
+    color: #5cb85c;
+}
+
+.trend-count-failed {
+    color: #d9534f;
+}

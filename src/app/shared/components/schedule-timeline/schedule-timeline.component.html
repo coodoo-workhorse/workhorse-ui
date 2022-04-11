@@ -1,0 +1,34 @@
+<div *ngIf="schedule">
+  <i class="ion ion-md-alarm" ngbPopover="Upcoming schedules" triggers="mouseenter:mouseleave"></i>
+  <span *ngIf="schedule && !scheduleTimeline" class="text-danger"> Invalid Cron Expression</span>
+  <span *ngFor="let t of scheduleTimeline">
+    <small>
+      <span [hidden]="t.duration === undefined" class="badge">{{ t.duration | jobDuration: 's' }}</span>
+      <span class="time">
+        <span class="text-muted">{{ t.time | date: 'd. MMM yy' }}</span>
+        <hr />
+        {{ t.time | date: 'HH:mm:ss' }}
+      </span>
+    </small>
+  </span>
+  <span
+    *ngIf="scheduleTimeline"
+    [hidden]="parts === 1"
+    (click)="getNextScheduledTimes(false)"
+    ngbPopover="Show less scheduled times"
+    triggers="mouseenter:mouseleave"
+    class="click-action"
+  >
+    <i class="ion-md-remove-circle"></i>
+  </span>
+  <span
+    *ngIf="scheduleTimeline"
+    [hidden]="parts > 20"
+    (click)="getNextScheduledTimes(true)"
+    ngbPopover="Show more scheduled times"
+    triggers="mouseenter:mouseleave"
+    class="click-action"
+  >
+    <i class="ion ion-md-add-circle"></i>
+  </span>
+</div>

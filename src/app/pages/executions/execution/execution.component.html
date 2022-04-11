@@ -1,0 +1,121 @@
+<div class="card mb-3">
+  <div class="card-header d-flex justify-content-between px-3 pt-3 pb-0">
+    <h4 class="card-title d-inline-block">Execution {{ executionId }}</h4>
+    <div *ngIf="!loading" class="actions">
+      <button class="btn btn-outline-secondary" (click)="navigateBack()" ngbPopover="Back" triggers="mouseenter:mouseleave">
+        <i class="ion ion-md-arrow-back"></i>
+      </button>
+      <button class="btn btn-outline-secondary ml-2" (click)="cloneExecution()">
+        <i class="ion ion-md-flash"></i><span class="ml-2">Clone</span>
+      </button>
+      <button
+        *ngIf="execution.status === 'QUEUED' || execution.status === 'RUNNING'"
+        class="btn btn-outline-secondary ml-2"
+        (click)="abortExecution()"
+      >
+        <i class="ion ion-md-close"></i><span class="ml-2">Abort</span>
+      </button>
+      <button
+        *ngIf="execution.status !== 'QUEUED' && execution.status !== 'RUNNING'"
+        class="btn btn-outline-secondary ml-2"
+        (click)="redoExecution()"
+      >
+        <i class="ion ion-md-sync"></i><span class="ml-2">Redo</span>
+      </button>
+      <refresh-button class="refresh d-inline-block ml-2" (click)="loadExecution()" [refreshing]="reloading"> </refresh-button>
+    </div>
+  </div>
+
+  <div *ngIf="loading || reloading" class="card-body d-flex justify-content-center align-items-center p-5">
+    <loading [loadingHorse]="true"></loading>
+  </div>
+
+  <div *ngIf="!loading && !reloading" class="card-body px-3 pb-3 pt-0">
+    <!-- Status / Infos -->
+    <div class="mb-3">
+      <job-execution-status [status]="execution.status" [jobId]="execution.jobId" [link]="false"></job-execution-status>
+      <span *ngIf="execution.priority" class="badge ml-2" ngbPopover="Priority" triggers="mouseenter:mouseleave">
+        <i class="ion ion-ios-star-outline"></i>
+      </span>
+      <span *ngIf="execution.duration" class="badge ml-2" ngbPopover="Duration" triggers="mouseenter:mouseleave">
+        <i class="ion ion-ios-timer"></i> {{ execution.duration | jobDuration }}
+      </span>
+      <span
+        *ngIf="execution.batchId"
+        (click)="showBatch(execution.batchId)"
+        class="badge ml-2 clickable"
+        ngbPopover="Batch"
+        triggers="mouseenter:mouseleave"
+      >
+        <i class="ion ion-md-menu"></i>{{ execution.batchId }}
+      </span>
+      <span
+        *ngIf="execution.chainId"
+        (click)="showChain(execution.chainId)"
+        class="badge ml-2 clickable"
+        ngbPopover="Chain"
+        triggers="mouseenter:mouseleave"
+      >
+        <i class="ion ion-ios-link"></i> {{ execution.chainId }}
+      </span>
+      <span
+        *ngIf="execution.failRetryExecutionId"
+        (click)="showFailRetryExecution()"
+        class="badge ml-2 clickable"
+        ngbPopover="Retry {{ execution.failRetry }} of {{ job.failRetries }}"
+        triggers="mouseenter:mouseleave"
+      >
+        <i class="ion ion-md-repeat"></i> {{ execution.failRetryExecutionId }}
+      </span>
+    </div>
+
+    <!-- Summary -->
+    <div class="mb-3" *ngIf="execution.summary">
+      <div>{{ execution.summary }}</div>
+    </div>
+
+    <!-- Timeline -->
+    <div class="mb-3">
+      <job-execution-timeline
+        [status]="execution.status"
+        [startedAt]="execution.startedAt"
+        [endedAt]="execution.endedAt"
+        [plannedFor]="execution.plannedFor"
+        [createdAt]="execution.createdAt"
+        [updatedAt]="execution.updatedAt"
+      ></job-execution-timeline>
+    </div>
+
+    <!-- Job -->
+    <div class="mb-3">
+      <job-summary [job]="job"></job-summary>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="!loading && !reloading && execution?.parameters" class="card mb-3" id="log">
+  <div class="card-header d-flex justify-content-between p-3">
+    <h5>Parameters</h5>
+  </div>
+  <div class="card-body">
+    <pre>{{ stringifyParameters(execution) }}</pre>
+  </div>
+</div>
+
+<div *ngIf="!loading && !reloading && executionLog?.log" class="card mb-3" id="log">
+  <div class="card-header d-flex justify-content-between p-3">
+    <h5>Log</h5>
+  </div>
+  <div class="card-body">
+    <pre>{{ executionLog.log }}</pre>
+  </div>
+</div>
+
+<div *ngIf="!loading && !reloading && executionLog?.stacktrace" class="card mb-3" id="stacktrace">
+  <div class="card-header d-flex justify-content-between p-3">
+    <h5>Stacktrace</h5>
+  </div>
+  <div class="card-body">
+    <pre>{{ executionLog.stacktrace }}</pre>
+  </div>
+</div>

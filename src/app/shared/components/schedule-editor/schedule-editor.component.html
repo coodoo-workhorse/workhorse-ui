@@ -1,0 +1,92 @@
+<div class="card mb-3">
+  <div class="card-header d-flex justify-content-between p-3">
+    <h5 class="d-inline-block">Schedule Editor</h5>
+
+    <div class="actions d-inline-block">
+      <div class="btn-group" role="group">
+        <button
+          class="btn btn-outline-secondary"
+          (click)="schedule = '*/15 * * * * *'; onChange()"
+          ngbPopover="*/15 * * * * *"
+          triggers="mouseenter:mouseleave"
+        >
+          Every 15 sec.
+        </button>
+        <button
+          class="btn btn-outline-secondary"
+          (click)="schedule = '0 */10 * * * *'; onChange()"
+          ngbPopover="0 */10 * * * *"
+          triggers="mouseenter:mouseleave"
+        >
+          Every 10 min.
+        </button>
+        <button
+          class="btn btn-outline-secondary"
+          (click)="schedule = '0 0 1-23/2 * * *'; onChange()"
+          ngbPopover="0 0 1-23/2 * * *"
+          triggers="mouseenter:mouseleave"
+        >
+          Odd Hours
+        </button>
+        <button
+          class="btn btn-outline-secondary"
+          (click)="schedule = '0 0 12 * * MON-FRI'; onChange()"
+          ngbPopover="0 0 12 * * MON-FRI"
+          triggers="mouseenter:mouseleave"
+        >
+          Lunchtime
+        </button>
+        <button
+          class="btn btn-outline-secondary"
+          (click)="schedule = '0 0 0 * * MON'; onChange()"
+          ngbPopover="0 0 0 * * MON"
+          triggers="mouseenter:mouseleave"
+        >
+          Mondays
+        </button>
+        <button
+          class="btn btn-outline-secondary"
+          (click)="schedule = '0 0 0 1 * *'; onChange()"
+          ngbPopover="0 0 0 1 * *"
+          triggers="mouseenter:mouseleave"
+        >
+          First day of Month
+        </button>
+        <button
+          class="btn btn-outline-secondary"
+          (click)="schedule = '0 0 0 29 2 *'; onChange()"
+          ngbPopover="0 0 0 29 2 *"
+          triggers="mouseenter:mouseleave"
+        >
+          Leap Years
+        </button>
+      </div>
+      <button
+        class="ml-2 btn btn-outline-secondary action-button"
+        ngbPopover="Show Schedule Information"
+        triggers="mouseenter:mouseleave"
+        placement="left"
+        (click)="showScheduleInfo()"
+      >
+        <i class="ion ion-md-bulb"></i>
+      </button>
+    </div>
+  </div>
+
+  <div class="card-body p-3 paddingdingding">
+    <div class="mb-3">
+      <strong>Cron Expression</strong>
+      <input class="form-control schedule" [(ngModel)]="schedule" (ngModelChange)="onChange()" appAutofocus />
+    </div>
+
+    <div *ngIf="schedule" class="mb-3">
+      <strong>Cron Description</strong>
+      <div>{{ scheduleDescription }}</div>
+    </div>
+
+    <div *ngIf="schedule" class="mb-3">
+      <strong>Next scheduled execution creation times</strong>
+      <schedule-timeline [(schedule)]="schedule" [parts]="8"></schedule-timeline>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,129 @@
+::ng-deep table {
+  width: 100%;
+}
+
+::ng-deep .table thead th {
+  vertical-align: top;
+  padding-top: 0px !important;
+}
+
+.table th {
+  border-top: none !important;
+  vertical-align: bottom;
+}
+
+::ng-deep .sorter :hover {
+  color: rgb(33, 37, 41);
+  text-decoration: none;
+}
+
+::ng-deep .sorter {
+  color: rgb(33, 37, 41);
+}
+
+::ng-deep .sorter a {
+  color: rgb(33, 37, 41) !important;
+}
+
+.row-4em {
+  width: 4em;
+}
+
+.row-6em {
+  width: 6em;
+}
+
+.row-7em {
+  width: 7em;
+}
+
+.row-8em {
+  width: 8em;
+}
+
+.row-10em {
+  width: 10em;
+}
+
+.row-12em {
+  width: 12em;
+}
+
+.row-25per {
+  width: 25%;
+}
+
+.subtitle {
+  padding-bottom: 1em;
+  margin-top: -0.7em;
+}
+
+.meta-info {
+  font-size: 0.8em;
+}
+
+.loader {
+  padding-top: 10%;
+}
+
+.no-entries {
+  font-size: 1.2em;
+  margin-top: 1em;
+  text-align: center;
+}
+
+.card-header {
+  flex-wrap: wrap;
+  display: flex;
+}
+
+.time {
+  display: inline-block;
+  min-width: 10px;
+  padding: 3px 7px;
+  font-weight: 500;
+  line-height: 1;
+  padding: 10px;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  background-color: white;
+}
+
+.time hr {
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+
+.time-QUEUED hr {
+  border: 1px solid #209dd7;
+}
+
+.time-PLANNED hr {
+  border: 1px solid #4b0082;
+}
+
+.time-RUNNING hr {
+  border: 1px solid #faa31b;
+}
+
+.time-FINISHED hr {
+  border: 1px solid #5cb85c;
+}
+
+.time-ABORTED hr {
+  border: 1px solid #777777;
+}
+
+.time-FAILED hr {
+  border: 1px solid #d9534f;
+}
+
+.time-FAILED hr {
+  border: 1px solid #d9534f;
+}
+
+pre {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}

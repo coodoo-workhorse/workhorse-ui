@@ -1,0 +1,8 @@
+<span *ngIf="!editMode" (click)="editMode=true" class="cell" ngbPopover="Edit" triggers="mouseenter:mouseleave">
+  <span *ngIf="data">{{ data }}</span>
+  <span *ngIf="!data" class="click-action">
+    ...
+  </span>
+</span>
+<input *ngIf="editMode" (focusout)="onFocusOut(); editMode=false" [(ngModel)]="data"
+  class="cellInput" type="{{type}}" maxlength="{{maxlength}}" max="{{maxlength}}" (keydown.enter)="$event.target.blur()">

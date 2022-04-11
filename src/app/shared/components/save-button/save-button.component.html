@@ -1,0 +1,3 @@
+<button *ngIf="!invalid" (click)="onClick()" type="button" class="" [ngClass]="styleClasses">Save</button>
+<button *ngIf="invalid" (click)="onClick()" type="button" class="" [ngClass]="styleClasses" disabled>Save</button>
+<!-- wenn der button ohne event submitten soll (in reactive Form), braucht er type submit und die events sind nicht mehr benoetigt -->

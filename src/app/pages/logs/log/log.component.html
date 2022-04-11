@@ -1,0 +1,56 @@
+<div class="card mb-3">
+  <div class="card-header d-flex justify-content-between p-3">
+    <h4 *ngIf="log" class="card-title">
+      Log at {{ log.createdAt | date: 'dd.MM.yyyy HH:mm:ss' }}
+    </h4>
+    <h4 *ngIf="!log" class="card-title">
+      Log {{ logId }}
+    </h4>
+  </div>
+
+  <div *ngIf="!loading" class="card-body pt-0">
+
+    <!-- Job (if available) -->
+    <div *ngIf="log.jobId" class="mb-3">
+      <job-summary [job]="job"></job-summary>
+    </div>
+
+    <!-- Message -->
+    <div class="mb-3">
+      <div class="alert alert-secondary" role="alert">
+        {{ log.message }}
+      </div>
+    </div>
+
+    <!-- Context -->
+    <div class="mb-3">
+      {{ log.createdAt | timeAgoStatic }} on {{log.hostName}} <span *ngIf="log.byUser">caused by user
+        interaction</span>
+      <div *ngIf="log.jobId">
+        Job status was <job-status [status]="log.jobStatus" [link]="false"></job-status>
+      </div>
+    </div>
+
+    <!-- Buttons -->
+    <div>
+      <button class="btn btn-outline-secondary" (click)="navigateBack()" ngbPopover="Back"
+        triggers="mouseenter:mouseleave">
+        <i class="ion ion-md-arrow-back"></i>
+      </button>
+    </div>
+
+    <!-- <pre>
+{{log|json}}
+</pre> -->
+
+  </div>
+</div>
+
+<div *ngIf="log?.stacktrace" class="card mb-3" id="stacktrace">
+  <div class="card-header d-flex justify-content-between p-3">
+    <h5>Stacktrace</h5>
+  </div>
+  <div class="card-body">
+    <pre>{{ log.stacktrace }}</pre>
+  </div>
+</div>

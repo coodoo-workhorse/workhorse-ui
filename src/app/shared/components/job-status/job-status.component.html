@@ -1,0 +1,10 @@
+<span *ngIf="status">
+  <a *ngIf="link" href="javascript:;" [routerLink]="'/jobs'" [queryParams]="{ 'filter-status': statusQueryParam() }" class="clickable">
+    <span class="label label-{{ status }} clickable"
+      ><span [hidden]="!count">{{ count }} </span>{{ status }}
+    </span>
+  </a>
+  <span *ngIf="!link" class="label label-{{ status }}"
+    ><span [hidden]="!count">{{ count }} </span>{{ status }}
+  </span>
+</span>

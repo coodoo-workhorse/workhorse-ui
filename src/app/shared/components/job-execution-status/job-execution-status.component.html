@@ -1,0 +1,10 @@
+<span *ngIf="status">
+  <a href="javascript:;" (click)="goToLink()" class="clickable">
+    <span *ngIf="link" class="label label-{{ status }} clickable">
+      <span [hidden]="!count">{{ count }} </span><span [hidden]="countOnly">{{ status }}</span>
+    </span>
+  </a>
+  <span *ngIf="!link" class="label label-{{ status }}"
+    ><span [hidden]="!count">{{ count }} </span><span [hidden]="countOnly">{{ status }}</span>
+  </span>
+</span>
