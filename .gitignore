@@ -45,7 +45,4 @@ testem.log
 # System Files
 .DS_Store
 Thumbs.db
-package.json
-package-lock.json
-package.json
 proxy.*.conf.json
