@@ -10,6 +10,7 @@ import { JobStatusCount } from 'src/services/job-status-count.model';
 import { Job } from 'src/services/job.model';
 import { WorkhorseService } from 'src/services/workhorse.service';
 import { JobService } from '../../../services/job.service';
+// import { RefreshTimeInterval,  getIntervalText } from './refresh-time-interval.enum';
 
 @Component({
   selector: 'app-workhorse',
@@ -42,7 +43,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
   threadsViewEnabled = true;
 
   workhorseStatusAutoRefresh = true;
-  currentlyQueuedAutoRefresh = false;
+  currentlyQueuedAutoRefresh = false; // Wird dieser Wert (im Cookie) verwendet?
+
+  // RefreshTimeInterval = RefreshTimeInterval;
+  // refreshIntervall = RefreshTimeInterval.REFRESH_BY_TEN_SECONDS; // Default Wert auf 10 Sekunden setzen
+  // intervalText: string;
 
   private workhorseStatusSubscription = null;
   private currentlyQueuedSubscription = null;
@@ -62,6 +67,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.rebuildDashboardView();
     this.getWorkhorseStatus();
     this.handleAutoRefreshs();
+    // this.handleAutoRefreshs(this.refreshIntervall);
     this.getJobStatusCount();
   }
 
@@ -75,6 +81,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   getWorkhorseStatus() {
+    console.log('getWorkhorseStatus', this.refreshIntervall);
     this.workhorseService.getWorkhorseStatus().subscribe(
       (data: boolean) => {
         if (this.initialLoading) {
@@ -147,13 +154,22 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   handleAutoRefreshs() {
     this.handleWorkhorseStatusAutoRefresh();
+  // handleAutoRefreshs(refreshTimeInterval: RefreshTimeInterval) {
+  //   this.handleWorkhorseStatusAutoRefresh(refreshTimeInterval);
   }
 
   handleWorkhorseStatusAutoRefresh() {
+  // handleWorkhorseStatusAutoRefresh(refreshTimeInterval: RefreshTimeInterval) {
+  // this.intervalText = getIntervalText(refreshTimeInterval);
+  // this.workhorseStatusAutoRefresh = refreshTimeInterval === RefreshTimeInterval.REFRESH_IS_SWITCHED_OFF ? false : true;
+  // this.refreshIntervall =  refreshTimeInterval;
     this.saveDashboardView();
 
+    // console.log('flag', this.workhorseStatusAutoRefresh);
+    // console.log('workhorseRefreshValueTimeInterval: ', this.refreshIntervall);
     if (this.workhorseStatusAutoRefresh) {
       this.workhorseStatusSubscription = interval(this.refreshIntervall).subscribe(() => {
+        // console.log('workhorseRefreshValueTimeInterval 1: ', this.refreshIntervall);
         if (this.workhorseStatus) {
           this.getWorkhorseStatus();
           this.getJobStatusCount();
@@ -179,6 +195,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       threadsViewEnabled: this.threadsViewEnabled,
       currentlyQueuedAutoRefresh: this.currentlyQueuedAutoRefresh,
       workhorseStatusAutoRefresh: this.workhorseStatusAutoRefresh
+      // refreshIntervall: this.refreshIntervall
     };
     this.cookieService.put(this.dashboardViewCookieName, JSON.stringify(cookieValue));
   }
@@ -194,6 +211,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.threadsViewEnabled = cookieValue.threadsViewEnabled;
       this.currentlyQueuedAutoRefresh = cookieValue.currentlyQueuedAutoRefresh;
       this.workhorseStatusAutoRefresh = cookieValue.workhorseStatusAutoRefresh;
+      // this.refreshIntervall = cookieValue.refreshIntervall;
+      // this.intervalText = getIntervalText(cookieValue.refreshIntervall)
     }
   }
 }

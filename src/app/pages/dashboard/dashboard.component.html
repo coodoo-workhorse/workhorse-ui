@@ -15,6 +15,20 @@
             <input type="checkbox" [(ngModel)]="workhorseStatusAutoRefresh" (change)="handleWorkhorseStatusAutoRefresh()" />
             <label class="ml-1">Auto-Refresh Status all {{ this.refreshIntervall / 1000 }}s</label>
           </div>
+          <!-- <div class="btn-group">
+            <refresh-button (click)="handleWorkhorseStatusAutoRefresh(refreshIntervall)" [refreshing]="loading"> </refresh-button>
+            <div class="btn-group" ngbDropdown role="group" aria-label="Button group with nested dropdown">
+              <button class="btn btn-outline-secondary" ngbDropdownToggle>{{ intervalText }}</button>
+              <div class="dropdown-menu" ngbDropdownMenu>
+                <button ngbDropdownItem (click)="handleWorkhorseStatusAutoRefresh(RefreshTimeInterval.REFRESH_IS_SWITCHED_OFF)">Off</button>
+                <button ngbDropdownItem (click)="handleWorkhorseStatusAutoRefresh(RefreshTimeInterval.REFRESH_BY_TEN_SECONDS)">10 seconds</button>
+                <button ngbDropdownItem (click)="handleWorkhorseStatusAutoRefresh(RefreshTimeInterval.REFRESH_BY_ONE_MINUTES)">1 minutes</button>
+                <button ngbDropdownItem (click)="handleWorkhorseStatusAutoRefresh(RefreshTimeInterval.REFRESH_BY_TWO_MINUTES)">2 minutes</button>
+                <button ngbDropdownItem (click)="handleWorkhorseStatusAutoRefresh(RefreshTimeInterval.REFRESH_BY_FIVE_MINUTES)">5 minutes</button>
+                <button ngbDropdownItem (click)="handleWorkhorseStatusAutoRefresh(RefreshTimeInterval.REFRESH_BY_FIFTEEN_MINUTES)">15 minutes</button>
+              </div>
+            </div>
+          </div> -->
         </div>
 
         <button
