@@ -1,0 +1,7 @@
+{
+  "/workhorse": {
+    "target": "https://some-other-host/api",
+    "secure": false,
+    "changeOrigin": true
+  }
+}
