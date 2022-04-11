@@ -5,17 +5,13 @@
 Out of the box modern User Interface, so you can see and manage your Workhorse jobs in realtime.
 
 
-## Development
 
-Run npm i after checkout
+## Start local
 
-Code like a workhorse
+1. Run `npm i`
+2. Set the `target` in [proxy.conf.json](./proxy.conf.json) with the endpoint of your Workhorse host
+3. Start it with `npm run start:proxy`
 
-Maintain Quality
-
-...
-
-Profit
 
 ## Changelog
 
