@@ -1,20 +1,24 @@
 {
   "name": "workhorse-ui",
-  "version": "13.0.0",
+  "version": "2.0.0-RC5",
   "description": "Out of the box modern User Interface, so you can see and manage your Workhorse jobs in realtime.",
   "license": "MIT",
   "engines": {
     "node": "16.x.x"
   },
   "scripts": {
-    "start": "ng serve --port 4202 --host 0.0.0.0  --disable-host-check",
-    "start:proxy": "ng serve --port 4202 --disable-host-check --proxy-config proxy.conf.json",
+    "start": "ng serve --port 4200 --host 0.0.0.0  --disable-host-check",
+    "start:proxy": "ng serve --port 4200 --disable-host-check --proxy-config proxy.conf.json",
     "build": "ng build --configuration production",
-    "build-stats": "ng build --configuration production --stats-json",
+    "build:stats": "ng build --configuration production --stats-json",
     "analyze": "webpack-bundle-analyzer dist/workhorse-ui/stats.json",
     "test": "ng test",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+    "docker:build": "docker build -t coodoogmbh/workhorse-ui:$npm_package_version -t coodoogmbh/workhorse-ui:latest .",
+    "docker:run": "docker run -p 80:80 coodoogmbh/workhorse-ui:latest",
+    "docker:push": "docker push -t coodoogmbh/workhorse-ui:$npm_package_version && docker push coodoogmbh/workhorse-ui:latest",
+    "docker:release": "npm run build && npm run docker:build && npm run docker:push"
   },
   "private": true,
   "dependencies": {
