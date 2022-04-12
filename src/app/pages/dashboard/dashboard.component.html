@@ -11,24 +11,10 @@
             <img *ngIf="workhorseStatus" class="workhorse-logo" [ngClass]="{ running: workhorseStatus }" src="assets/workhorse.png" />
             <img *ngIf="!workhorseStatus" class="workhorse-logo" [ngClass]="{ running: workhorseStatus }" src="assets/horse-10.png" />
           </div>
-          <div class="auto-refresh d-inline-block mr-2">
-            <input type="checkbox" [(ngModel)]="workhorseStatusAutoRefresh" (change)="handleWorkhorseStatusAutoRefresh()" />
-            <label class="ml-1">Auto-Refresh Status all {{ this.refreshIntervall / 1000 }}s</label>
+          <div class="btn-group">
+            <refresh-button (click)="setWorkhorseStatusAutoRefresh(true)" [refreshing]="loading"> </refresh-button>
+            <time-interval-button [intervalText]="intervalText" [intervals]="intervals" (selectedIntervalKey)="handleWorkhorseStatusAutoRefresh($event)"></time-interval-button>
           </div>
-          <!-- <div class="btn-group">
-            <refresh-button (click)="handleWorkhorseStatusAutoRefresh(refreshIntervall)" [refreshing]="loading"> </refresh-button>
-            <div class="btn-group" ngbDropdown role="group" aria-label="Button group with nested dropdown">
-              <button class="btn btn-outline-secondary" ngbDropdownToggle>{{ intervalText }}</button>
-              <div class="dropdown-menu" ngbDropdownMenu>
-                <button ngbDropdownItem (click)="handleWorkhorseStatusAutoRefresh(RefreshTimeInterval.REFRESH_IS_SWITCHED_OFF)">Off</button>
-                <button ngbDropdownItem (click)="handleWorkhorseStatusAutoRefresh(RefreshTimeInterval.REFRESH_BY_TEN_SECONDS)">10 seconds</button>
-                <button ngbDropdownItem (click)="handleWorkhorseStatusAutoRefresh(RefreshTimeInterval.REFRESH_BY_ONE_MINUTES)">1 minutes</button>
-                <button ngbDropdownItem (click)="handleWorkhorseStatusAutoRefresh(RefreshTimeInterval.REFRESH_BY_TWO_MINUTES)">2 minutes</button>
-                <button ngbDropdownItem (click)="handleWorkhorseStatusAutoRefresh(RefreshTimeInterval.REFRESH_BY_FIVE_MINUTES)">5 minutes</button>
-                <button ngbDropdownItem (click)="handleWorkhorseStatusAutoRefresh(RefreshTimeInterval.REFRESH_BY_FIFTEEN_MINUTES)">15 minutes</button>
-              </div>
-            </div>
-          </div> -->
         </div>
 
         <button
@@ -126,7 +112,7 @@
     <job-execution-status-summary
       [status]="'PLANNED'"
       [workhorseStatusAutoRefresh]="workhorseStatusAutoRefresh"
-      [refreshIntervall]="refreshIntervall"
+      [refreshInterval]="refreshInterval"
     >
     </job-execution-status-summary>
   </div>
@@ -134,7 +120,7 @@
     <job-execution-status-summary
       [status]="'QUEUED'"
       [workhorseStatusAutoRefresh]="workhorseStatusAutoRefresh"
-      [refreshIntervall]="refreshIntervall"
+      [refreshInterval]="refreshInterval"
     >
     </job-execution-status-summary>
   </div>
@@ -142,7 +128,7 @@
     <job-execution-status-summary
       [status]="'RUNNING'"
       [workhorseStatusAutoRefresh]="workhorseStatusAutoRefresh"
-      [refreshIntervall]="refreshIntervall"
+      [refreshInterval]="refreshInterval"
     >
     </job-execution-status-summary>
   </div>
@@ -150,7 +136,7 @@
     <job-execution-status-summary
       [status]="'ABORTED'"
       [workhorseStatusAutoRefresh]="workhorseStatusAutoRefresh"
-      [refreshIntervall]="refreshIntervall"
+      [refreshInterval]="refreshInterval"
     >
     </job-execution-status-summary>
   </div>
@@ -158,7 +144,7 @@
     <job-execution-status-summary
       [status]="'FINISHED'"
       [workhorseStatusAutoRefresh]="workhorseStatusAutoRefresh"
-      [refreshIntervall]="refreshIntervall"
+      [refreshInterval]="refreshInterval"
     >
     </job-execution-status-summary>
   </div>
@@ -166,7 +152,7 @@
     <job-execution-status-summary
       [status]="'FAILED'"
       [workhorseStatusAutoRefresh]="workhorseStatusAutoRefresh"
-      [refreshIntervall]="refreshIntervall"
+      [refreshInterval]="refreshInterval"
     >
     </job-execution-status-summary>
   </div>

@@ -13,7 +13,7 @@ import { JobExecutionStatusSummary } from 'src/services/job-execution-status-sum
 export class JobExecutionStatusSummaryComponent implements OnInit, OnChanges, OnDestroy {
   @Input() status: string;
   @Input() workhorseStatusAutoRefresh: boolean;
-  @Input() refreshIntervall: number;
+  @Input() refreshInterval: number;
 
   lastMinutes: number;
   listMax = 8;
@@ -66,14 +66,19 @@ export class JobExecutionStatusSummaryComponent implements OnInit, OnChanges, On
   }
 
   handleCurrentlyStatusAutoRefresh() {
-    if (this.workhorseStatusAutoRefresh) {
-      this.currentlyStatusSubscription = interval(this.refreshIntervall).subscribe(() => {
+    console.log('****** JOB: ', this.workhorseStatusAutoRefresh, this.refreshInterval);
+    if (this.currentlyStatusSubscription) {
+      this.currentlyStatusSubscription.unsubscribe();
+    }
+    if (this.workhorseStatusAutoRefresh && this.refreshInterval !== 0) {
+      this.currentlyStatusSubscription = interval(this.refreshInterval).subscribe(() => {
+        console.log('****** getJOBs by Interval: ', this.refreshInterval);
         this.getJobByExecutionStatusSummary();
       });
-    } else {
-      if (this.currentlyStatusSubscription) {
-        this.currentlyStatusSubscription.unsubscribe();
-      }
+    }
+    if (this.workhorseStatusAutoRefresh && this.refreshInterval === 0) {
+        console.log('****** getJOBs immediately: ', this.refreshInterval);
+        this.getJobByExecutionStatusSummary();
     }
   }
 
