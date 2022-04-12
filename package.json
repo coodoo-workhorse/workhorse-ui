@@ -17,7 +17,7 @@
     "e2e": "ng e2e",
     "docker:build": "docker build -t coodoogmbh/workhorse-ui:$npm_package_version -t coodoogmbh/workhorse-ui:latest .",
     "docker:run": "docker run -p 80:80 coodoogmbh/workhorse-ui:latest",
-    "docker:push": "docker push -t coodoogmbh/workhorse-ui:$npm_package_version && docker push coodoogmbh/workhorse-ui:latest",
+    "docker:push": "docker push coodoogmbh/workhorse-ui:$npm_package_version && docker push coodoogmbh/workhorse-ui:latest",
     "docker:release": "npm run build && npm run docker:build && npm run docker:push"
   },
   "private": true,
