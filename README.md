@@ -5,12 +5,13 @@
 Out of the box modern User Interface, so you can see and manage your Workhorse jobs in realtime.
 
 
-
 ## Start local
 
 1. Run `npm i`
-2. Set the `target` in [proxy.conf.json](./proxy.conf.json) with the endpoint of your Workhorse host
-3. Start it with `npm run start:proxy`
+1. Copy and name [proxy.example.conf.json](./proxy.example.conf.json)
+1. Set the `target` in you new `proxy.xxx.conf.json`)` with the endpoint of your Workhorse host
+1. Add your xxx proxy as a start script `start:xxx` in [package.json](./package.json)
+1. Start it with `npm run start:xxx`
 
 
 ## Changelog
