@@ -57,33 +57,33 @@
                         <button
                           *ngIf="rowSelectionEnabled"
                           class="btn btn-outline-secondary action-button ml-2"
-                          [ngClass]="{'disabled': selectedRowIds.size === 0}"
-                          ngbPopover="Redo {{ selectedRowIds.size }} selected executions"
+                          [ngClass]="{'disabled': selectedRows.length === 0}"
+                          ngbPopover="Redo {{ selectedRows.length }} selected executions"
                           triggers="mouseenter:mouseleave"
                           placement="left"
-                          (click)="selectedRowIds.size != 0 ? redoSelectedExecutions() : undefined"
+                          (click)="selectedRows.length != 0 ? redoSelectedExecutions() : undefined"
                         >
                           <i class="ion ion-md-sync"></i>
                         </button>
                         <button
                           *ngIf="rowSelectionEnabled"
                           class="btn btn-outline-secondary action-button ml-2"
-                          [ngClass]="{'disabled': selectedRowIds.size === 0}"
-                          ngbPopover="Abort {{ selectedRowIds.size }} selected executions"
+                          [ngClass]="{'disabled': selectedRows.length === 0}"
+                          ngbPopover="Abort {{ selectedRows.length }} selected executions"
                           triggers="mouseenter:mouseleave"
                           placement="left"
-                          (click)="selectedRowIds.size != 0 ? abortSelectedExecutions() : undefined"
+                          (click)="selectedRows.length != 0 ? abortSelectedExecutions() : undefined"
                         >
                           <i class="ion ion-md-close"></i>
                         </button>
                         <button
                           *ngIf="rowSelectionEnabled"
                           class="btn btn-outline-secondary action-button ml-2"
-                          [ngClass]="{'disabled': selectedRowIds.size === 0}"
-                          ngbPopover="Delete {{ selectedRowIds.size }} selected executions"
+                          [ngClass]="{'disabled': selectedRows.length === 0}"
+                          ngbPopover="Delete {{ selectedRows.length }} selected executions"
                           triggers="mouseenter:mouseleave"
                           placement="left"
-                          (click)="selectedRowIds.size != 0 ? deleteSelectedExecutions() : undefined"
+                          (click)="selectedRows.length != 0 ? deleteSelectedExecutions() : undefined"
                         >
                           <i class="ion ion-md-trash"></i>
                         </button>
@@ -103,7 +103,7 @@
                 </ng-template>
                 <ng-template #row let-row="row">
                   <td *ngIf="rowSelectionEnabled" class="align-middle">
-                    <coo-table-select [id]="row.id"></coo-table-select>
+                    <coo-table-select [row]="row"></coo-table-select>
                   </td>
                   <td *ngIf="!jobId" (dblclick)="showExecution(row)" class="clickable">
                     <span (click)="showJob(row)" class="link" ngbPopover="{{ row.jobDescription }}" triggers="mouseenter:mouseleave">

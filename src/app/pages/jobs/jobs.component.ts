@@ -13,7 +13,8 @@ import { CreateExecutionComponent } from '../executions/create-execution/create-
 @Component({
   selector: 'app-jobs',
   templateUrl: './jobs.component.html',
-  styleUrls: ['./jobs.component.css']
+  styleUrls: ['./jobs.component.css'],
+  providers: [CooTableListingService, CooTableSelectionService, ListingParameters]
 })
 export class JobsComponent implements OnInit, OnDestroy {
   rows: Array<Job> = [];
@@ -26,7 +27,7 @@ export class JobsComponent implements OnInit, OnDestroy {
   status: Array<string> = ['ACTIVE', 'INACTIVE', 'ERROR', 'NO_WORKER'];
 
   rowSelectionEnabled = false;
-  selectedRowIds: Set<number> = new Set();
+  selectedRows = [];
 
   private config: NgbModalOptions;
   private unsubscribe = new Subject<void>();
@@ -41,21 +42,17 @@ export class JobsComponent implements OnInit, OnDestroy {
     private cooTableSelectionService: CooTableSelectionService
   ) {
     this.config = { size: 'lg' };
-    this.cooTableSelectionService.selectedRowsChanged$
-      .pipe(takeUntil(this.unsubscribe))
-      .subscribe(selectedRowIds => {
-        this.selectedRowIds = selectedRowIds;
-      });
+    this.cooTableSelectionService.selectedRowsChanged$.pipe(takeUntil(this.unsubscribe)).subscribe(selectedRows => {
+      this.selectedRows = selectedRows;
+    });
   }
 
   ngOnInit() {
     this.cooTableListingService.setDefaultLimit(this.limit);
 
-    this.cooTableListingService.list$
-      .pipe(takeUntil(this.unsubscribe))
-      .subscribe(() => {
-        this.list();
-      });
+    this.cooTableListingService.list$.pipe(takeUntil(this.unsubscribe)).subscribe(() => {
+      this.list();
+    });
   }
 
   list() {
@@ -81,39 +78,39 @@ export class JobsComponent implements OnInit, OnDestroy {
   toggleSelectedJobsStatus(deactivate: boolean) {
     const modalRef: NgbModalRef = this.modalService.open(ModalComponent, { centered: true });
     // tslint:disable-next-line: max-line-length
-    modalRef.componentInstance.content = 'Do you really want to ' +  (deactivate ? 'deactivate' : 'activate') + ' all ' + this.selectedRowIds.size + ' selected jobs?';
+    modalRef.componentInstance.content =
+      'Do you really want to ' + (deactivate ? 'deactivate' : 'activate') + ' all ' + this.selectedRows.length + ' selected jobs?';
     modalRef.result.then(
       closeResult => {
         if (closeResult) {
-          for (const row of this.rows) {
-            if (this.selectedRowIds.has(row.id)) {
-              if (deactivate) {
-                this.jobService.deactivateJob(row.id).subscribe(
-                  (job: Job) => {
-                    row.status = job.status;
-                    this.toastrService.success(`Deactivated job <strong>${row.name}</strong>`);
-                  },
-                  () => {
-                    this.toastrService.error(`Could not deactivate job <strong>${row.name}</strong>`);
-                  }
-                );
-              } else {
-                this.jobService.activateJob(row.id).subscribe(
-                  (job: Job) => {
-                    row.status = job.status;
-                    this.toastrService.success(`Activated job <strong>${row.name}</strong>`);
-                  },
-                  () => {
-                    this.toastrService.error(`Could not activate job <strong>${row.name}</strong>`);
-                  }
-                );
-              }
+          for (const row of this.selectedRows) {
+            if (deactivate) {
+              this.jobService.deactivateJob(row.id).subscribe(
+                (job: Job) => {
+                  row.status = job.status;
+                  this.toastrService.success(`Deactivated job <strong>${row.name}</strong>`);
+                },
+                () => {
+                  this.toastrService.error(`Could not deactivate job <strong>${row.name}</strong>`);
+                }
+              );
+            } else {
+              this.jobService.activateJob(row.id).subscribe(
+                (job: Job) => {
+                  row.status = job.status;
+                  this.toastrService.success(`Activated job <strong>${row.name}</strong>`);
+                },
+                () => {
+                  this.toastrService.error(`Could not activate job <strong>${row.name}</strong>`);
+                }
+              );
             }
           }
+          this.cooTableSelectionService.unselectAll();
           this.list();
         }
       },
-      () => { }
+      () => {}
     );
   }
 
@@ -136,7 +133,7 @@ export class JobsComponent implements OnInit, OnDestroy {
           );
         }
       },
-      () => { }
+      () => {}
     );
   }
 
@@ -159,7 +156,7 @@ export class JobsComponent implements OnInit, OnDestroy {
           );
         }
       },
-      () => { }
+      () => {}
     );
   }
 
@@ -170,7 +167,7 @@ export class JobsComponent implements OnInit, OnDestroy {
       .then(() => {
         this.list();
       })
-      .catch(() => { });
+      .catch(() => {});
   }
 
   showJob(job: Job) {

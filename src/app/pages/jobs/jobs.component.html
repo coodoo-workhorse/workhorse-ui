@@ -41,22 +41,22 @@
                     <button
                       *ngIf="rowSelectionEnabled"
                       class="btn btn-outline-secondary action-button ml-2"
-                      [ngClass]="{'disabled': selectedRowIds.size === 0}"
-                      [ngbPopover]="selectedRowIds.size > 0 ? 'Activate ' + selectedRowIds.size + ' selected jobs' : ''"
+                      [ngClass]="{'disabled': selectedRows.length === 0}"
+                      [ngbPopover]="selectedRows.length > 0 ? 'Activate ' + selectedRows.length + ' selected jobs' : ''"
                       triggers="mouseenter:mouseleave"
                       placement="left"
-                      (click)="selectedRowIds.size != 0 ? toggleSelectedJobsStatus(false) : undefined"
+                      (click)="selectedRows.length != 0 ? toggleSelectedJobsStatus(false) : undefined"
                       >
                       <i class="ion ion-md-play"></i>
                     </button>
                     <button
                       *ngIf="rowSelectionEnabled"
                       class="btn btn-outline-secondary action-button ml-2"
-                      [ngClass]="{'disabled': selectedRowIds.size === 0}"
-                      [ngbPopover]="selectedRowIds.size > 0 ? 'Deactivate ' + selectedRowIds.size + ' selected jobs' : ''"
+                      [ngClass]="{'disabled': selectedRows.length === 0}"
+                      [ngbPopover]="selectedRows.length > 0 ? 'Deactivate ' + selectedRows.length + ' selected jobs' : ''"
                       triggers="mouseenter:mouseleave"
                       placement="left"
-                      (click)="selectedRowIds.size != 0 ? toggleSelectedJobsStatus(true) : undefined"
+                      (click)="selectedRows.length != 0 ? toggleSelectedJobsStatus(true) : undefined"
                       >
                       <i class="ion ion-md-pause"></i>
                     </button>
@@ -78,7 +78,7 @@
             </ng-template>
             <ng-template #row let-row="row">
               <td *ngIf="rowSelectionEnabled" class="align-middle">
-                <coo-table-select [id]="row.id"></coo-table-select>
+                <coo-table-select [row]="row"></coo-table-select>
               </td>
               <td colspan="5" (dblclick)="showJob(row)" class="clickable">
                 <job-summary [job]="row"></job-summary>

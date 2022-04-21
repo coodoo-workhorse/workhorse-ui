@@ -16,7 +16,12 @@ import { CreateExecutionComponent } from './create-execution/create-execution.co
   // tslint:disable-next-line:component-selector
   selector: 'executions',
   templateUrl: './executions.component.html',
-  styleUrls: ['./executions.component.css']
+  styleUrls: ['./executions.component.css'],
+  providers: [
+    CooTableListingService,
+    CooTableSelectionService,
+    ListingParameters
+  ]
 })
 export class ExecutionsComponent implements OnInit, OnDestroy {
   @Input() embedded = false;
@@ -41,7 +46,7 @@ export class ExecutionsComponent implements OnInit, OnDestroy {
   status: Array<string> = ['PLANNED', 'QUEUED', 'RUNNING', 'FINISHED', 'FAILED', 'ABORTED'];
 
   rowSelectionEnabled = false;
-  selectedRowIds: Set<number> = new Set();
+  selectedRows = [];
 
   private unsubscribe = new Subject<void>();
 
@@ -60,8 +65,8 @@ export class ExecutionsComponent implements OnInit, OnDestroy {
 
     this.cooTableSelectionService.selectedRowsChanged$
       .pipe(takeUntil(this.unsubscribe))
-      .subscribe(selectedRowIds => {
-        this.selectedRowIds = selectedRowIds;
+      .subscribe(selectedRows => {
+        this.selectedRows = selectedRows;
       });
   }
 
@@ -161,15 +166,14 @@ export class ExecutionsComponent implements OnInit, OnDestroy {
   abortSelectedExecutions() {
     const modalRef: NgbModalRef = this.modalService.open(ModalComponent, { centered: true });
     // tslint:disable-next-line: max-line-length
-    modalRef.componentInstance.content = 'Do you really want to abort all ' + this.selectedRowIds.size + ' selected job execution?';
+    modalRef.componentInstance.content = 'Do you really want to abort all ' + this.selectedRows.length + ' selected job execution?';
     modalRef.result.then(
       closeResult => {
         if (closeResult) {
-          for (const row of this.rows) {
-            if (this.selectedRowIds.has(row.id)) {
-              this.abortExecution(row);
-            }
+          for (const row of this.selectedRows) {
+            this.abortExecution(row);
           }
+          this.cooTableSelectionService.unselectAll();
           this.list();
         }
       },
@@ -209,23 +213,22 @@ export class ExecutionsComponent implements OnInit, OnDestroy {
     // tslint:disable-next-line: max-line-length
     modalRef.componentInstance.content =
       'Do you really want to redo all ' +
-      this.selectedRowIds.size +
+      this.selectedRows.length +
       ' selected job execution?<br> All metadata like timestamps and logs of this execution will be gone!';
     modalRef.result.then(
       closeResult => {
         if (closeResult) {
-          for (const row of this.rows) {
-            if (this.selectedRowIds.has(row.id)) {
-              this.executionService.redoJobExecution(row.jobId, row.id).subscribe(
-                () => {
-                  this.toastrService.success('Redo job execution with ID ' + row.id);
-                },
-                error => {
-                  this.toastrService.error('Could not redo job execution with ID ' + row.id + ': ' + error.message);
-                }
-              );
-            }
+          for (const row of this.selectedRows) {
+            this.executionService.redoJobExecution(row.jobId, row.id).subscribe(
+              () => {
+                this.toastrService.success('Redo job execution with ID ' + row.id);
+              },
+              error => {
+                this.toastrService.error('Could not redo job execution with ID ' + row.id + ': ' + error.message);
+              }
+            );
           }
+          this.cooTableSelectionService.unselectAll();
           this.list();
         }
       },
@@ -261,21 +264,20 @@ export class ExecutionsComponent implements OnInit, OnDestroy {
   deleteSelectedExecutions() {
     const modalRef: NgbModalRef = this.modalService.open(ModalComponent, { centered: true });
     // tslint:disable-next-line: max-line-length
-    modalRef.componentInstance.content = 'Do you really want to delete all ' + this.selectedRowIds.size + ' selected job execution?';
+    modalRef.componentInstance.content = 'Do you really want to delete all ' + this.selectedRows.length + ' selected job execution?';
     modalRef.result.then(
       closeResult => {
         if (closeResult) {
-          for (const row of this.rows) {
-            if (this.selectedRowIds.has(row.id)) {
-              this.executionService.deleteJobExecution(row.jobId, row.id).subscribe(
-                () => {
-                  this.toastrService.success('Job execution with ID ' + row.id + ' deleted');
-                },
-                error => {
-                  this.toastrService.error('Could not delete job execution with ID ' + row.id + ': ' + error.message);
-                }
-              );
-            }
+          for (const row of this.selectedRows) {
+            this.executionService.deleteJobExecution(row.jobId, row.id).subscribe(
+              () => {
+                this.toastrService.success('Job execution with ID ' + row.id + ' deleted');
+              },
+              error => {
+                this.toastrService.error('Could not delete job execution with ID ' + row.id + ': ' + error.message);
+              }
+            );
+            this.cooTableSelectionService.unselectAll();
             this.list();
           }
         }
