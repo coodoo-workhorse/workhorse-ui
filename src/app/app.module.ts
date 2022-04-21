@@ -4,6 +4,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CooTableModule } from '@coodoo/coo-table';
+import { OwlDateTimeModule, OwlNativeDateTimeModule } from '@danielmoncada/angular-datetime-picker';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { Ng2GoogleChartsModule } from 'ng2-google-charts';
 import { CookieModule } from 'ngx-cookie';
@@ -54,6 +55,7 @@ import { ThreadsComponent } from './shared/components/threads/threads.component'
 import { JavaClassNamePipe } from './shared/pipes/java-class-name.pipe';
 import { JobDurationPipe } from './shared/pipes/job-duration.pipe';
 import { TimeAgoStaticPipe } from './shared/pipes/time-ago-static.pipe';
+
 
 export function appInit(jobStore: JobStore) {
   return () => jobStore.initJobs();
@@ -113,6 +115,8 @@ export function appInit(jobStore: JobStore) {
       preventDuplicates: false,
       enableHtml: true
     }),
+    OwlDateTimeModule,
+    OwlNativeDateTimeModule,
     CooTableModule,
     BrowserModule,
     FormsModule,
@@ -128,13 +132,13 @@ export function appInit(jobStore: JobStore) {
     LogService,
     ConfigService,
     JobStore,
-      {
-        provide: APP_INITIALIZER,
-        useFactory: appInit,
-        multi: true,
-        deps: [JobStore]
-      }
+    {
+      provide: APP_INITIALIZER,
+      useFactory: appInit,
+      multi: true,
+      deps: [JobStore]
+    },
   ],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {}

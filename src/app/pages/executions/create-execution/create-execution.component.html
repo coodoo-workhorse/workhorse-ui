@@ -12,59 +12,33 @@
 </div>
 
 <div *ngIf="!loading" class="modal-body">
-  <!-- Job -->
   <div class="mb-5">
     <job-summary [job]="job"></job-summary>
   </div>
 
+
+
   <form [formGroup]="executionForm">
-    <!-- Priorität -->
+
     <div class="form-group row">
       <label for="priority" class="col-2 col-form-label text-right">Priority</label>
       <div class="col-10">
-        <app-switch formControlName="priority" id="priority" textOn="Yes" textOff="No"></app-switch>
-        <div
-          class="error"
-          *ngIf="executionForm.get('priority').hasError('required') && (executionForm.get('priority').touched || onExecuted)"
-        >
-          Required
-        </div>
+        <!-- <i class="ion ion-ios-star-outline"></i> -->
+        <app-switch formControlName="priority" id="priority" textOn="Yes" textOff="No" ></app-switch>
       </div>
     </div>
-    <!-- Fälligkeit -->
+
     <div class="form-group row">
-      <label for="plannedFor" class="col-2 col-form-label text-right">Planned</label>
+      <label for="plannedFor" class="col-2 col-form-label text-right">Planned for</label>
       <input
-        ngbDatepicker
-        formControlName="plannedForDate"
-        placeholder="TT.MM.JJJJ"
+        formControlName="plannedFor"
+        [owlDateTimeTrigger]="dtPlannedFor"
+        [owlDateTime]="dtPlannedFor"
+        [min]="minPlannedFor"
         class="form-control col-3 ml-3"
-        name="dp"
-        id="plannedFor"
-        #d="ngbDatepicker"
       />
-
-      <div class="input-group-addon pointer input-group-addon-1 col-1" placement="top" (click)="d.toggle()" container="body">
-        <i class="icon ion-ios-calendar" aria-hidden="true"></i>
-      </div>
-
-      <ngb-timepicker
-        style="font-size: 0.5rem; margin-top: -2.5rem"
-        class="mr-auto mb-auto pl-0"
-        formControlName="plannedForTime"
-        [spinners]="true"
-        [seconds]="false"
-        [hourStep]="1"
-        [minuteStep]="5"
-      >
-      </ngb-timepicker>
-      <div
-        class="error"
-        *ngIf="executionForm.get('plannedFor').hasError('required') && (executionForm.get('plannedFor').touched || onExecuted)"
-      >
-        Required
-      </div>
     </div>
+    <owl-date-time #dtPlannedFor [showSecondsTimer]="true"></owl-date-time>
 
     <div *ngIf="job.parametersClassName" class="form-group row">
       <label for="parameters" class="col-2 col-form-label text-right">Parameters</label>

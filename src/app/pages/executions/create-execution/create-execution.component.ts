@@ -1,8 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ListingParameters, ListingResult } from '@coodoo/coo-table';
+import { DateTimeAdapter } from '@danielmoncada/angular-datetime-picker';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
+import { Subject } from 'rxjs';
 import { Execution } from 'src/services/execution.model';
 import { Job } from 'src/services/job.model';
 import { ExecutionService } from '../../../../services/execution.service';
@@ -25,13 +27,18 @@ export class CreateExecutionComponent implements OnInit {
   onExecuted = false;
   isExecution = false;
 
+   minPlannedFor = new Date();
+
   constructor(
     public activeModal: NgbActiveModal,
     private formBuilder: FormBuilder,
     private toastrService: ToastrService,
     private jobStore: JobStore,
-    private executionService: ExecutionService
-  ) {}
+    private executionService: ExecutionService,
+    private dateTimeAdapter: DateTimeAdapter<any>
+  ) {
+    this.dateTimeAdapter.setLocale('en-GB');
+  }
 
   ngOnInit() {
     this.loading = true;
@@ -40,8 +47,6 @@ export class CreateExecutionComponent implements OnInit {
       priority: [undefined, Validators.required],
       plannedFor: [undefined],
       parameters: [undefined],
-      plannedForDate: [undefined],
-      plannedForTime: [undefined]
     });
 
     if (!this.job) {
@@ -98,20 +103,20 @@ export class CreateExecutionComponent implements OnInit {
   }
 
   createExecutioData(): Execution {
-    if (this.executionForm.get('plannedForDate').touched && this.executionForm.get('plannedForTime').touched) {
-      const deadline: Date = new Date();
-      deadline.setFullYear(this.executionForm.value.plannedForDate.year);
-      deadline.setMonth(this.executionForm.value.plannedForDate.month - 1);
-      deadline.setDate(this.executionForm.value.plannedForDate.day);
-      deadline.setHours(this.executionForm.value.plannedForTime.hour);
-      deadline.setMinutes(this.executionForm.value.plannedForTime.minute);
-      this.executionForm.patchValue({ plannedFor: deadline });
-    }
-
     const exec: Execution = new Execution();
     exec.jobId = this.executionForm.value.jobId;
     exec.priority = this.executionForm.value.priority;
-    exec.plannedFor = this.executionForm.value.plannedFor;
+
+    if(this.executionForm.value.plannedFor){
+      const now = new Date();
+      let timezoneOffsetMillis = now.getTimezoneOffset() * 1000 * 60;
+      const plannedFor = new Date( this.executionForm.value.plannedFor.getTime() - timezoneOffsetMillis );
+      if(now.getTime() > plannedFor.getTime()){
+        timezoneOffsetMillis = now.getTime();
+      }
+      exec.plannedFor = plannedFor;
+    }
+
     exec.parameters = this.executionForm.value.parameters;
     return exec;
   }

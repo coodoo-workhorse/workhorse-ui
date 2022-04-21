@@ -27,3 +27,7 @@ textarea {
 .meta-info {
   font-size: 0.8em;
 }
+
+::ng-deep .cdk-overlay-container, .cdk-global-overlay-wrapper {
+  z-index: 10001 !important;
+}
