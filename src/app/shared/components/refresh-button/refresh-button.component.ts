@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { RefreshService } from 'src/services/refresh.service';
 
 @Component({
   selector: 'refresh-button',
@@ -11,9 +12,19 @@ export class RefreshButtonComponent implements OnInit {
   @Input() text: string;
   @Input() popoverText: string;
 
+  @Input() global = false;
+
+  constructor(private refreshService: RefreshService) {}
+
   ngOnInit() {
     if (!this.popoverText) {
       this.popoverText = 'Refresh';
+    }
+  }
+
+  refresh() {
+    if (this.global) {
+      this.refreshService.refresh();
     }
   }
 }

@@ -3,11 +3,14 @@ import { Router } from '@angular/router';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { CookieService } from 'ngx-cookie';
 import { ToastrService } from 'ngx-toastr';
-import { interval } from 'rxjs';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { ModalComponent } from 'src/app/shared/components/modal/modal.component';
 import { JobCounts } from 'src/services/job-counts.model';
 import { JobStatusCount } from 'src/services/job-status-count.model';
 import { Job } from 'src/services/job.model';
+import { RefreshIntervalService } from 'src/services/refresh-interval.service';
+import { RefreshService } from 'src/services/refresh.service';
 import { WorkhorseService } from 'src/services/workhorse.service';
 import { JobService } from '../../../services/job.service';
 
@@ -40,24 +43,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
   jobsViewEnabled = true;
   threadsViewEnabled = true;
 
-  workhorseStatusAutoRefresh = true;
-  currentlyQueuedAutoRefresh = false;
-
-  intervals: Map<number, string> = new Map([
-    [0, 'Off'],
-    [10000, '10 seconds'],
-    [6000, '6 seconds'],
-    [60000, '1 minutes'],
-    [120000, '2 minutes'],
-    [300000, '5 minutes'],
-    [900000, '15 minutes' ]
-  ]);
-  refreshInterval = 10000; // default auf 10 Sekunden, falls noch nichts im Cookie steht
-  intervalText: string = this.intervals.get(10000); // passender Text zum refreshInterval '10 seconds'
-  private workhorseStatusSubscription = null;
-  private currentlyQueuedSubscription = null;
-
-  private dashboardViewCookieName = 'wh-view-dashboard';
+  private dashboardViewCookieName = 'wh-view-dashboard-v1';
+  private unsubscribe = new Subject<void>();
 
   constructor(
     private router: Router,
@@ -65,44 +52,58 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private workhorseService: WorkhorseService,
     private jobService: JobService,
     private modalService: NgbModal,
-    private cookieService: CookieService
+    private cookieService: CookieService,
+    private refreshService: RefreshService,
+    private refreshIntervalService: RefreshIntervalService
   ) {}
 
   ngOnInit() {
     this.rebuildDashboardView();
+
     this.getWorkhorseStatus();
-    this.handleAutoRefreshs(this.refreshInterval);
     this.getJobStatusCount();
+
+    this.refreshService.refreshChanged$.pipe(takeUntil(this.unsubscribe)).subscribe(() => {
+      this.getWorkhorseStatus();
+      this.getJobStatusCount();
+    });
+
+    this.refreshIntervalService.refreshIntervalChanged$.pipe(takeUntil(this.unsubscribe)).subscribe(() => {
+      this.getWorkhorseStatus();
+      this.getJobStatusCount();
+    });
   }
 
   ngOnDestroy() {
-    if (this.workhorseStatusSubscription) {
-      this.workhorseStatusSubscription.unsubscribe();
-    }
-    if (this.currentlyQueuedSubscription) {
-      this.currentlyQueuedSubscription.unsubscribe();
-    }
+    this.unsubscribe.next();
+    this.unsubscribe.complete();
   }
 
   getWorkhorseStatus() {
-    this.workhorseService.getWorkhorseStatus().subscribe(
-      (data: boolean) => {
-        if (this.initialLoading) {
-          this.initialLoading = false;
-          this.loading = false;
+    this.workhorseService
+      .getWorkhorseStatus()
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(
+        (data: boolean) => {
+          if (this.initialLoading) {
+            this.initialLoading = false;
+            this.loading = false;
+          }
+          this.workhorseStatus = data;
+        },
+        (error: any) => {
+          this.toastrService.info('Auto updated failed' + error.message);
         }
-        this.workhorseStatus = data;
-      },
-      (error: any) => {
-        this.toastrService.info('Auto updated failed' + error.message);
-      }
-    );
+      );
   }
 
   getJobStatusCount() {
-    this.jobService.getJobStatusCount().subscribe((data: JobStatusCount) => {
-      this.jobStatusCount = data;
-    });
+    this.jobService
+      .getJobStatusCount()
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe((data: JobStatusCount) => {
+        this.jobStatusCount = data;
+      });
   }
 
   startWorkhorse() {
@@ -112,18 +113,21 @@ export class DashboardComponent implements OnInit, OnDestroy {
       closeResult => {
         if (closeResult) {
           this.loading = true;
-          this.workhorseService.startWorkhorse().subscribe(
-            () => {
-              this.toastrService.success('Workhorse started');
-              this.workhorseStatus = true;
-              this.getJobStatusCount();
-              this.loading = false;
-            },
-            (error: any) => {
-              this.toastrService.error('Could not start Workhorse: ' + error.message);
-              this.loading = false;
-            }
-          );
+          this.workhorseService
+            .startWorkhorse()
+            .pipe(takeUntil(this.unsubscribe))
+            .subscribe(
+              () => {
+                this.toastrService.success('Workhorse started');
+                this.workhorseStatus = true;
+                this.getJobStatusCount();
+                this.loading = false;
+              },
+              (error: any) => {
+                this.toastrService.error('Could not start Workhorse: ' + error.message);
+                this.loading = false;
+              }
+            );
         }
       },
       () => {}
@@ -138,55 +142,24 @@ export class DashboardComponent implements OnInit, OnDestroy {
       closeResult => {
         if (closeResult) {
           this.loading = true;
-          this.workhorseService.stopWorkhorse().subscribe(
-            () => {
-              this.toastrService.success('Workhorse stopped');
-              this.workhorseStatus = false;
-              this.loading = false;
-            },
-            (error: any) => {
-              this.toastrService.error('Could not stop Workhorse: ' + error.message);
-              this.loading = false;
-            }
-          );
+          this.workhorseService
+            .stopWorkhorse()
+            .pipe(takeUntil(this.unsubscribe))
+            .subscribe(
+              () => {
+                this.toastrService.success('Workhorse stopped');
+                this.workhorseStatus = false;
+                this.loading = false;
+              },
+              (error: any) => {
+                this.toastrService.error('Could not stop Workhorse: ' + error.message);
+                this.loading = false;
+              }
+            );
         }
       },
       () => {}
     );
-  }
-
-  handleAutoRefreshs(refreshInterval: number) {
-    this.handleWorkhorseStatusAutoRefresh(refreshInterval);
-  }
-
-  handleWorkhorseStatusAutoRefresh(refreshInterval: number) {
-    this.setWorkhorseStatusAutoRefresh(refreshInterval === 0 ? false : true);
-    if (this.workhorseStatusSubscription) {
-      this.workhorseStatusSubscription.unsubscribe();
-      console.log('unsubscribe workhorseStatusSubscription');
-    }
-    this.refreshInterval =  refreshInterval;
-    this.saveDashboardView();
-
-    console.log('workhorseRefreshValueTimeInterval: ', this.refreshInterval, 'autorefresh:', this.workhorseStatusAutoRefresh);
-    if (this.workhorseStatusAutoRefresh) {
-      this.workhorseStatusSubscription = interval(this.refreshInterval).subscribe(() => {
-        if (this.workhorseStatus) {
-          this.getWorkhorseStatus();
-          this.getJobStatusCount();
-        }
-      });
-    } else {
-      if (this.workhorseStatusSubscription) {
-        this.workhorseStatusSubscription.unsubscribe();
-      }
-    }
-  }
-
-  setWorkhorseStatusAutoRefresh(bol: boolean): void {
-    console.log('BOOOOOOL ', bol);
-    // TODO wenn workhorseStatusAutoRefresh bereits true ist, wird das nicht nochmal getriggert.
-    this.workhorseStatusAutoRefresh = bol;
   }
 
   navigateToJob(job: Job) {
@@ -199,10 +172,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       lastExecutionsViewEnabled: this.lastExecutionsViewEnabled,
       logsViewEnabled: this.logsViewEnabled,
       jobsViewEnabled: this.jobsViewEnabled,
-      threadsViewEnabled: this.threadsViewEnabled,
-      currentlyQueuedAutoRefresh: this.currentlyQueuedAutoRefresh,
-      workhorseStatusAutoRefresh: this.workhorseStatusAutoRefresh,
-      refreshInterval: this.refreshInterval
+      threadsViewEnabled: this.threadsViewEnabled
     };
     this.cookieService.put(this.dashboardViewCookieName, JSON.stringify(cookieValue));
   }
@@ -216,12 +186,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.logsViewEnabled = cookieValue.logsViewEnabled;
       this.jobsViewEnabled = cookieValue.jobsViewEnabled;
       this.threadsViewEnabled = cookieValue.threadsViewEnabled;
-      this.currentlyQueuedAutoRefresh = cookieValue.currentlyQueuedAutoRefresh;
-      this.workhorseStatusAutoRefresh = cookieValue.workhorseStatusAutoRefresh;
-      if (cookieValue.refreshInterval) {
-        this.refreshInterval = cookieValue.refreshInterval;
-        this.intervalText = this.intervals.get(this.refreshInterval);
-      }
     }
   }
 }

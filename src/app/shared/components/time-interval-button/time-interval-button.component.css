@@ -1,0 +1,16 @@
+.blink {
+  animation-iteration-count: initial;
+  animation-timing-function: linear;
+  animation-delay: 0s;
+  animation-name: blink-animation;
+  animation-duration: 1000ms;
+}
+
+@keyframes blink-animation {
+  0% { background-color: white; border-color: white; }
+  20% { background-color: #f7c575; border-color: #faa31b; }
+  40% { background-color: #faa31b; border-color: #faa31b; }
+  60% { background-color: #faa31b; border-color: #faa31b; }
+  80% { background-color: #f7c575; border-color: #faa31b; }
+  100% { background-color: white; border-color: #6c757d; color: #6c757d }
+}

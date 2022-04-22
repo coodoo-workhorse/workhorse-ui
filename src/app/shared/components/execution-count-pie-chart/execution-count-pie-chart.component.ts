@@ -1,6 +1,10 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { GoogleChartInterface } from 'ng2-google-charts';
 import { ToastrService } from 'ngx-toastr';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import { RefreshIntervalService } from 'src/services/refresh-interval.service';
+import { RefreshService } from 'src/services/refresh.service';
 import { ExecutionStatusCounts } from '../../../../services/execution-status-counts.model';
 import { ExecutionService } from '../../../../services/execution.service';
 
@@ -18,12 +22,32 @@ export class ExecutionCountPieChartComponent implements OnInit {
   timeunit: string;
   pieChart: GoogleChartInterface;
 
-  constructor(private executionService: ExecutionService, private toastrService: ToastrService) {
+  private unsubscribe = new Subject<void>();
+
+  constructor(
+    private executionService: ExecutionService,
+    private toastrService: ToastrService,
+    private refreshService: RefreshService,
+    private refreshIntervalService: RefreshIntervalService
+  ) {
     this.timeunit = 'day';
   }
 
   ngOnInit() {
     this.getCount();
+
+    this.refreshService.refreshChanged$.pipe(takeUntil(this.unsubscribe)).subscribe(() => {
+      this.getCount();
+    });
+
+    this.refreshIntervalService.refreshIntervalChanged$.pipe(takeUntil(this.unsubscribe)).subscribe(() => {
+      this.getCount();
+    });
+  }
+
+  ngOnDestroy() {
+    this.unsubscribe.next();
+    this.unsubscribe.complete();
   }
 
   getCount() {
@@ -49,20 +73,23 @@ export class ExecutionCountPieChartComponent implements OnInit {
         minutes = 5256000; // 10 years
         break;
     }
-    this.executionService.getStatusCounts(this.jobId, minutes).subscribe(
-      (data: ExecutionStatusCounts) => {
-        if (data) {
-          this.counts = data;
-          this.buildChart();
-        } else {
+    this.executionService
+      .getStatusCounts(this.jobId, minutes)
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(
+        (data: ExecutionStatusCounts) => {
+          if (data) {
+            this.counts = data;
+            this.buildChart();
+          } else {
+            this.loading = false;
+          }
+        },
+        (error: any) => {
           this.loading = false;
+          this.toastrService.error(error.name, error.message);
         }
-      },
-      (error: any) => {
-        this.loading = false;
-        this.toastrService.error(error.name, error.message);
-      }
-    );
+      );
   }
 
   buildChart() {
