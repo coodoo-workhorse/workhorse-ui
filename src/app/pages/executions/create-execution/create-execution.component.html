@@ -5,26 +5,17 @@
   </button>
 </div>
 
-<div *ngIf="loading" class="modal-body">
-  <div class="row justify-content-center">
-    <loading [loadingHorse]="true"></loading>
-  </div>
-</div>
-
-<div *ngIf="!loading" class="modal-body">
+<div class="modal-body">
   <div class="mb-5">
     <job-summary [job]="job"></job-summary>
   </div>
 
-
-
   <form [formGroup]="executionForm">
-
     <div class="form-group row">
       <label for="priority" class="col-2 col-form-label text-right">Priority</label>
       <div class="col-10">
         <!-- <i class="ion ion-ios-star-outline"></i> -->
-        <app-switch formControlName="priority" id="priority" textOn="Yes" textOff="No" ></app-switch>
+        <app-switch formControlName="priority" id="priority" textOn="Yes" textOff="No"></app-switch>
       </div>
     </div>
 
@@ -43,20 +34,23 @@
     <div *ngIf="job.parametersClassName" class="form-group row">
       <label for="parameters" class="col-2 col-form-label text-right">Parameters</label>
       <div class="col-10">
-        <textarea class="form-control" type="text" id="parameters" formControlName="parameters"></textarea>
-        <div
-          class="error"
-          *ngIf="executionForm.get('parameters').hasError('required') && (executionForm.get('parameters').touched || onExecuted)"
-        >
-          Required
-        </div>
-        <div class="text-muted" *ngIf="isExecution"><small>Prefilled values came from last execution</small></div>
+        <textarea class="form-control" type="text" id="parameters" formControlName="parameters" rows="{{textareaRows}}"></textarea>
       </div>
     </div>
   </form>
 </div>
 
-<div class="modal-footer d-flex justify-content-end">
-  <button type="button" class="btn btn-outline-secondary mr-2" (click)="activeModal.dismiss()">Cancel</button>
-  <app-save-button (upload)="onExecute()" saveText="Create execution" [loading]="loading"> </app-save-button>
+<div class="modal-footer">
+  <div class="d-flex justify-content-start">
+    <button type="button" class="btn btn-outline-secondary mr-2" (click)="getRandomParameters()" [disabled]="loading">
+      Random Parameters
+    </button>
+    <button type="button" class="btn btn-outline-secondary mr-2" (click)="getLatestParameters()" [disabled]="loading">
+      Latest Parameters
+    </button>
+  </div>
+  <div class="d-flex justify-content-end">
+    <button type="button" class="btn btn-outline-secondary mr-2" (click)="activeModal.dismiss()">Cancel</button>
+    <app-save-button (upload)="onExecute()" saveText="Create execution" [loading]="loading"> </app-save-button>
+  </div>
 </div>

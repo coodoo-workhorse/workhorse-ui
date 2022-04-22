@@ -58,4 +58,12 @@ export class ExecutionService {
     }
     return this.http.get<ExecutionStatusCounts>(`${RestConfig.apiUrl}/jobs/${jobId}/executions/status-counts/${minutes}`);
   }
+
+  getRandomParameters(jobId: number): Observable<string> {
+    return this.http.get<string>(`${RestConfig.apiUrl}/jobs/${jobId}/executions/random-parameters`);
+  }
+
+  getLatestParameters(jobId: number): Observable<string> {
+    return this.http.get<string>(`${RestConfig.apiUrl}/jobs/${jobId}/executions/latest-parameters`);
+  }
 }

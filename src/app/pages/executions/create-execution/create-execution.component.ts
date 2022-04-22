@@ -15,19 +15,14 @@ import { JobStore } from '../../../../services/job.store';
   templateUrl: './create-execution.component.html',
   styleUrls: ['./create-execution.component.css']
 })
-
-/**
- * Execution aus Job oder vergangener Execution erstellen.
- */
 export class CreateExecutionComponent implements OnInit {
   job: Job;
   execution: Execution;
   executionForm: FormGroup;
   loading = false;
   onExecuted = false;
-  isExecution = false;
-
-   minPlannedFor = new Date();
+  minPlannedFor = new Date();
+  textareaRows = 5;
 
   constructor(
     public activeModal: NgbActiveModal,
@@ -46,7 +41,7 @@ export class CreateExecutionComponent implements OnInit {
       jobId: [undefined, Validators.required],
       priority: [undefined, Validators.required],
       plannedFor: [undefined],
-      parameters: [undefined],
+      parameters: [undefined]
     });
 
     if (!this.job) {
@@ -62,26 +57,33 @@ export class CreateExecutionComponent implements OnInit {
   initExecution() {
     if (this.execution) {
       this.updateForm(this.execution);
-    } else {
-      this.getLastExecution();
     }
+    this.loading = false;
   }
 
-  getLastExecution() {
-    this.isExecution = false;
-
-    const listingParameters = new ListingParameters();
-    listingParameters.limit = 1;
-    this.executionService.getJobExecutions(listingParameters, this.job.id).subscribe((execList: ListingResult<Execution>) => {
-      this.execution = execList.results[0];
-      if (this.execution) {
-        if (this.execution.parameters) {
-          this.isExecution = true;
-        }
-        this.updateForm(this.execution);
-      }
-      this.loading = false;
+  getRandomParameters() {
+    this.loading = true;
+    this.executionService.getRandomParameters(this.job.id).subscribe((parameters: string) => {
+      this.dealWithParameters(parameters);
     });
+  }
+
+  getLatestParameters() {
+    this.loading = true;
+    this.executionService.getLatestParameters(this.job.id).subscribe((parameters: string) => {
+      this.dealWithParameters(parameters);
+    });
+  }
+
+  private dealWithParameters(parameters: string): string {
+    let latestParameters = null;
+    if (parameters) {
+      latestParameters = JSON.stringify(parameters, null, 2); // format JSON
+      this.textareaRows = latestParameters.split(/\r\n|\r|\n/).length; // adjust textarea
+    }
+    this.executionForm.patchValue({ parameters: latestParameters });
+    this.loading = false;
+    return latestParameters;
   }
 
   updateForm(execution: Execution) {
@@ -107,11 +109,11 @@ export class CreateExecutionComponent implements OnInit {
     exec.jobId = this.executionForm.value.jobId;
     exec.priority = this.executionForm.value.priority;
 
-    if(this.executionForm.value.plannedFor){
+    if (this.executionForm.value.plannedFor) {
       const now = new Date();
       let timezoneOffsetMillis = now.getTimezoneOffset() * 1000 * 60;
-      const plannedFor = new Date( this.executionForm.value.plannedFor.getTime() - timezoneOffsetMillis );
-      if(now.getTime() > plannedFor.getTime()){
+      const plannedFor = new Date(this.executionForm.value.plannedFor.getTime() - timezoneOffsetMillis);
+      if (now.getTime() > plannedFor.getTime()) {
         timezoneOffsetMillis = now.getTime();
       }
       exec.plannedFor = plannedFor;
