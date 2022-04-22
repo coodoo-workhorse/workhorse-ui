@@ -22,7 +22,6 @@
 
   <div *ngIf="jobExecutionStatusSummaries?.count === 0" class="no-work-horse card-content d-flex flex-column justify-content-center">
     <img src="{{ this.imageSource }}" alt="No job found" class="mx-auto"/>
-    <span class="mx-auto">My work here is done!</span>
   </div>
 
   <table *ngIf="!currentlyStatusLoading" class="table table-hover mb-0">
