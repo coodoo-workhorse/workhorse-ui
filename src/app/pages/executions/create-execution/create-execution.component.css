@@ -1,27 +1,31 @@
-.value-label {
-  padding-left: 12px;
+.hide-planned-from {
+  height: 0px;
+  width: 0px;
+  border: none;
+  position: absolute;
+  margin: 0px;
+  padding: 0px;
 }
 
-.col-form-label {
-  font-weight: bold;
+textarea {
+  border-radius: 0;
 }
 
-.error {
-  color: red;
-  font-size: 0.9em;
+.ion-ios-star {
+  color: #faa31b;
 }
 
-::ng-deep .modal-md {
-  max-width: 800px !important;
+.planned {
+  color: #4b0082;
 }
 
-.card-header {
-  flex-wrap: wrap;
-  display: flex;
+.click-action {
+  cursor: pointer;
+  color: rgba(34, 34, 34, 0.2);
 }
 
-.meta-info {
-  font-size: 0.8em;
+.click-action:hover {
+  color: #6c757d;
 }
 
 ::ng-deep .cdk-overlay-container,

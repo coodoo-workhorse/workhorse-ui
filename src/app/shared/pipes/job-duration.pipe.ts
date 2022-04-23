@@ -1,11 +1,21 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
-@Pipe({name: 'jobDuration'})
+@Pipe({ name: 'jobDuration' })
 export class JobDurationPipe implements PipeTransform {
   // NON BREAKING SPACE
   NBS = '\u00A0';
 
   transform(millis: number, minUnit: string, round = false): string {
+    if (millis >= 31563000000) {
+      // y
+      const y = Math.floor(millis / 31563000000);
+      const d = Math.floor(millis / 86400000) % 365;
+      if (d === 0 || round) {
+        return `${y}y`;
+      } else {
+        return `${y}y${this.NBS}${d}d`;
+      }
+    }
     if (minUnit === 'd') {
       return `${Math.floor(millis / 86400000)}d`;
     }

@@ -1,10 +1,7 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ListingParameters, ListingResult } from '@coodoo/coo-table';
+import { Component, OnInit } from '@angular/core';
 import { DateTimeAdapter } from '@danielmoncada/angular-datetime-picker';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
-import { Subject } from 'rxjs';
 import { Execution } from 'src/services/execution.model';
 import { Job } from 'src/services/job.model';
 import { ExecutionService } from '../../../../services/execution.service';
@@ -18,32 +15,27 @@ import { JobStore } from '../../../../services/job.store';
 export class CreateExecutionComponent implements OnInit {
   job: Job;
   execution: Execution;
-  executionForm: FormGroup;
+  newExecution = new Execution();
   loading = false;
-  onExecuted = false;
   minPlannedFor = new Date();
+  timezoneOffsetMillis = this.minPlannedFor.getTimezoneOffset() * 1000 * 60;
+  displayCreatedAt: Date;
+  displayPlannedFor: Date;
   textareaRows = 5;
 
   constructor(
     public activeModal: NgbActiveModal,
-    private formBuilder: FormBuilder,
     private toastrService: ToastrService,
     private jobStore: JobStore,
     private executionService: ExecutionService,
     private dateTimeAdapter: DateTimeAdapter<any>
   ) {
     this.dateTimeAdapter.setLocale('en-GB');
+    this.minPlannedFor = this.patchDate(this.minPlannedFor);
   }
 
   ngOnInit() {
     this.loading = true;
-    this.executionForm = this.formBuilder.group({
-      jobId: [undefined, Validators.required],
-      priority: [undefined, Validators.required],
-      plannedFor: [undefined],
-      parameters: [undefined]
-    });
-
     if (!this.job) {
       this.jobStore.jobs$.subscribe(jobs => {
         this.job = this.jobStore.getJob(this.execution.jobId);
@@ -56,81 +48,75 @@ export class CreateExecutionComponent implements OnInit {
 
   initExecution() {
     if (this.execution) {
-      this.updateForm(this.execution);
+      this.newExecution.priority = this.execution.priority;
+      let jsonParameters = null;
+      if (this.execution.parameters) {
+        jsonParameters = JSON.stringify(JSON.parse(this.execution.parameters), null, 2);
+      }
+      this.newExecution.parameters = jsonParameters;
+      this.updateTextareaRows();
     }
     this.loading = false;
-  }
-
-  getRandomParameters() {
-    this.loading = true;
-    this.executionService.getRandomParameters(this.job.id).subscribe((parameters: string) => {
-      this.dealWithParameters(parameters);
-    });
   }
 
   getLatestParameters() {
     this.loading = true;
     this.executionService.getLatestParameters(this.job.id).subscribe((parameters: string) => {
-      this.dealWithParameters(parameters);
-    });
-  }
-
-  private dealWithParameters(parameters: string): string {
-    let latestParameters = null;
-    if (parameters) {
-      latestParameters = JSON.stringify(parameters, null, 2); // format JSON
-      this.textareaRows = latestParameters.split(/\r\n|\r|\n/).length; // adjust textarea
-    }
-    this.executionForm.patchValue({ parameters: latestParameters });
-    this.loading = false;
-    return latestParameters;
-  }
-
-  updateForm(execution: Execution) {
-    let jsonParameters;
-    if (execution.parameters) {
-      jsonParameters = JSON.stringify(JSON.parse(execution.parameters), null, 2);
-    }
-    this.executionForm.patchValue({
-      jobId: execution.jobId,
-      priority: execution.priority,
-      parameters: jsonParameters
-    });
-    this.loading = false;
-  }
-
-  onExecute() {
-    this.onExecuted = true;
-    this.createExecution();
-  }
-
-  createExecutioData(): Execution {
-    const exec: Execution = new Execution();
-    exec.jobId = this.executionForm.value.jobId;
-    exec.priority = this.executionForm.value.priority;
-
-    if (this.executionForm.value.plannedFor) {
-      const now = new Date();
-      let timezoneOffsetMillis = now.getTimezoneOffset() * 1000 * 60;
-      const plannedFor = new Date(this.executionForm.value.plannedFor.getTime() - timezoneOffsetMillis);
-      if (now.getTime() > plannedFor.getTime()) {
-        timezoneOffsetMillis = now.getTime();
+      let latestParameters = null;
+      if (parameters) {
+        latestParameters = JSON.stringify(parameters, null, 2);
       }
-      exec.plannedFor = plannedFor;
-    }
+      this.newExecution.parameters = latestParameters;
+      this.updateTextareaRows();
+      this.loading = false;
+    });
+  }
 
-    exec.parameters = this.executionForm.value.parameters;
-    return exec;
+  getRandomParameters() {
+    this.loading = true;
+    this.executionService.getRandomParameters(this.job.id).subscribe((parameters: string) => {
+      if (parameters) {
+        this.newExecution.parameters = JSON.stringify(parameters, null, 2);
+        this.updateTextareaRows();
+      }
+      this.loading = false;
+    });
+  }
+
+  updateTextareaRows() {
+    if (this.newExecution.parameters) {
+      this.textareaRows = this.newExecution.parameters.split(/\r\n|\r|\n/).length;
+    }
+  }
+
+  clearPlannedFor() {
+    this.newExecution.plannedFor = null;
+    this.updateDisplayDates();
+  }
+  updateDisplayDates() {
+    this.minPlannedFor = new Date();
+    this.displayCreatedAt = this.patchDate(this.minPlannedFor);
+    this.displayPlannedFor = this.patchDate(this.newExecution.plannedFor);
+    if (this.displayCreatedAt && this.displayPlannedFor && this.displayCreatedAt > this.displayPlannedFor) {
+      this.displayCreatedAt = this.displayPlannedFor;
+    }
+  }
+
+  patchDate(date: Date) {
+    if (date) {
+      return new Date(date.getTime() - this.timezoneOffsetMillis);
+    }
+    return null;
   }
 
   createExecution() {
-    const exec: Execution = this.createExecutioData();
+    this.newExecution.plannedFor = this.patchDate(this.newExecution.plannedFor);
     this.loading = true;
-    this.executionService.createJobExecution(this.job.id, exec).subscribe(
-      (execution: Execution) => {
-        this.toastrService.success('Execution created');
+    this.executionService.createJobExecution(this.job.id, this.newExecution).subscribe(
+      (createdeExecution: Execution) => {
+        this.toastrService.success('Execution created with ID ' + createdeExecution.id);
         this.loading = false;
-        this.activeModal.close(execution);
+        this.activeModal.close(createdeExecution);
       },
       (error: any) => {
         this.toastrService.error('Could not create execution: ' + error.message);

@@ -16,6 +16,7 @@ export class ExecutionTimelineComponent implements OnChanges {
   @Input() createdAt: Date;
   @Input() updatedAt: Date;
   @Input() embedded = false;
+  @Input() hideCreatedAt = false;
 
   ngOnChanges() {
     this.assembleTimeline();
@@ -24,13 +25,15 @@ export class ExecutionTimelineComponent implements OnChanges {
   private assembleTimeline() {
     this.timeline = [];
 
-    const created = new ExecutionTimeline();
-    created.state = 'QUEUED';
-    created.label = 'Created';
-    created.time = this.createdAt;
-    this.timeline.push(created);
+    if(!this.hideCreatedAt){
+      const created = new ExecutionTimeline();
+      created.state = 'QUEUED';
+      created.label = 'Created';
+      created.time = this.createdAt;
+      this.timeline.push(created);
+    }
 
-    if (this.plannedFor && this.createdAt !== this.plannedFor) {
+    if (this.plannedFor) {
       const plannedFor = new ExecutionTimeline();
       plannedFor.state = 'PLANNED';
       plannedFor.label = 'Planned';
@@ -39,7 +42,7 @@ export class ExecutionTimelineComponent implements OnChanges {
       this.timeline.push(plannedFor);
     }
 
-    if (this.startedAt && !(this.plannedFor && this.plannedFor === this.startedAt)) {
+    if (this.startedAt) {
       const started = new ExecutionTimeline();
       started.state = 'RUNNING';
       started.label = 'Started '; // + this.timeAgoPipe.transform(this.startedAt + '');
