@@ -20,7 +20,7 @@
         <button
           *ngIf="!loading"
           class="btn d-inline-block"
-          [ngClass]="workhorseStatus ? 'border-danger text-danger' : 'btn-primary bg-success border-success'"
+          [ngClass]="workhorseStatus ? 'border-danger text-danger' : 'btn-primary'"
           (click)="workhorseStatus ? stopWorkhorse() : startWorkhorse()"
         >
           <i class="ion" [ngClass]="workhorseStatus ? 'ion-md-square' : 'ion-ios-play'"></i

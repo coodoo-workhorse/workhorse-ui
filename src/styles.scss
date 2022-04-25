@@ -101,6 +101,44 @@ a {
   border-radius: 0 !important;
 }
 
+.btn-primary {
+  background-color: #b2967a;
+  border-color: #917254;
+}
+.btn-primary:hover,
+.btn-primary:focus {
+  background-color: #977758;
+  background-position: 0 -15px;
+  border-color: #917254;
+  box-shadow: 0 0 0 0.2rem #b2967a80;
+}
+.btn-primary:active,
+.btn-primary.active {
+  background-color: #977758;
+  border-color: #917254;
+}
+.btn-primary.disabled,
+.btn-primary[disabled],
+fieldset[disabled] .btn-primary,
+.btn-primary.disabled:hover,
+.btn-primary[disabled]:hover,
+fieldset[disabled] .btn-primary:hover,
+.btn-primary.disabled:focus,
+.btn-primary[disabled]:focus,
+fieldset[disabled] .btn-primary:focus,
+.btn-primary.disabled.focus,
+.btn-primary[disabled].focus,
+fieldset[disabled] .btn-primary.focus,
+.btn-primary.disabled:active,
+.btn-primary[disabled]:active,
+fieldset[disabled] .btn-primary:active,
+.btn-primary.disabled.active,
+.btn-primary[disabled].active,
+fieldset[disabled] .btn-primary.active {
+  background-color: #977758;
+  background-image: none;
+}
+
 .btn-group button {
   height: 36px;
 }
@@ -227,7 +265,8 @@ pre {
   background-color: #6c757d !important;
 }
 
-.coo-table-button-primary.selected, .coo-table-button-primary:hover {
+.coo-table-button-primary.selected,
+.coo-table-button-primary:hover {
   background-color: #4c5258 !important;
 }
 
