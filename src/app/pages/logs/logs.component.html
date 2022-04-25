@@ -47,7 +47,7 @@
                     <coo-table-sorter label="Hostname" column="hostName"></coo-table-sorter>
                     <coo-table-filter-text column="hostName"></coo-table-filter-text>
                   </th>
-                  <th class="row-4em row-buttons pr-3">
+                  <th class="row-4em row-buttons pr-3 align-bottom">
                     <refresh-button (click)="list()" [refreshing]="loading"></refresh-button>
                   </th>
                 </tr>
@@ -59,7 +59,7 @@
                     <i class="ion ion-ios-document"></i>
                   </span>
                 </td>
-                <td (dblclick)="showLog(row)" *ngIf="!jobId" [ngClass]="{ clickable: row.id }">
+                <td (dblclick)="showLog(row)" *ngIf="row.jobId" [ngClass]="{ clickable: row.id }">
                   <span (click)="showJob(row)" class="link" ngbPopover="{{ row.job?.description }}" triggers="mouseenter:mouseleave">
                     {{ row.job?.name }}
                     <span class="badge clickable"> ID {{ row.jobId }} </span>
@@ -104,10 +104,8 @@
         <div *ngIf="!loading && rows.length === 0" class="no-entries">No logs</div>
         <div [hidden]="!loading" class="d-flex justify-content-between align-items-center">
           <coo-table-counter></coo-table-counter>
-          <div>
-            <coo-table-limit></coo-table-limit>
-            <coo-table-pager class="ml-2"></coo-table-pager>
-          </div>
+          <coo-table-limit class="ml-auto"></coo-table-limit>
+          <coo-table-pager class="ml-2"></coo-table-pager>
         </div>
       </div>
     </div>

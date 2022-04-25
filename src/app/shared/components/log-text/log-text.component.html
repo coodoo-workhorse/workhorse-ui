@@ -1,8 +1,8 @@
-<div class="card mb-3">
+<div class="card h-100">
   <div class="card-header d-flex justify-content-between p-3">
-    <h5 *ngIf="!metadata" class="d-inline-block">Log messages</h5>
-    <h5 *ngIf="metadata?.count > 0" class="d-inline-block">{{ metadata.count }} log messages</h5>
-    <h5 *ngIf="metadata?.count === 0" class="d-inline-block">No log messages</h5>
+    <h5 *ngIf="!metadata" class="d-inline-block">Log Messages</h5>
+    <h5 *ngIf="metadata?.count > 0" class="d-inline-block">{{ metadata.count }} Log Messages</h5>
+    <h5 *ngIf="metadata?.count === 0" class="d-inline-block">No Log Messages</h5>
     <div class="refresh d-inline-block">
       <log-button [jobId]="jobId" (newLog)="list()" class="ml-2"></log-button>
       <button

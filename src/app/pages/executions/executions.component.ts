@@ -10,6 +10,8 @@ import { Execution } from 'src/services/execution.model';
 import { Job } from 'src/services/job.model';
 import { ExecutionService } from '../../../services/execution.service';
 import { JobStore } from '../../../services/job.store';
+import { RefreshIntervalService } from '../../../services/refresh-interval.service';
+import { RefreshService } from '../../../services/refresh.service';
 import { CreateExecutionComponent } from './create-execution/create-execution.component';
 
 @Component({
@@ -59,7 +61,9 @@ export class ExecutionsComponent implements OnInit, OnDestroy {
     private toastrService: ToastrService,
     private listingParameters: ListingParameters,
     public cooTableListingService: CooTableListingService,
-    private cooTableSelectionService: CooTableSelectionService
+    private cooTableSelectionService: CooTableSelectionService,
+    private refreshIntervalService: RefreshIntervalService,
+    private refreshService: RefreshService
   ) {
     this.loading = true;
 
@@ -80,6 +84,14 @@ export class ExecutionsComponent implements OnInit, OnDestroy {
         this.job = this.jobStore.getJob(+this.jobId);
       });
     }
+
+    this.refreshIntervalService.refreshIntervalChanged$.pipe(takeUntil(this.unsubscribe)).subscribe(() => {
+      this.list();
+    })
+
+    this.refreshService.refreshChanged$.pipe(takeUntil(this.unsubscribe)).subscribe(() => {
+      this.list();
+    })
 
     this.cooTableListingService.list$
       .pipe(takeUntil(this.unsubscribe))
@@ -195,7 +207,7 @@ export class ExecutionsComponent implements OnInit, OnDestroy {
     row.status = 'ABORTED';
     row.updatedAt = new Date();
 
-    this.executionService.updateJobExecution(row.jobId, execution).subscribe(
+    this.executionService.updateJobExecution(row.jobId, execution).pipe(takeUntil(this.unsubscribe)).subscribe(
       (updatedExecution: Execution) => {
         this.toastrService.success('Job execution with ID ' + row.id + ' aborted');
         // hoffen, dass es klappt...
@@ -219,7 +231,7 @@ export class ExecutionsComponent implements OnInit, OnDestroy {
       closeResult => {
         if (closeResult) {
           for (const row of this.selectedRows) {
-            this.executionService.redoJobExecution(row.jobId, row.id).subscribe(
+            this.executionService.redoJobExecution(row.jobId, row.id).pipe(takeUntil(this.unsubscribe)).subscribe(
               () => {
                 this.toastrService.success('Redo job execution with ID ' + row.id);
               },
@@ -246,7 +258,7 @@ export class ExecutionsComponent implements OnInit, OnDestroy {
     modalRef.result.then(
       closeResult => {
         if (closeResult) {
-          this.executionService.redoJobExecution(row.jobId, row.id).subscribe(
+          this.executionService.redoJobExecution(row.jobId, row.id).pipe(takeUntil(this.unsubscribe)).subscribe(
             () => {
               this.toastrService.success('Redo job execution with ID ' + row.id);
               this.list();
@@ -269,7 +281,7 @@ export class ExecutionsComponent implements OnInit, OnDestroy {
       closeResult => {
         if (closeResult) {
           for (const row of this.selectedRows) {
-            this.executionService.deleteJobExecution(row.jobId, row.id).subscribe(
+            this.executionService.deleteJobExecution(row.jobId, row.id).pipe(takeUntil(this.unsubscribe)).subscribe(
               () => {
                 this.toastrService.success('Job execution with ID ' + row.id + ' deleted');
               },
@@ -292,7 +304,7 @@ export class ExecutionsComponent implements OnInit, OnDestroy {
     modalRef.result.then(
       closeResult => {
         if (closeResult) {
-          this.executionService.deleteJobExecution(row.jobId, row.id).subscribe(
+          this.executionService.deleteJobExecution(row.jobId, row.id).pipe(takeUntil(this.unsubscribe)).subscribe(
             () => {
               this.toastrService.success('Job execution with ID ' + row.id + ' deleted');
               this.list();

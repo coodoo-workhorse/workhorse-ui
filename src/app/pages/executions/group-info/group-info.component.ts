@@ -1,25 +1,28 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { GoogleChartInterface } from 'ng2-google-charts';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { ExecutionGroupInfo } from 'src/services/execution-group-info.model';
 import { Job } from 'src/services/job.model';
 import { ExecutionService } from '../../../../services/execution.service';
 import { JobStore } from '../../../../services/job.store';
+import { RefreshIntervalService } from '../../../../services/refresh-interval.service';
+import { RefreshService } from '../../../../services/refresh.service';
 
 @Component({
   selector: 'app-group-info',
   templateUrl: './group-info.component.html',
   styleUrls: ['./group-info.component.css']
 })
-export class GroupInfoComponent implements OnInit {
+export class GroupInfoComponent implements OnInit, OnDestroy {
   batchId: number;
   chainId: number;
   groupId: number;
   jobId: number;
   executionId: number;
 
-  loading: boolean;
-  reloading: boolean;
+  loading = true;
   job: Job;
   groupInfo: ExecutionGroupInfo;
   pieChart: GoogleChartInterface;
@@ -27,10 +30,17 @@ export class GroupInfoComponent implements OnInit {
   timelineChart2: GoogleChartInterface;
   timelineChart3: GoogleChartInterface;
 
-  constructor(private route: ActivatedRoute, private jobStore: JobStore, private executionService: ExecutionService) {}
+  private unsubscribe = new Subject<void>();
+
+  constructor(
+    private route: ActivatedRoute,
+    private jobStore: JobStore,
+    private executionService: ExecutionService,
+    private refreshIntervalService: RefreshIntervalService,
+    private refreshService: RefreshService
+  ) {}
 
   ngOnInit() {
-    this.loading = true;
     this.jobId = this.route.snapshot.params.jobId;
     this.executionId = this.route.snapshot.params.executionId;
     const path = this.route.snapshot.routeConfig.path;
@@ -40,17 +50,33 @@ export class GroupInfoComponent implements OnInit {
     } else if (path.endsWith('batch')) {
       this.batchId = this.executionId;
     }
-    this.jobStore.jobs$.subscribe(jobs => {
-      this.job = this.jobStore.getJob(this.jobId);
+    this.jobStore.jobs$
+    .pipe(takeUntil(this.unsubscribe))
+    .subscribe(jobs => {
+      this.job = this.jobStore.getJob(+this.jobId);
+      this.init();
+    });
+
+    this.refreshIntervalService.refreshIntervalChanged$
+    .pipe(takeUntil(this.unsubscribe))
+    .subscribe(() => {
+      this.init();
+    });
+
+    this.refreshService.refreshChanged$
+    .pipe(takeUntil(this.unsubscribe))
+    .subscribe(() => {
       this.init();
     });
   }
 
   init() {
-    this.reloading = true;
+    this.loading  = true;
     if (this.batchId) {
       this.groupId = this.batchId;
-      this.executionService.getBatchInfo(this.jobId, this.batchId).subscribe((groupInfo: ExecutionGroupInfo) => {
+      this.executionService.getBatchInfo(this.jobId, this.batchId)
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe((groupInfo: ExecutionGroupInfo) => {
         this.groupInfo = groupInfo;
         this.createPieChart(groupInfo);
         if (groupInfo.startedAt) {
@@ -59,12 +85,13 @@ export class GroupInfoComponent implements OnInit {
           this.createBatchTimeline3(groupInfo);
         }
         this.loading = false;
-        this.reloading = false;
       });
     }
     if (this.chainId) {
       this.groupId = this.chainId;
-      this.executionService.getChainInfo(this.jobId, this.chainId).subscribe((groupInfo: ExecutionGroupInfo) => {
+      this.executionService.getChainInfo(this.jobId, this.chainId)
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe((groupInfo: ExecutionGroupInfo) => {
         this.groupInfo = groupInfo;
         this.createPieChart(groupInfo);
         if (groupInfo.startedAt) {
@@ -73,7 +100,6 @@ export class GroupInfoComponent implements OnInit {
           this.createChainTimeline3(groupInfo);
         }
         this.loading = false;
-        this.reloading = false;
       });
     }
   }
@@ -693,5 +719,10 @@ export class GroupInfoComponent implements OnInit {
         hAxis: { format: 'HH:mm:ss' }
       }
     };
+  }
+
+  ngOnDestroy(): void {
+    this.unsubscribe.next();
+    this.unsubscribe.complete();
   }
 }

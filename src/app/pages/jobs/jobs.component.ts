@@ -7,6 +7,8 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Job } from 'src/services/job.model';
 import { JobService } from '../../../services/job.service';
+import { RefreshIntervalService } from '../../../services/refresh-interval.service';
+import { RefreshService } from '../../../services/refresh.service';
 import { ModalComponent } from '../../shared/components/modal/modal.component';
 import { CreateExecutionComponent } from '../executions/create-execution/create-execution.component';
 
@@ -39,7 +41,9 @@ export class JobsComponent implements OnInit, OnDestroy {
     private toastrService: ToastrService,
     private listingParameters: ListingParameters,
     private cooTableListingService: CooTableListingService,
-    private cooTableSelectionService: CooTableSelectionService
+    private cooTableSelectionService: CooTableSelectionService,
+    private refreshIntervalService: RefreshIntervalService,
+    private refreshService: RefreshService
   ) {
     this.config = { size: 'lg' };
     this.cooTableSelectionService.selectedRowsChanged$.pipe(takeUntil(this.unsubscribe)).subscribe(selectedRows => {
@@ -50,6 +54,14 @@ export class JobsComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.cooTableListingService.setDefaultLimit(this.limit);
 
+    this.refreshIntervalService.refreshIntervalChanged$.pipe(takeUntil(this.unsubscribe)).subscribe(() => {
+      this.list();
+    });
+
+    this.refreshService.refreshChanged$.pipe(takeUntil(this.unsubscribe)).subscribe(() => {
+      this.list();
+    });
+
     this.cooTableListingService.list$.pipe(takeUntil(this.unsubscribe)).subscribe(() => {
       this.list();
     });
@@ -58,7 +70,7 @@ export class JobsComponent implements OnInit, OnDestroy {
   list() {
     this.loading = true;
     this.rows = [];
-    this.jobService.getJobs(this.listingParameters).subscribe((listingResult: ListingResult<Job>) => {
+    this.jobService.getJobs(this.listingParameters).pipe(takeUntil(this.unsubscribe)).subscribe((listingResult: ListingResult<Job>) => {
       this.rows = listingResult.results;
       this.metadata = listingResult.metadata;
 
@@ -95,7 +107,7 @@ export class JobsComponent implements OnInit, OnDestroy {
                 }
               );
             } else {
-              this.jobService.activateJob(row.id).subscribe(
+              this.jobService.activateJob(row.id).pipe(takeUntil(this.unsubscribe)).subscribe(
                 (job: Job) => {
                   row.status = job.status;
                   this.toastrService.success(`Activated job <strong>${row.name}</strong>`);
@@ -121,7 +133,7 @@ export class JobsComponent implements OnInit, OnDestroy {
     modalRef.result.then(
       closeResult => {
         if (closeResult) {
-          this.jobService.activateJob(row.id).subscribe(
+          this.jobService.activateJob(row.id).pipe(takeUntil(this.unsubscribe)).subscribe(
             (job: Job) => {
               row.status = job.status;
               this.toastrService.success(`Activated job <strong>${row.name}</strong>`);
@@ -144,7 +156,7 @@ export class JobsComponent implements OnInit, OnDestroy {
     modalRef.result.then(
       closeResult => {
         if (closeResult) {
-          this.jobService.deactivateJob(row.id).subscribe(
+          this.jobService.deactivateJob(row.id).pipe(takeUntil(this.unsubscribe)).subscribe(
             (job: Job) => {
               row.status = job.status;
               this.toastrService.success(`Deactivated job <strong>${row.name}</strong>`);

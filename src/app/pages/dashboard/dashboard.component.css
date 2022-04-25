@@ -33,6 +33,32 @@
   padding-left: 0;
 }
 
+.arends-dirty-hack {
+  margin-bottom: 5px;
+}
+
+.dashboard-row {
+  display: flex;
+  margin-bottom: 1rem;
+}
+
+.dashboard-row > * {
+  flex-grow: 1;
+  flex-basis: 0;
+}
+
+.dashboard-row > div {
+  margin-right: 1rem;
+}
+
+.dashboard-row > div:last-child {
+  margin-right: 0;
+}
+
+.dashboard-row > *:last {
+  margin-right: 1rem;
+}
+
 @keyframes shake {
   0% {
     transform: translate(1px, 1px) rotate(0deg);

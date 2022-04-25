@@ -53,11 +53,6 @@ export class JobExecutionStatusSummaryComponent implements OnInit, OnDestroy {
     });
   }
 
-  ngOnDestroy() {
-    this.unsubscribe.next();
-    this.unsubscribe.complete();
-  }
-
   getJobByExecutionStatusSummary() {
     this.currentlyStatusLoading = true;
     this.workhorseService
@@ -85,5 +80,10 @@ export class JobExecutionStatusSummaryComponent implements OnInit, OnDestroy {
 
   navigateToJob(job: Job) {
     this.router.navigate([`jobs/${job.id}`]);
+  }
+
+  ngOnDestroy() {
+    this.unsubscribe.next();
+    this.unsubscribe.complete();
   }
 }

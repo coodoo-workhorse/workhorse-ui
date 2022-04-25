@@ -1,9 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { JobThread } from 'src/services/job-thread.model';
 import { WorkhorseConfig } from 'src/services/workhorseConfig.model';
 import { Config } from '../../../services/config.model';
 import { ConfigService } from '../../../services/config.service';
+import { RefreshIntervalService } from '../../../services/refresh-interval.service';
+import { RefreshService } from '../../../services/refresh.service';
 import { TimeZones } from '../../../services/time-zones.model';
 
 @Component({
@@ -11,7 +15,7 @@ import { TimeZones } from '../../../services/time-zones.model';
   templateUrl: './config.component.html',
   styleUrls: ['./config.component.css']
 })
-export class ConfigComponent implements OnInit {
+export class ConfigComponent implements OnInit, OnDestroy {
   config: WorkhorseConfig;
   workhorseVersion: string;
   timezones: TimeZones;
@@ -38,7 +42,10 @@ export class ConfigComponent implements OnInit {
     'minutesUntilCleanup'
   ];
 
-  constructor(private configService: ConfigService, private toastrService: ToastrService) {}
+  private unsubscribe = new Subject<void>();
+
+  constructor(private configService: ConfigService, private toastrService: ToastrService,    private refreshIntervalService: RefreshIntervalService,
+    private refreshService: RefreshService) {}
 
   ngOnInit() {
     this.loading = true;
@@ -46,6 +53,14 @@ export class ConfigComponent implements OnInit {
     this.loadConfig();
     this.configService.getTimeZones().subscribe((timezones: TimeZones) => {
       this.timezones = timezones;
+    });
+
+    this.refreshIntervalService.refreshIntervalChanged$.pipe(takeUntil(this.unsubscribe)).subscribe(() => {
+      this.loadConfig();
+    });
+
+    this.refreshService.refreshChanged$.pipe(takeUntil(this.unsubscribe)).subscribe(() => {
+      this.loadConfig();
     });
   }
 
@@ -81,5 +96,10 @@ export class ConfigComponent implements OnInit {
         this.toastrService.error(`Could not change <strong>${name}</strong><br>from <i>${oldValue}</i><br>to <i>${newValue}</i>!`);
       }
     );
+  }
+
+  ngOnDestroy() {
+    this.unsubscribe.next();
+    this.unsubscribe.complete();
   }
 }

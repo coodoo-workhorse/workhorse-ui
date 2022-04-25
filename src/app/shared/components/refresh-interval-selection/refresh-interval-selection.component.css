@@ -7,10 +7,10 @@
 }
 
 @keyframes blink-animation {
-  0% { background-color: white; border-color: white; }
-  20% { background-color: #f7c575; border-color: #faa31b; }
-  40% { background-color: #faa31b; border-color: #faa31b; }
-  60% { background-color: #faa31b; border-color: #faa31b; }
-  80% { background-color: #f7c575; border-color: #faa31b; }
-  100% { background-color: white; border-color: #6c757d; color: #6c757d }
+  0% { color: white; border-color: white; }
+  20% { color: #f7c575; border-color: #faa31b; }
+  40% { color: #faa31b; border-color: #faa31b; }
+  60% { color: #faa31b; border-color: #faa31b; }
+  80% { color: #f7c575; border-color: #faa31b; }
+  100% { color: white; border-color: #6c757d; color: #6c757d }
 }

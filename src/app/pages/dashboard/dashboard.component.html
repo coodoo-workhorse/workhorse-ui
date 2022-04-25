@@ -1,129 +1,96 @@
-<div class="row">
-  <div [ngClass]="lastExecutionsViewEnabled ? 'col-12 col-xl-8' : 'col-12'" class="mb-3">
-    <div class="card h-100">
-      <div class="card-header">
-        <div class="d-flex justify-content-between">
-          <div>
-            <h4 class="card-title d-inline-block mr-3">
-              Workhorse <span>is {{ !loading ? (workhorseStatus ? 'running' : 'stopped') : 'loading' }}</span>
-            </h4>
-            <img *ngIf="workhorseStatus" class="workhorse-logo" [ngClass]="{ running: workhorseStatus }" src="assets/workhorse.png" />
-            <img *ngIf="!workhorseStatus" class="workhorse-logo" [ngClass]="{ running: workhorseStatus }" src="assets/horse-10.png" />
-          </div>
-          <div class="btn-group">
-            <refresh-interval-selection></refresh-interval-selection>
-            <refresh-button [refreshing]="loading" [global]="true"> </refresh-button>
-          </div>
-        </div>
-
-        <button
-          *ngIf="!loading"
-          class="btn d-inline-block"
-          [ngClass]="workhorseStatus ? 'border-danger text-danger' : 'btn-primary'"
-          (click)="workhorseStatus ? stopWorkhorse() : startWorkhorse()"
-        >
-          <i class="ion" [ngClass]="workhorseStatus ? 'ion-md-square' : 'ion-ios-play'"></i
-          ><span class="ml-2">{{ workhorseStatus ? 'Stop' : 'Start' }}</span>
-        </button>
-
-        <loading *ngIf="loading" class="d-inline-block"></loading>
-      </div>
-
-      <div class="card-body d-flex justify-content-between p-3">
-        <div class="d-flex align-items-end">
-          <div *ngIf="jobStatusCount">
-            <strong>{{ jobStatusCount.total }} Jobs</strong>
-            <div>
-              <job-status
-                [hidden]="jobStatusCount.active === 0"
-                [status]="'ACTIVE'"
-                [count]="jobStatusCount.active"
-                class="mr-2"
-              ></job-status>
-              <job-status
-                [hidden]="jobStatusCount.inactive === 0"
-                [status]="'INACTIVE'"
-                [count]="jobStatusCount.inactive"
-                class="mr-2"
-              ></job-status>
-              <job-status [hidden]="jobStatusCount.error === 0" [status]="'ERROR'" [count]="jobStatusCount.error" class="ml-2"></job-status>
-              <job-status
-                [hidden]="jobStatusCount.noWorker === 0"
-                [status]="'NO_WORKER'"
-                [count]="jobStatusCount.noWorker"
-                class="mr-2"
-              ></job-status>
-            </div>
-          </div>
-        </div>
-
-        <div class="d-flex align-items-end">
-          <div class="btn-group icon-btn-group" role="group">
-            <button
-              class="btn btn-outline-secondary"
-              (click)="lastExecutionsViewEnabled = !lastExecutionsViewEnabled; saveDashboardView()"
-              ngbPopover="Show last executions"
-              triggers="mouseenter:mouseleave"
-              [class.active]="lastExecutionsViewEnabled"
-            >
-              <i class="ion ion-ios-pie"></i>
-            </button>
-            <button
-              class="btn btn-outline-secondary"
-              (click)="jobsViewEnabled = !jobsViewEnabled; saveDashboardView()"
-              ngbPopover="Show currently queued or running"
-              triggers="mouseenter:mouseleave"
-              [class.active]="jobsViewEnabled"
-            >
-              <i class="ion ion-ios-list"></i>
-            </button>
-            <button
-              class="btn btn-outline-secondary"
-              (click)="logsViewEnabled = !logsViewEnabled; saveDashboardView()"
-              ngbPopover="Show Logs"
-              triggers="mouseenter:mouseleave"
-              [class.active]="logsViewEnabled"
-            >
-              <i class="ion ion-ios-document"></i>
-            </button>
-            <button
-              class="btn btn-outline-secondary"
-              (click)="threadsViewEnabled = !threadsViewEnabled; saveDashboardView()"
-              ngbPopover="Show Threads"
-              triggers="mouseenter:mouseleave"
-              [class.active]="threadsViewEnabled"
-            >
-              <i class="ion ion-ios-pulse"></i>
-            </button>
-          </div>
-        </div>
-      </div>
+<div class="d-flex justify-content-between mb-3">
+  <div *ngIf="statusService.running === undefined" class="d-flex align-items-center">
+    <small class="text-muted"> Workhorse status is reqeusted...</small>
+  </div>
+  <div *ngIf="statusService.running !== undefined" class="d-flex align-items-center">
+    <small class="text-muted font-weight-bold">
+      Workhorse is {{ statusService.running ? 'running' : 'stopped with' }} {{ jobStatusCount?.total }} jobs:</small
+    >
+    <div class="ml-2 arends-dirty-hack">
+      <job-status *ngIf="jobStatusCount?.active > 0" [status]="'ACTIVE'" [count]="jobStatusCount?.active" class="mr-2"></job-status>
+      <job-status *ngIf="jobStatusCount?.inactive > 0" [status]="'INACTIVE'" [count]="jobStatusCount?.inactive" class="mr-2"></job-status>
+      <job-status *ngIf="jobStatusCount?.error > 0" [status]="'ERROR'" [count]="jobStatusCount?.error" class="mr-2"></job-status>
+      <job-status *ngIf="jobStatusCount?.noWorker > 0" [status]="'NO_WORKER'" [count]="jobStatusCount?.noWorker" class="mr-2"></job-status>
     </div>
   </div>
-  <div *ngIf="!initialLoading && lastExecutionsViewEnabled" class="col-12 col-xl-4 mb-3">
+
+  <!-- Action-Buttons -->
+  <div class="d-flex align-items-end">
+    <div class="btn-group icon-btn-group" role="group">
+      <button
+        class="btn btn-outline-secondary"
+        (click)="logsViewEnabled = !logsViewEnabled; saveDashboardView()"
+        ngbPopover="Show Logs"
+        triggers="mouseenter:mouseleave"
+        [class.active]="logsViewEnabled"
+      >
+        <i class="ion ion-ios-document"></i>
+      </button>
+      <button
+        class="btn btn-outline-secondary"
+        (click)="threadsViewEnabled = !threadsViewEnabled; saveDashboardView()"
+        ngbPopover="Show Threads"
+        triggers="mouseenter:mouseleave"
+        [class.active]="threadsViewEnabled"
+      >
+        <i class="ion ion-ios-pulse"></i>
+      </button>
+      <button
+        class="btn btn-outline-secondary"
+        (click)="lastExecutionsViewEnabled = !lastExecutionsViewEnabled; saveDashboardView()"
+        ngbPopover="Show last executions"
+        triggers="mouseenter:mouseleave"
+        [class.active]="lastExecutionsViewEnabled"
+      >
+        <i class="ion ion-ios-pie"></i>
+      </button>
+      <button
+        class="btn btn-outline-secondary"
+        (click)="jobsViewEnabled = !jobsViewEnabled; saveDashboardView()"
+        ngbPopover="Show currently queued or running"
+        triggers="mouseenter:mouseleave"
+        [class.active]="jobsViewEnabled"
+      >
+        <i class="ion ion-ios-list"></i>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!--  Dashboard-Panels -->
+<div class="dashboard-row">
+  <div *ngIf="logsViewEnabled">
+    <log-text [limit]="10"></log-text>
+  </div>
+  <div *ngIf="threadsViewEnabled">
+    <app-threads></app-threads>
+  </div>
+  <div *ngIf="lastExecutionsViewEnabled">
     <execution-count-pie-chart></execution-count-pie-chart>
   </div>
 </div>
 
-<div *ngIf="!initialLoading && jobsViewEnabled" class="row">
-  <div class="col-12 col-lg-6 col-xl-4 mb-3">
-    <job-execution-status-summary [status]="'PLANNED'"> </job-execution-status-summary>
+<div *ngIf="jobsViewEnabled">
+  <div class="dashboard-row">
+    <div>
+      <job-execution-status-summary [status]="'PLANNED'"> </job-execution-status-summary>
+    </div>
+    <div>
+      <job-execution-status-summary [status]="'QUEUED'"> </job-execution-status-summary>
+    </div>
+    <div>
+      <job-execution-status-summary [status]="'RUNNING'"> </job-execution-status-summary>
+    </div>
   </div>
-  <div class="col-12 col-lg-6 col-xl-4 mb-3">
-    <job-execution-status-summary [status]="'QUEUED'"> </job-execution-status-summary>
-  </div>
-  <div class="col-12 col-lg-6 col-xl-4 mb-3">
-    <job-execution-status-summary [status]="'RUNNING'"> </job-execution-status-summary>
-  </div>
-  <div class="col-12 col-lg-6 col-xl-4 mb-3">
-    <job-execution-status-summary [status]="'ABORTED'"> </job-execution-status-summary>
-  </div>
-  <div class="col-12 col-lg-6 col-xl-4 mb-3">
-    <job-execution-status-summary [status]="'FINISHED'"> </job-execution-status-summary>
-  </div>
-  <div class="col-12 col-lg-6 col-xl-4 mb-3">
-    <job-execution-status-summary [status]="'FAILED'"> </job-execution-status-summary>
+  <div class="dashboard-row">
+    <div>
+      <job-execution-status-summary [status]="'ABORTED'"> </job-execution-status-summary>
+    </div>
+    <div>
+      <job-execution-status-summary [status]="'FINISHED'"> </job-execution-status-summary>
+    </div>
+    <div>
+      <job-execution-status-summary [status]="'FAILED'"> </job-execution-status-summary>
+    </div>
   </div>
 </div>
-<log-text *ngIf="!initialLoading && logsViewEnabled" [limit]="10"></log-text>
-<app-threads *ngIf="!initialLoading && threadsViewEnabled"></app-threads>

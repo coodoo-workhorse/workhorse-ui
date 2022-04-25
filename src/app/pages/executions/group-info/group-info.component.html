@@ -4,7 +4,7 @@
       <span *ngIf="batchId">Batch {{ batchId }}</span>
       <span *ngIf="chainId">Chain {{ chainId }}</span>
     </h4>
-    <refresh-button class="refresh d-inline-block" (click)="init()" [refreshing]="reloading">
+    <refresh-button class="refresh d-inline-block" (click)="init()" [refreshing]="loading">
     </refresh-button>
   </div>
 

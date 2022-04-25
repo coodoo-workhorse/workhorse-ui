@@ -1,14 +1,18 @@
 import { Location } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { ModalComponent } from 'src/app/shared/components/modal/modal.component';
 import { ExecutionLog } from 'src/services/execution-log.model';
 import { Execution } from 'src/services/execution.model';
 import { Job } from 'src/services/job.model';
 import { ExecutionService } from '../../../../services/execution.service';
 import { JobStore } from '../../../../services/job.store';
+import { RefreshIntervalService } from '../../../../services/refresh-interval.service';
+import { RefreshService } from '../../../../services/refresh.service';
 import { CreateExecutionComponent } from '../create-execution/create-execution.component';
 
 @Component({
@@ -17,7 +21,7 @@ import { CreateExecutionComponent } from '../create-execution/create-execution.c
   templateUrl: './execution.component.html',
   styleUrls: ['./execution.component.css']
 })
-export class ExecutionComponent implements OnInit {
+export class ExecutionComponent implements OnInit, OnDestroy {
   executionId: number;
   jobId: number;
   execution: Execution;
@@ -26,6 +30,7 @@ export class ExecutionComponent implements OnInit {
   loading = true;
   reloading: boolean;
 
+  private unsubscribe = new Subject<void>();
   private config: any = { size: 'md' };
 
   constructor(
@@ -35,18 +40,35 @@ export class ExecutionComponent implements OnInit {
     private executionService: ExecutionService,
     private toastrService: ToastrService,
     private location: Location,
-    private modalService: NgbModal
+    private modalService: NgbModal,
+    private refreshIntervalService: RefreshIntervalService,
+    private refreshService: RefreshService
   ) {}
 
   ngOnInit() {
     this.executionId = this.activatedRoute.snapshot.params.executionId;
     this.jobId = this.activatedRoute.snapshot.params.jobId;
+
+    this.refreshIntervalService.refreshIntervalChanged$
+    .pipe(takeUntil(this.unsubscribe))
+    .subscribe(() => {
+      this.loadExecution();
+    })
+
+    this.refreshService.refreshChanged$
+    .pipe(takeUntil(this.unsubscribe))
+    .subscribe(() => {
+      this.loadExecution();
+    })
+
     this.loadExecution();
   }
 
   loadExecution() {
     this.reloading = true;
-    this.executionService.getExecution(this.jobId, this.executionId).subscribe((execution: Execution) => {
+    this.executionService.getExecution(this.jobId, this.executionId)
+    .pipe(takeUntil(this.unsubscribe))
+    .subscribe((execution: Execution) => {
       this.execution = execution;
       // FIXME: timeline neu rendern
       if (!this.job) {
@@ -61,7 +83,9 @@ export class ExecutionComponent implements OnInit {
       }
     });
 
-    this.executionService.getExecutionLog(this.jobId, this.executionId).subscribe((executionLog: ExecutionLog) => {
+    this.executionService.getExecutionLog(this.jobId, this.executionId)
+    .pipe(takeUntil(this.unsubscribe))
+    .subscribe((executionLog: ExecutionLog) => {
       this.executionLog = executionLog;
     });
   }
@@ -88,7 +112,9 @@ export class ExecutionComponent implements OnInit {
     this.execution.status = 'ABORTED';
     this.execution.updatedAt = new Date();
 
-    this.executionService.updateJobExecution(this.execution.jobId, this.execution).subscribe(
+    this.executionService.updateJobExecution(this.execution.jobId, this.execution)
+    .pipe(takeUntil(this.unsubscribe))
+    .subscribe(
       (execution: Execution) => {
         this.toastrService.info('Abort job execution');
         this.execution = execution;
@@ -107,7 +133,9 @@ export class ExecutionComponent implements OnInit {
     modalRef.result.then(
       closeResult => {
         if (closeResult) {
-          this.executionService.redoJobExecution(this.execution.jobId, this.execution.id).subscribe(
+          this.executionService.redoJobExecution(this.execution.jobId, this.execution.id)
+          .pipe(takeUntil(this.unsubscribe))
+          .subscribe(
             (execution: Execution) => {
               this.toastrService.info('Redo job execution');
               this.execution = execution;
@@ -138,5 +166,10 @@ export class ExecutionComponent implements OnInit {
 
   navigateBack() {
     this.location.back();
+  }
+
+  ngOnDestroy(): void {
+    this.unsubscribe.next();
+    this.unsubscribe.complete();
   }
 }

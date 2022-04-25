@@ -395,7 +395,9 @@
   </figure>
 </div>
 
-<log-text *ngIf="logsViewEnabled && !hiddeAdvancedFunction" [jobId]="jobId" [limit]="50"></log-text>
+<div *ngIf="logsViewEnabled && !hiddeAdvancedFunction" class="mb-3">
+  <log-text [jobId]="jobId" [limit]="50"></log-text>
+</div>
 
 <executions *ngIf="executionsViewEnabled && !hiddeAdvancedFunction" [embedded]="true" [hideParameters]="!job?.parametersClassName">
 </executions>

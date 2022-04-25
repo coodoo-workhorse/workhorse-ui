@@ -1,3 +1,5 @@
+import { RefreshService } from './../../../../services/refresh.service';
+import { RefreshIntervalService } from './../../../../services/refresh-interval.service';
 import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -12,7 +14,7 @@ import { CreateExecutionComponent } from '../../executions/create-execution/crea
 
 @Component({
   // tslint:disable-next-line: component-selector
-  selector: 'execution',
+  selector: 'job',
   templateUrl: './job.component.html',
   styleUrls: ['./job.component.css']
 })
@@ -36,17 +38,26 @@ export class JobComponent implements OnInit {
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    private workhorseService: WorkhorseService,
     private jobService: JobService,
     private toastrService: ToastrService,
     private location: Location,
     private modalService: NgbModal,
-    private cookieService: CookieService
+    private cookieService: CookieService,
+    private refreshIntervalService: RefreshIntervalService,
+    private refreshService: RefreshService
   ) {
     this.config = { size: 'lg' };
   }
 
   ngOnInit() {
+
+    this.refreshIntervalService.refreshIntervalChanged$.subscribe(() => {
+      this.loadJob();
+    })
+    this.refreshService.refreshChanged$.subscribe(() => {
+      this.loadJob();
+    })
+
     this.rebuildJobView();
     this.jobId = this.route.snapshot.params.jobId;
     this.loadJob();

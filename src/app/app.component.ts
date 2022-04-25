@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CooTableConfig, CooTableService } from '@coodoo/coo-table';
 import { Config } from 'protractor';
 import { ConfigService } from '../services/config.service';
+import { StatusService } from '../services/status.service';
 
 @Component({
   selector: 'app-root',
@@ -17,7 +18,8 @@ export class AppComponent implements OnInit {
 
   constructor(
     private configService: ConfigService,
-    private cooTableService: CooTableService
+    private cooTableService: CooTableService,
+    public statusService: StatusService,
   ) {
     const defaultCooTableConfig = new CooTableConfig();
     defaultCooTableConfig.translations.filterText.placeholder = '';
@@ -32,4 +34,6 @@ export class AppComponent implements OnInit {
       this.persistenceVersion = config.workhorseConfig.persistenceVersion;
     });
   }
+
+
 }

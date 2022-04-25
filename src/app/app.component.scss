@@ -11,10 +11,22 @@
   line-height: 1;
 }
 
+.navbar-nav .nav-link {
+  font-size: large;
+}
+
 .random-workhorse {
   width: 60px;
   height: 60px;
   margin: -10px;
+}
+
+.status-btn {
+  height: 36px;
+}
+
+::ng-deep refresh-interval-selection button {
+  margin-right: -1px !important;
 }
 
 /* Filter-List Styling */

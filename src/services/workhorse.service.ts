@@ -2,16 +2,14 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { JobExecutionStatusSummaries } from './job-execution-status-summaries.model';
-import { JobStatusCount } from './job-status-count.model';
 import { JobThread } from './job-thread.model';
-import { Job } from './job.model';
 import { RestConfig } from './rest.config';
 
 @Injectable()
 export class WorkhorseService {
   constructor(private http: HttpClient) { }
 
-  getWorkhorseStatus(): Observable<boolean> {
+  isRunning(): Observable<boolean> {
     return this.http.get<boolean>(`${RestConfig.apiUrl}/is-running`);
   }
 

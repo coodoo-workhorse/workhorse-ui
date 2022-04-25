@@ -114,8 +114,9 @@ a {
 }
 .btn-primary:active,
 .btn-primary.active {
-  background-color: #977758;
-  border-color: #917254;
+  background-color: #977758 !important;
+  border-color: #917254 !important;
+  box-shadow: 0 0 0 0.2rem #b2967a80 !important;
 }
 .btn-primary.disabled,
 .btn-primary[disabled],

@@ -1,12 +1,14 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CooTableListingService, ListingParameters, ListingResult, Metadata } from '@coodoo/coo-table';
-import { Subscription } from 'rxjs';
-import { takeWhile } from 'rxjs/operators';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { Job } from 'src/services/job.model';
 import { JobStore } from '../../../services/job.store';
 import { Log } from '../../../services/log.model';
 import { LogService } from '../../../services/logs.service';
+import { RefreshIntervalService } from '../../../services/refresh-interval.service';
+import { RefreshService } from '../../../services/refresh.service';
 
 @Component({
   selector: 'app-logs',
@@ -25,8 +27,7 @@ export class LogsComponent implements OnInit, OnDestroy {
   hostname: boolean;
   status: Array<string> = ['ACTIVE', 'INACTIVE', 'ERROR', 'NO_WORKER'];
 
-  private alive = true;
-  private listingServiceSubscription: Subscription;
+  private unsubscribe = new Subject<void>();
 
   constructor(
     private router: Router,
@@ -34,7 +35,9 @@ export class LogsComponent implements OnInit, OnDestroy {
     private jobStore: JobStore,
     private logService: LogService,
     private listingParameters: ListingParameters,
-    public cooTableListingService: CooTableListingService
+    public cooTableListingService: CooTableListingService,
+    private refreshIntervalService: RefreshIntervalService,
+    private refreshService: RefreshService
   ) {}
 
   ngOnInit() {
@@ -51,7 +54,15 @@ export class LogsComponent implements OnInit, OnDestroy {
         this.job = this.jobStore.getJob(+this.jobId);
       });
     }
-    this.listingServiceSubscription = this.cooTableListingService.list$.subscribe(() => {
+    this.cooTableListingService.list$.pipe(takeUntil(this.unsubscribe)).subscribe(() => {
+      this.list();
+    });
+
+    this.refreshIntervalService.refreshIntervalChanged$.pipe(takeUntil(this.unsubscribe)).subscribe(() => {
+      this.list();
+    });
+
+    this.refreshService.refreshChanged$.pipe(takeUntil(this.unsubscribe)).subscribe(() => {
       this.list();
     });
   }
@@ -61,7 +72,7 @@ export class LogsComponent implements OnInit, OnDestroy {
     this.rows = [];
     this.logService
       .getJobLogs(this.listingParameters)
-      .pipe(takeWhile(() => this.alive))
+      .pipe(takeUntil(this.unsubscribe))
       .subscribe((listingResult: ListingResult<Log>) => {
         this.rows = listingResult.results;
         this.metadata = listingResult.metadata;
@@ -74,12 +85,6 @@ export class LogsComponent implements OnInit, OnDestroy {
         }
         this.loading = false;
       });
-
-  }
-
-  ngOnDestroy() {
-    this.alive = false;
-    this.listingServiceSubscription.unsubscribe();
   }
 
   showLog(log: Log) {
@@ -91,5 +96,10 @@ export class LogsComponent implements OnInit, OnDestroy {
 
   showJob(log: Log) {
     this.router.navigate([`jobs/${log.jobId}`]);
+  }
+
+  ngOnDestroy() {
+    this.unsubscribe.next();
+    this.unsubscribe.complete();
   }
 }
