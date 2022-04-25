@@ -4,6 +4,7 @@
   triggers="mouseenter:mouseleave"
   [class.disabled]="refreshing"
   placement="left"
+  (click)="refresh()"
 >
   <i class="ion ion-md-refresh loading" [class.refreshing]="refreshing"></i><span *ngIf="text" class="ml-3">{{ text }}</span>
 </button>

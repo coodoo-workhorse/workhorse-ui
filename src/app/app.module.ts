@@ -52,6 +52,7 @@ import { ScheduleInfoComponent } from './shared/components/schedule-editor/sched
 import { ScheduleTimelineComponent } from './shared/components/schedule-timeline/schedule-timeline.component';
 import { SwitchComponent } from './shared/components/switch/switch.component';
 import { ThreadsComponent } from './shared/components/threads/threads.component';
+import { RefreshIntervalSelectionComponent } from './shared/components/refresh-interval-selection/refresh-interval-selection.component';
 import { JavaClassNamePipe } from './shared/pipes/java-class-name.pipe';
 import { JobDurationPipe } from './shared/pipes/job-duration.pipe';
 import { TimeAgoStaticPipe } from './shared/pipes/time-ago-static.pipe';
@@ -70,6 +71,7 @@ export function appInit(jobStore: JobStore) {
     ExecutionTimelineComponent,
     LoadingComponent,
     RefreshButtonComponent,
+    RefreshIntervalSelectionComponent,
     JobMemoryChartComponent,
     JobExecutionStatusComponent,
     CreateExecutionComponent,
