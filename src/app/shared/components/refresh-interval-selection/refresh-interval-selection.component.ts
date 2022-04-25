@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
 import { RefreshIntervalService } from 'src/services/refresh-interval.service';
 @Component({
-  selector: 'time-interval-button',
-  templateUrl: './time-interval-button.component.html',
-  styleUrls: ['./time-interval-button.component.css']
+  selector: 'refresh-interval-selection',
+  templateUrl: './refresh-interval-selection.component.html',
+  styleUrls: ['./refresh-interval-selection.component.css']
 })
-export class TimeIntervalButtonComponent {
+export class RefreshIntervalSelectionComponent {
   intervals: Map<number, string> = new Map([
     [0, 'Off'],
     [10000, '10 seconds'],

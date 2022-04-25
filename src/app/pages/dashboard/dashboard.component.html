@@ -11,7 +11,7 @@
             <img *ngIf="!workhorseStatus" class="workhorse-logo" [ngClass]="{ running: workhorseStatus }" src="assets/horse-10.png" />
           </div>
           <div class="btn-group">
-            <time-interval-button></time-interval-button>
+            <refresh-interval-selection></refresh-interval-selection>
             <refresh-button [refreshing]="loading" [global]="true"> </refresh-button>
           </div>
         </div>
