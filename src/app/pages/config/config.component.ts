@@ -1,14 +1,14 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { JobThread } from 'src/services/job-thread.model';
 import { WorkhorseConfig } from 'src/services/workhorseConfig.model';
 import { Config } from '../../../services/config.model';
 import { ConfigService } from '../../../services/config.service';
 import { RefreshIntervalService } from '../../../services/refresh-interval.service';
 import { RefreshService } from '../../../services/refresh.service';
 import { TimeZones } from '../../../services/time-zones.model';
+import { WorkhorseCookieService } from '../../../services/workhorse-cookie.service';
 
 @Component({
   selector: 'app-config',
@@ -44,8 +44,13 @@ export class ConfigComponent implements OnInit, OnDestroy {
 
   private unsubscribe = new Subject<void>();
 
-  constructor(private configService: ConfigService, private toastrService: ToastrService,    private refreshIntervalService: RefreshIntervalService,
-    private refreshService: RefreshService) {}
+  constructor(
+    private configService: ConfigService,
+    private toastrService: ToastrService,
+    private refreshIntervalService: RefreshIntervalService,
+    private refreshService: RefreshService,
+    public workhorseCookieService: WorkhorseCookieService
+  ) {}
 
   ngOnInit() {
     this.loading = true;

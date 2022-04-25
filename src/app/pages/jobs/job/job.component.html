@@ -1,5 +1,8 @@
 <div class="row mb-3">
-  <div [class.col-8]="lastExecutionsViewEnabled" [class.col-12]="!lastExecutionsViewEnabled">
+  <div
+    [class.col-8]="workhorseCookieService.cookie.jobPanelLastExecutions"
+    [class.col-12]="!workhorseCookieService.cookie.jobPanelLastExecutions"
+  >
     <div class="card h-100">
       <div class="card-header d-flex justify-content-between px-3 pt-3 pb-0">
         <h4 *ngIf="loading || !job" class="card-title d-inline-block text-truncate">Job {{ jobId }}</h4>
@@ -15,28 +18,30 @@
               <div class="btn-group icon-btn-group ml-2" role="group">
                 <button
                   class="btn btn-outline-secondary"
-                  (click)="lastExecutionsViewEnabled = !lastExecutionsViewEnabled; saveJobView()"
+                  (click)="
+                    workhorseCookieService.setCookieValue('jobPanelLastExecutions', !workhorseCookieService.cookie.jobPanelLastExecutions)
+                  "
                   ngbPopover="Show last executions"
                   triggers="mouseenter:mouseleave"
-                  [class.active]="lastExecutionsViewEnabled"
+                  [class.active]="workhorseCookieService.cookie.jobPanelLastExecutions"
                 >
                   <i class="ion ion-ios-pie"></i>
                 </button>
                 <button
                   class="btn btn-outline-secondary"
-                  (click)="executionsViewEnabled = !executionsViewEnabled; saveJobView()"
+                  (click)="workhorseCookieService.setCookieValue('jobPanelExecutions', !workhorseCookieService.cookie.jobPanelExecutions)"
                   ngbPopover="Show executions list"
                   triggers="mouseenter:mouseleave"
-                  [class.active]="executionsViewEnabled"
+                  [class.active]="workhorseCookieService.cookie.jobPanelExecutions"
                 >
                   <i class="ion ion-ios-list"></i>
                 </button>
                 <button
                   class="btn btn-outline-secondary"
-                  (click)="logsViewEnabled = !logsViewEnabled; saveJobView()"
+                  (click)="workhorseCookieService.setCookieValue('jobPanelLogs', !workhorseCookieService.cookie.jobPanelLogs)"
                   ngbPopover="Show logs"
                   triggers="mouseenter:mouseleave"
-                  [class.active]="logsViewEnabled"
+                  [class.active]="jobPanelLogs"
                 >
                   <i class="ion ion-ios-document"></i>
                 </button>
@@ -383,7 +388,7 @@
     </div>
   </div>
 
-  <div *ngIf="lastExecutionsViewEnabled && !hiddeAdvancedFunction" class="col-4 no-col-padding-left">
+  <div *ngIf="workhorseCookieService.cookie.jobPanelLastExecutions && !hiddeAdvancedFunction" class="col-4 no-col-padding-left">
     <execution-count-pie-chart [jobId]="jobId"></execution-count-pie-chart>
   </div>
 </div>
@@ -395,9 +400,13 @@
   </figure>
 </div>
 
-<div *ngIf="logsViewEnabled && !hiddeAdvancedFunction" class="mb-3">
+<div *ngIf="workhorseCookieService.cookie.jobPanelLogs && !hiddeAdvancedFunction" class="mb-3">
   <log-text [jobId]="jobId" [limit]="50"></log-text>
 </div>
 
-<executions *ngIf="executionsViewEnabled && !hiddeAdvancedFunction" [embedded]="true" [hideParameters]="!job?.parametersClassName">
+<executions
+  *ngIf="workhorseCookieService.cookie.jobPanelExecutions && !hiddeAdvancedFunction"
+  [embedded]="true"
+  [hideParameters]="!job?.parametersClassName"
+>
 </executions>

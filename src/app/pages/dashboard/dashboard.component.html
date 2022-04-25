@@ -19,37 +19,44 @@
     <div class="btn-group icon-btn-group" role="group">
       <button
         class="btn btn-outline-secondary"
-        (click)="logsViewEnabled = !logsViewEnabled; saveDashboardView()"
+        (click)="workhorseCookieService.setCookieValue('dashboardPanelLogs', !workhorseCookieService.cookie.dashboardPanelLogs)"
         ngbPopover="Show Logs"
         triggers="mouseenter:mouseleave"
-        [class.active]="logsViewEnabled"
+        [class.active]="workhorseCookieService.cookie.dashboardPanelLogs"
       >
         <i class="ion ion-ios-document"></i>
       </button>
       <button
         class="btn btn-outline-secondary"
-        (click)="threadsViewEnabled = !threadsViewEnabled; saveDashboardView()"
+        (click)="workhorseCookieService.setCookieValue('dashboardPanelThreads', !workhorseCookieService.cookie.dashboardPanelThreads)"
         ngbPopover="Show Threads"
         triggers="mouseenter:mouseleave"
-        [class.active]="threadsViewEnabled"
+        [class.active]="workhorseCookieService.cookie.dashboardPanelThreads"
       >
         <i class="ion ion-ios-pulse"></i>
       </button>
       <button
         class="btn btn-outline-secondary"
-        (click)="lastExecutionsViewEnabled = !lastExecutionsViewEnabled; saveDashboardView()"
+        (click)="
+          workhorseCookieService.setCookieValue('dashboardPanelLastExecutions', !workhorseCookieService.cookie.dashboardPanelLastExecutions)
+        "
         ngbPopover="Show last executions"
         triggers="mouseenter:mouseleave"
-        [class.active]="lastExecutionsViewEnabled"
+        [class.active]="workhorseCookieService.cookie.dashboardPanelLastExecutions"
       >
         <i class="ion ion-ios-pie"></i>
       </button>
       <button
         class="btn btn-outline-secondary"
-        (click)="jobsViewEnabled = !jobsViewEnabled; saveDashboardView()"
-        ngbPopover="Show currently queued or running"
+        (click)="
+          workhorseCookieService.setCookieValue(
+            'dashboardPanelExecutionsStatusSummary',
+            !workhorseCookieService.cookie.dashboardPanelExecutionsStatusSummary
+          )
+        "
+        ngbPopover="Show execution status summaries"
         triggers="mouseenter:mouseleave"
-        [class.active]="jobsViewEnabled"
+        [class.active]="workhorseCookieService.cookie.dashboardPanelExecutionsStatusSummary"
       >
         <i class="ion ion-ios-list"></i>
       </button>
@@ -59,18 +66,18 @@
 
 <!--  Dashboard-Panels -->
 <div class="dashboard-row">
-  <div *ngIf="logsViewEnabled">
+  <div *ngIf="workhorseCookieService.cookie.dashboardPanelLogs">
     <log-text [limit]="10"></log-text>
   </div>
-  <div *ngIf="threadsViewEnabled">
+  <div *ngIf="workhorseCookieService.cookie.dashboardPanelThreads">
     <app-threads></app-threads>
   </div>
-  <div *ngIf="lastExecutionsViewEnabled">
+  <div *ngIf="workhorseCookieService.cookie.dashboardPanelLastExecutions">
     <execution-count-pie-chart></execution-count-pie-chart>
   </div>
 </div>
 
-<div *ngIf="jobsViewEnabled">
+<div *ngIf="workhorseCookieService.cookie.dashboardPanelExecutionsStatusSummary">
   <div class="dashboard-row">
     <div>
       <job-execution-status-summary [status]="'PLANNED'"> </job-execution-status-summary>

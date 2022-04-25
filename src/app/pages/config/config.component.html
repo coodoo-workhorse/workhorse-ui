@@ -5,7 +5,7 @@
         <h4 class="d-inline-block">Config</h4>
         <div class="action-buttons">
           <button class="btn btn-outline-secondary action-button px-2 w-auto py-0 ml-3" (click)="edit = !edit">
-            <i class="ion ion-md-create"></i><span class="ml-2">{{ edit ? 'End edit' : 'Edit'}} mode</span>
+            <i class="ion ion-md-create"></i><span class="ml-2">{{ edit ? 'End edit' : 'Edit' }} mode</span>
           </button>
           <refresh-button class="refresh d-inline-block ml-2" (click)="loadConfig()" [refreshing]="loading"> </refresh-button>
         </div>
@@ -208,6 +208,32 @@
           <strong> Config </strong>
           <ng-container *ngFor="let item of config | keyvalue">
             <span *ngIf="!configFields.includes(item.key)">
+              <br />
+              {{ item.key }}: <span class="log-text">{{ item.value }}</span>
+            </span>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col">
+    <div class="card mb-3">
+      <div class="card-header d-flex justify-content-between p-3">
+        <h4 class="d-inline-block">Cookie</h4>
+        <div class="action-buttons">
+          <button class="btn btn-outline-secondary action-button px-2 w-auto py-0 ml-3" (click)="workhorseCookieService.resetCookie()">
+            Reset Defaults
+          </button>
+        </div>
+      </div>
+      <div *ngIf="!loading && config" class="card-body pt-0">
+        <div class="mb-3">
+          <strong>{{ workhorseCookieService.name + workhorseCookieService.version }}</strong>
+          <ng-container *ngFor="let item of workhorseCookieService.cookie | keyvalue">
+            <span>
               <br />
               {{ item.key }}: <span class="log-text">{{ item.value }}</span>
             </span>

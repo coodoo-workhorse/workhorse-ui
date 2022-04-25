@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { CookieService } from 'ngx-cookie';
 import { interval, Subject, Subscription } from 'rxjs';
+import { WorkhorseCookieService } from './workhorse-cookie.service';
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +15,7 @@ export class RefreshIntervalService {
 
   private refreshIntervalCookieName = 'wh-view-refresh-interval-v1';
 
-  constructor(private cookieService: CookieService) {
+  constructor(private workhorseCookieService: WorkhorseCookieService) {
     this.getIntervalFromCookie();
     this.startTimer();
   }
@@ -42,17 +42,10 @@ export class RefreshIntervalService {
   }
 
   saveIntervalInCookie() {
-    const cookieValue = {
-      refreshInterval: this.refreshInterval
-    };
-    this.cookieService.put(this.refreshIntervalCookieName, JSON.stringify(cookieValue));
+    this.workhorseCookieService.setCookieValue('refreshInterval', this.refreshInterval);
   }
 
   getIntervalFromCookie() {
-    const cookie = this.cookieService.get(this.refreshIntervalCookieName);
-    if (cookie) {
-      const cookieValue = JSON.parse(cookie);
-      this.refreshInterval = cookieValue.refreshInterval;
-    }
+    this.refreshInterval = this.workhorseCookieService.getWorkhorseCookie().refreshInterval;
   }
 }

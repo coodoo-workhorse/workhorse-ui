@@ -11,6 +11,7 @@ import { Job } from 'src/services/job.model';
 import { WorkhorseService } from 'src/services/workhorse.service';
 import { JobService } from '../../../../services/job.service';
 import { CreateExecutionComponent } from '../../executions/create-execution/create-execution.component';
+import { WorkhorseCookieService } from '../../../../services/workhorse-cookie.service';
 
 @Component({
   // tslint:disable-next-line: component-selector
@@ -25,15 +26,10 @@ export class JobComponent implements OnInit {
   reloading = false;
   edit = false;
 
-  lastExecutionsViewEnabled = true;
-  logsViewEnabled = false;
-  executionsViewEnabled = true;
-
   hiddeAdvancedFunction = false;
   randomWorkhorse: number;
 
   private config: NgbModalOptions;
-  private jobViewCookieName = 'wh-view-job';
 
   constructor(
     private router: Router,
@@ -42,23 +38,21 @@ export class JobComponent implements OnInit {
     private toastrService: ToastrService,
     private location: Location,
     private modalService: NgbModal,
-    private cookieService: CookieService,
     private refreshIntervalService: RefreshIntervalService,
-    private refreshService: RefreshService
+    private refreshService: RefreshService,
+    public workhorseCookieService: WorkhorseCookieService
   ) {
     this.config = { size: 'lg' };
   }
 
   ngOnInit() {
-
     this.refreshIntervalService.refreshIntervalChanged$.subscribe(() => {
       this.loadJob();
-    })
+    });
     this.refreshService.refreshChanged$.subscribe(() => {
       this.loadJob();
-    })
+    });
 
-    this.rebuildJobView();
     this.jobId = this.route.snapshot.params.jobId;
     this.loadJob();
   }
@@ -216,26 +210,5 @@ export class JobComponent implements OnInit {
     document.execCommand('copy');
     document.body.removeChild(selBox);
     this.toastrService.info(val, 'Copied to clipboard:');
-  }
-
-  /* Saves current set flags of view in cookie */
-  saveJobView() {
-    const cookieValue = {
-      lastExecutionsViewEnabled: this.lastExecutionsViewEnabled,
-      logsViewEnabled: this.logsViewEnabled,
-      executionsViewEnabled: this.executionsViewEnabled
-    };
-    this.cookieService.put(this.jobViewCookieName, JSON.stringify(cookieValue));
-  }
-
-  /* Rebuilds the view out of set flags of cookie */
-  rebuildJobView() {
-    const cookie = this.cookieService.get(this.jobViewCookieName);
-    if (cookie) {
-      const cookieValue = JSON.parse(cookie);
-      this.lastExecutionsViewEnabled = cookieValue.lastExecutionsViewEnabled;
-      this.logsViewEnabled = cookieValue.logsViewEnabled;
-      this.executionsViewEnabled = cookieValue.executionsViewEnabled;
-    }
   }
 }
