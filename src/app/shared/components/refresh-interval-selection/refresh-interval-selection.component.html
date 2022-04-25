@@ -1,0 +1,10 @@
+<div class="btn-group" ngbDropdown role="group" aria-label="Button group with nested dropdown">
+  <button class="btn btn-outline-secondary animation-blink" [ngClass]="{ blink: blinkInterval }" ngbDropdownToggle>
+    {{ intervalText }}
+  </button>
+  <div class="dropdown-menu" ngbDropdownMenu>
+    <button *ngFor="let item of intervals | keyvalue" ngbDropdownItem (click)="changeInterval(item.key, item.value)">
+      {{ item.value }}
+    </button>
+  </div>
+</div>

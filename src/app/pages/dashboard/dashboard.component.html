@@ -2,7 +2,6 @@
   <div [ngClass]="lastExecutionsViewEnabled ? 'col-12 col-xl-8' : 'col-12'" class="mb-3">
     <div class="card h-100">
       <div class="card-header">
-
         <div class="d-flex justify-content-between">
           <div>
             <h4 class="card-title d-inline-block mr-3">
@@ -11,9 +10,9 @@
             <img *ngIf="workhorseStatus" class="workhorse-logo" [ngClass]="{ running: workhorseStatus }" src="assets/workhorse.png" />
             <img *ngIf="!workhorseStatus" class="workhorse-logo" [ngClass]="{ running: workhorseStatus }" src="assets/horse-10.png" />
           </div>
-          <div class="auto-refresh d-inline-block mr-2">
-            <input type="checkbox" [(ngModel)]="workhorseStatusAutoRefresh" (change)="handleWorkhorseStatusAutoRefresh()" />
-            <label class="ml-1">Auto-Refresh Status all {{ this.refreshIntervall / 1000 }}s</label>
+          <div class="btn-group">
+            <refresh-interval-selection></refresh-interval-selection>
+            <refresh-button [refreshing]="loading" [global]="true"> </refresh-button>
           </div>
         </div>
 
@@ -28,7 +27,6 @@
         </button>
 
         <loading *ngIf="loading" class="d-inline-block"></loading>
-
       </div>
 
       <div class="card-body d-flex justify-content-between p-3">
@@ -109,55 +107,23 @@
 
 <div *ngIf="!initialLoading && jobsViewEnabled" class="row">
   <div class="col-12 col-lg-6 col-xl-4 mb-3">
-    <job-execution-status-summary
-      [status]="'PLANNED'"
-      [workhorseStatusAutoRefresh]="workhorseStatusAutoRefresh"
-      [refreshIntervall]="refreshIntervall"
-    >
-    </job-execution-status-summary>
+    <job-execution-status-summary [status]="'PLANNED'"> </job-execution-status-summary>
   </div>
   <div class="col-12 col-lg-6 col-xl-4 mb-3">
-    <job-execution-status-summary
-      [status]="'QUEUED'"
-      [workhorseStatusAutoRefresh]="workhorseStatusAutoRefresh"
-      [refreshIntervall]="refreshIntervall"
-    >
-    </job-execution-status-summary>
+    <job-execution-status-summary [status]="'QUEUED'"> </job-execution-status-summary>
   </div>
   <div class="col-12 col-lg-6 col-xl-4 mb-3">
-    <job-execution-status-summary
-      [status]="'RUNNING'"
-      [workhorseStatusAutoRefresh]="workhorseStatusAutoRefresh"
-      [refreshIntervall]="refreshIntervall"
-    >
-    </job-execution-status-summary>
+    <job-execution-status-summary [status]="'RUNNING'"> </job-execution-status-summary>
   </div>
   <div class="col-12 col-lg-6 col-xl-4 mb-3">
-    <job-execution-status-summary
-      [status]="'ABORTED'"
-      [workhorseStatusAutoRefresh]="workhorseStatusAutoRefresh"
-      [refreshIntervall]="refreshIntervall"
-    >
-    </job-execution-status-summary>
+    <job-execution-status-summary [status]="'ABORTED'"> </job-execution-status-summary>
   </div>
   <div class="col-12 col-lg-6 col-xl-4 mb-3">
-    <job-execution-status-summary
-      [status]="'FINISHED'"
-      [workhorseStatusAutoRefresh]="workhorseStatusAutoRefresh"
-      [refreshIntervall]="refreshIntervall"
-    >
-    </job-execution-status-summary>
+    <job-execution-status-summary [status]="'FINISHED'"> </job-execution-status-summary>
   </div>
   <div class="col-12 col-lg-6 col-xl-4 mb-3">
-    <job-execution-status-summary
-      [status]="'FAILED'"
-      [workhorseStatusAutoRefresh]="workhorseStatusAutoRefresh"
-      [refreshIntervall]="refreshIntervall"
-    >
-    </job-execution-status-summary>
+    <job-execution-status-summary [status]="'FAILED'"> </job-execution-status-summary>
   </div>
 </div>
-
 <log-text *ngIf="!initialLoading && logsViewEnabled" [limit]="10"></log-text>
-
 <app-threads *ngIf="!initialLoading && threadsViewEnabled"></app-threads>
