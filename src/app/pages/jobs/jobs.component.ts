@@ -6,6 +6,7 @@ import { ToastrService } from 'ngx-toastr';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Job } from 'src/services/job.model';
+import { WorkhorseCookieService } from 'src/services/workhorse-cookie.service';
 import { JobService } from '../../../services/job.service';
 import { RefreshIntervalService } from '../../../services/refresh-interval.service';
 import { RefreshService } from '../../../services/refresh.service';
@@ -21,7 +22,7 @@ import { CreateExecutionComponent } from '../executions/create-execution/create-
 export class JobsComponent implements OnInit, OnDestroy {
   rows: Array<Job> = [];
   metadata: Metadata;
-  limit = 20;
+
   activeJobs = 0;
   inactiveJobs = 0;
   loading = true;
@@ -31,7 +32,6 @@ export class JobsComponent implements OnInit, OnDestroy {
   rowSelectionEnabled = false;
   selectedRows = [];
 
-  private config: NgbModalOptions;
   private unsubscribe = new Subject<void>();
 
   constructor(
@@ -42,16 +42,19 @@ export class JobsComponent implements OnInit, OnDestroy {
     private cooTableListingService: CooTableListingService,
     private cooTableSelectionService: CooTableSelectionService,
     private refreshIntervalService: RefreshIntervalService,
-    private refreshService: RefreshService
+    private refreshService: RefreshService,
+    private workhorseCookieService: WorkhorseCookieService
   ) {
-    this.config = { size: 'lg' };
     this.cooTableSelectionService.selectedRowsChanged$.pipe(takeUntil(this.unsubscribe)).subscribe(selectedRows => {
       this.selectedRows = selectedRows;
     });
   }
 
   ngOnInit() {
-    this.cooTableListingService.setDefaultLimit(this.limit);
+    this.cooTableListingService.setMetadata({
+      limit: this.workhorseCookieService.getWorkhorseCookie().jobsListingLimit,
+      sort: this.workhorseCookieService.getWorkhorseCookie().jobsListingSort
+    } as Metadata);
 
     this.refreshIntervalService.refreshIntervalChanged$.pipe(takeUntil(this.unsubscribe)).subscribe(() => {
       this.list();
@@ -63,6 +66,11 @@ export class JobsComponent implements OnInit, OnDestroy {
 
     this.cooTableListingService.list$.pipe(takeUntil(this.unsubscribe)).subscribe(() => {
       this.list();
+    });
+
+    this.cooTableListingService.metadata$.pipe(takeUntil(this.unsubscribe)).subscribe((metadata) => {
+      this.workhorseCookieService.setCookieValue('jobsListingLimit', metadata.limit);
+      this.workhorseCookieService.setCookieValue('jobsListingSort', metadata.sort);
     });
   }
 
@@ -172,7 +180,7 @@ export class JobsComponent implements OnInit, OnDestroy {
   }
 
   createExecution(job: Job) {
-    const modalRef: NgbModalRef = this.modalService.open(CreateExecutionComponent, this.config);
+    const modalRef: NgbModalRef = this.modalService.open(CreateExecutionComponent, { size: 'lg' });
     modalRef.componentInstance.job = job;
     modalRef.result
       .then(() => {
