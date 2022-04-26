@@ -19,10 +19,7 @@ import { CreateExecutionComponent } from './create-execution/create-execution.co
   selector: 'executions',
   templateUrl: './executions.component.html',
   styleUrls: ['./executions.component.css'],
-  providers: [
-    CooTableListingService,
-    CooTableSelectionService
-  ]
+  providers: [CooTableListingService, CooTableSelectionService]
 })
 export class ExecutionsComponent implements OnInit, OnDestroy {
   @Input() embedded = false;
@@ -65,11 +62,9 @@ export class ExecutionsComponent implements OnInit, OnDestroy {
   ) {
     this.loading = true;
 
-    this.cooTableSelectionService.selectedRowsChanged$
-      .pipe(takeUntil(this.unsubscribe))
-      .subscribe(selectedRows => {
-        this.selectedRows = selectedRows;
-      });
+    this.cooTableSelectionService.selectedRowsChanged$.pipe(takeUntil(this.unsubscribe)).subscribe(selectedRows => {
+      this.selectedRows = selectedRows;
+    });
   }
 
   ngOnInit() {
@@ -85,33 +80,33 @@ export class ExecutionsComponent implements OnInit, OnDestroy {
 
     this.refreshIntervalService.refreshIntervalChanged$.pipe(takeUntil(this.unsubscribe)).subscribe(() => {
       this.list();
-    })
+    });
 
     this.refreshService.refreshChanged$.pipe(takeUntil(this.unsubscribe)).subscribe(() => {
       this.list();
-    })
+    });
 
-    this.cooTableListingService.list$
-      .pipe(takeUntil(this.unsubscribe))
-      .subscribe(() => {
-        this.list();
-      });
+    this.cooTableListingService.list$.pipe(takeUntil(this.unsubscribe)).subscribe(() => {
+      this.list();
+    });
   }
 
   list() {
     this.loading = true;
     this.rows = [];
     if (this.batchId) {
-      this.cooTableListingService.filterTable({
-        column: 'batchId',
-        value: this.batchId
-      });
+      // FIXME @klemens
+      // this.cooTableListingService.filterTable({
+      //   column: 'batchId',
+      //   value: this.batchId
+      // });
     }
     if (this.chainId) {
-      this.cooTableListingService.filterTable({
-        column: 'chainId',
-        value: this.chainId
-      });
+      // FIXME @klemens
+      // this.cooTableListingService.filterTable({
+      //   column: 'chainId',
+      //   value: this.chainId
+      // });
     }
 
     this.executionService
@@ -139,7 +134,7 @@ export class ExecutionsComponent implements OnInit, OnDestroy {
     return row.status === 'PLANNED' || row.status === 'QUEUED' || row.status === 'RUNNING';
   }
 
-  onTableChanged() { }
+  onTableChanged() {}
 
   showJob(execution: Execution) {
     this.router.navigate([`jobs/${execution.jobId}`]);
@@ -176,7 +171,7 @@ export class ExecutionsComponent implements OnInit, OnDestroy {
       .then(() => {
         this.list();
       })
-      .catch(() => { });
+      .catch(() => {});
   }
 
   abortSelectedExecutions() {
@@ -193,7 +188,7 @@ export class ExecutionsComponent implements OnInit, OnDestroy {
           this.list();
         }
       },
-      () => { }
+      () => {}
     );
   }
 
@@ -211,17 +206,20 @@ export class ExecutionsComponent implements OnInit, OnDestroy {
     row.status = 'ABORTED';
     row.updatedAt = new Date();
 
-    this.executionService.updateJobExecution(row.jobId, execution).pipe(takeUntil(this.unsubscribe)).subscribe(
-      (updatedExecution: Execution) => {
-        this.toastrService.success('Job execution with ID ' + row.id + ' aborted');
-        // hoffen, dass es klappt...
-      },
-      error => {
-        row.status = oldStatus;
-        row.updatedAt = oldUpdatedAt;
-        this.toastrService.error('Could not abort job execution with ID ' + row.id + ': ' + error.message);
-      }
-    );
+    this.executionService
+      .updateJobExecution(row.jobId, execution)
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(
+        (updatedExecution: Execution) => {
+          this.toastrService.success('Job execution with ID ' + row.id + ' aborted');
+          // hoffen, dass es klappt...
+        },
+        error => {
+          row.status = oldStatus;
+          row.updatedAt = oldUpdatedAt;
+          this.toastrService.error('Could not abort job execution with ID ' + row.id + ': ' + error.message);
+        }
+      );
   }
 
   redoSelectedExecutions() {
@@ -235,20 +233,23 @@ export class ExecutionsComponent implements OnInit, OnDestroy {
       closeResult => {
         if (closeResult) {
           for (const row of this.selectedRows) {
-            this.executionService.redoJobExecution(row.jobId, row.id).pipe(takeUntil(this.unsubscribe)).subscribe(
-              () => {
-                this.toastrService.success('Redo job execution with ID ' + row.id);
-              },
-              error => {
-                this.toastrService.error('Could not redo job execution with ID ' + row.id + ': ' + error.message);
-              }
-            );
+            this.executionService
+              .redoJobExecution(row.jobId, row.id)
+              .pipe(takeUntil(this.unsubscribe))
+              .subscribe(
+                () => {
+                  this.toastrService.success('Redo job execution with ID ' + row.id);
+                },
+                error => {
+                  this.toastrService.error('Could not redo job execution with ID ' + row.id + ': ' + error.message);
+                }
+              );
           }
           this.cooTableSelectionService.unselectAll();
           this.list();
         }
       },
-      () => { }
+      () => {}
     );
   }
 
@@ -262,18 +263,21 @@ export class ExecutionsComponent implements OnInit, OnDestroy {
     modalRef.result.then(
       closeResult => {
         if (closeResult) {
-          this.executionService.redoJobExecution(row.jobId, row.id).pipe(takeUntil(this.unsubscribe)).subscribe(
-            () => {
-              this.toastrService.success('Redo job execution with ID ' + row.id);
-              this.list();
-            },
-            error => {
-              this.toastrService.error('Could not redo job execution with ID ' + row.id + ': ' + error.message);
-            }
-          );
+          this.executionService
+            .redoJobExecution(row.jobId, row.id)
+            .pipe(takeUntil(this.unsubscribe))
+            .subscribe(
+              () => {
+                this.toastrService.success('Redo job execution with ID ' + row.id);
+                this.list();
+              },
+              error => {
+                this.toastrService.error('Could not redo job execution with ID ' + row.id + ': ' + error.message);
+              }
+            );
         }
       },
-      () => { }
+      () => {}
     );
   }
 
@@ -285,20 +289,23 @@ export class ExecutionsComponent implements OnInit, OnDestroy {
       closeResult => {
         if (closeResult) {
           for (const row of this.selectedRows) {
-            this.executionService.deleteJobExecution(row.jobId, row.id).pipe(takeUntil(this.unsubscribe)).subscribe(
-              () => {
-                this.toastrService.success('Job execution with ID ' + row.id + ' deleted');
-              },
-              error => {
-                this.toastrService.error('Could not delete job execution with ID ' + row.id + ': ' + error.message);
-              }
-            );
+            this.executionService
+              .deleteJobExecution(row.jobId, row.id)
+              .pipe(takeUntil(this.unsubscribe))
+              .subscribe(
+                () => {
+                  this.toastrService.success('Job execution with ID ' + row.id + ' deleted');
+                },
+                error => {
+                  this.toastrService.error('Could not delete job execution with ID ' + row.id + ': ' + error.message);
+                }
+              );
             this.cooTableSelectionService.unselectAll();
             this.list();
           }
         }
       },
-      () => { }
+      () => {}
     );
   }
 
@@ -308,18 +315,21 @@ export class ExecutionsComponent implements OnInit, OnDestroy {
     modalRef.result.then(
       closeResult => {
         if (closeResult) {
-          this.executionService.deleteJobExecution(row.jobId, row.id).pipe(takeUntil(this.unsubscribe)).subscribe(
-            () => {
-              this.toastrService.success('Job execution with ID ' + row.id + ' deleted');
-              this.list();
-            },
-            error => {
-              this.toastrService.error('Could not delete job execution with ID ' + row.id + ': ' + error.message);
-            }
-          );
+          this.executionService
+            .deleteJobExecution(row.jobId, row.id)
+            .pipe(takeUntil(this.unsubscribe))
+            .subscribe(
+              () => {
+                this.toastrService.success('Job execution with ID ' + row.id + ' deleted');
+                this.list();
+              },
+              error => {
+                this.toastrService.error('Could not delete job execution with ID ' + row.id + ': ' + error.message);
+              }
+            );
         }
       },
-      () => { }
+      () => {}
     );
   }
 
