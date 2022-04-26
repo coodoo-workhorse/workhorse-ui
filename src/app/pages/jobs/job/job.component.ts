@@ -1,17 +1,15 @@
-import { RefreshService } from './../../../../services/refresh.service';
-import { RefreshIntervalService } from './../../../../services/refresh-interval.service';
 import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { NgbModal, NgbModalRef, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
-import { CookieService } from 'ngx-cookie';
+import { NgbModal, NgbModalOptions, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
 import { ModalComponent } from 'src/app/shared/components/modal/modal.component';
 import { Job } from 'src/services/job.model';
-import { WorkhorseService } from 'src/services/workhorse.service';
 import { JobService } from '../../../../services/job.service';
-import { CreateExecutionComponent } from '../../executions/create-execution/create-execution.component';
 import { WorkhorseCookieService } from '../../../../services/workhorse-cookie.service';
+import { CreateExecutionComponent } from '../../executions/create-execution/create-execution.component';
+import { RefreshIntervalService } from './../../../../services/refresh-interval.service';
+import { RefreshService } from './../../../../services/refresh.service';
 
 @Component({
   // tslint:disable-next-line: component-selector
@@ -25,7 +23,6 @@ export class JobComponent implements OnInit {
   loading = true;
   reloading = false;
   edit = false;
-
   hiddeAdvancedFunction = false;
   randomWorkhorse: number;
 
@@ -72,9 +69,7 @@ export class JobComponent implements OnInit {
       error => {
         this.loading = false;
         this.reloading = false;
-
         this.hiddeAdvancedFunction = true;
-
         this.randomWorkhorse = Math.floor(Math.random() * 9) + 1;
         this.toastrService.error(error.statusText + ': ' + error.error);
       }

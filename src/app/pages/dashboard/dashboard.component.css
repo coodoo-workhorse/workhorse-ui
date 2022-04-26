@@ -1,38 +1,3 @@
-.workhorse-logo {
-  width: 42px;
-}
-
-.running {
-  animation: shake 0.5s;
-  animation-iteration-count: infinite;
-}
-
-.history-options {
-  margin: 1.5em;
-  margin-bottom: 0;
-  float: right;
-}
-
-.history-options input {
-  width: 5em;
-  float: right;
-  margin-left: 8px;
-}
-
-.upcomming {
-  float: right;
-}
-
-.upcomming input {
-  width: 5em;
-  float: right;
-  margin-left: 8px;
-}
-
-.no-col-padding-left {
-  padding-left: 0;
-}
-
 .arends-dirty-hack {
   margin-bottom: 5px;
 }
@@ -57,6 +22,11 @@
 
 .dashboard-row > *:last {
   margin-right: 1rem;
+}
+
+.running {
+  animation: shake 0.5s;
+  animation-iteration-count: infinite;
 }
 
 @keyframes shake {
@@ -103,43 +73,4 @@
   100% {
     transform: translate(1px, -2px) rotate(-1deg);
   }
-}
-
-.trend {
-  position: absolute;
-  height: 250px;
-}
-
-.trend-queued {
-  margin-top: -4.6px;
-}
-
-.trend-finished {
-  margin-top: -5px;
-  margin-left: 0.2px;
-}
-
-.trend-failed {
-  margin-top: -5.4px;
-  margin-left: 0.4px;
-}
-
-.trend-count {
-  top: 4px;
-  left: 274px;
-  position: relative;
-  font-size: x-small;
-  width: 42px;
-}
-
-.trend-count-queued {
-  color: #2196F3;
-}
-
-.trend-count-finished {
-  color: #5cb85c;
-}
-
-.trend-count-failed {
-  color: #d9534f;
 }

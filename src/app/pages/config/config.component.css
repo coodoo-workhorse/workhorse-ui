@@ -39,3 +39,25 @@
   margin-right: 0.8em;
   border-radius: 4px 0 0 4px;
 }
+
+.dashboard-row {
+  display: flex;
+  margin-bottom: 1rem;
+}
+
+.dashboard-row > * {
+  flex-grow: 1;
+  flex-basis: 0;
+}
+
+.dashboard-row > div {
+  margin-right: 1rem;
+}
+
+.dashboard-row > div:last-child {
+  margin-right: 0;
+}
+
+.dashboard-row > *:last {
+  margin-right: 1rem;
+}

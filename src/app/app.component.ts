@@ -14,17 +14,11 @@ export class AppComponent implements OnInit {
   workhorseVersion: string;
   persistenceName: string;
   persistenceVersion: string;
-  randomWorkhorse: number;
 
-  constructor(
-    private configService: ConfigService,
-    private cooTableService: CooTableService,
-    public statusService: StatusService,
-  ) {
+  constructor(private configService: ConfigService, private cooTableService: CooTableService, public statusService: StatusService) {
     const defaultCooTableConfig = new CooTableConfig();
     defaultCooTableConfig.translations.filterText.placeholder = '';
     this.cooTableService.setDefaultConfig(defaultCooTableConfig);
-    this.randomWorkhorse = Math.floor(Math.random() * 9) + 1;
   }
 
   ngOnInit() {
@@ -34,6 +28,4 @@ export class AppComponent implements OnInit {
       this.persistenceVersion = config.workhorseConfig.persistenceVersion;
     });
   }
-
-
 }

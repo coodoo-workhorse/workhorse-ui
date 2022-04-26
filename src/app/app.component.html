@@ -3,7 +3,8 @@
   <div class="collapse navbar-collapse" id="menu">
     <div class="navbar-nav align-items-center">
       <div class="navbar-brand ml-3">
-        <img class="random-workhorse" src="assets/horse-0{{ randomWorkhorse }}.png" />
+        <img *ngIf="statusService.running" class="workhorse-logo" src="assets/workhorse.png" />
+        <img *ngIf="!statusService.running" class="workhorse-logo" src="assets/horse-10.png" />
       </div>
       <a
         [routerLink]="['/']"

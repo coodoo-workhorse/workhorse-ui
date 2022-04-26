@@ -37,7 +37,6 @@ import { InlineEditComponent } from './shared/components/inline-edit/inline-edit
 // tslint:disable-next-line: max-line-length
 import { JobExecutionStatusSummaryComponent } from './shared/components/job-execution-status-summary/job-execution-status-summary.component';
 import { JobExecutionStatusComponent } from './shared/components/job-execution-status/job-execution-status.component';
-import { JobMemoryChartComponent } from './shared/components/job-memory-chart/job-memory-chart.component';
 import { JobStatusComponent } from './shared/components/job-status/job-status.component';
 import { JobSummaryComponent } from './shared/components/job-summary/job-summary.component';
 import { JobTagsComponent } from './shared/components/job-tags/job-tags.component';
@@ -57,7 +56,6 @@ import { JavaClassNamePipe } from './shared/pipes/java-class-name.pipe';
 import { JobDurationPipe } from './shared/pipes/job-duration.pipe';
 import { TimeAgoStaticPipe } from './shared/pipes/time-ago-static.pipe';
 
-
 export function appInit(jobStore: JobStore) {
   return () => jobStore.initJobs();
 }
@@ -72,7 +70,6 @@ export function appInit(jobStore: JobStore) {
     LoadingComponent,
     RefreshButtonComponent,
     RefreshIntervalSelectionComponent,
-    JobMemoryChartComponent,
     JobExecutionStatusComponent,
     CreateExecutionComponent,
     JobSummaryComponent,
@@ -139,7 +136,7 @@ export function appInit(jobStore: JobStore) {
       useFactory: appInit,
       multi: true,
       deps: [JobStore]
-    },
+    }
   ],
   bootstrap: [AppComponent]
 })
