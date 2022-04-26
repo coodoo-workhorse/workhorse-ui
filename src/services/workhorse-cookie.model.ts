@@ -2,7 +2,7 @@ export class WorkhorseCookie {
   createdAt: Date = new Date();
   updatedAt: Date;
 
-  refreshInterval: number = 60000;
+  refreshInterval: number = 0;
 
   dashboardPanelLogs: boolean = true;
   dashboardPanelThreads: boolean = false;

@@ -1,6 +1,6 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { CooTableListingService, CooTableSelectionService, ListingParameters, ListingResult, Metadata } from '@coodoo/coo-table';
+import { CooTableListingService, CooTableSelectionService, ListingResult, Metadata } from '@coodoo/coo-table';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
 import { Subject } from 'rxjs';
@@ -21,8 +21,7 @@ import { CreateExecutionComponent } from './create-execution/create-execution.co
   styleUrls: ['./executions.component.css'],
   providers: [
     CooTableListingService,
-    CooTableSelectionService,
-    ListingParameters
+    CooTableSelectionService
   ]
 })
 export class ExecutionsComponent implements OnInit, OnDestroy {
@@ -59,8 +58,7 @@ export class ExecutionsComponent implements OnInit, OnDestroy {
     private executionService: ExecutionService,
     private modalService: NgbModal,
     private toastrService: ToastrService,
-    private listingParameters: ListingParameters,
-    public cooTableListingService: CooTableListingService,
+    private cooTableListingService: CooTableListingService,
     private cooTableSelectionService: CooTableSelectionService,
     private refreshIntervalService: RefreshIntervalService,
     private refreshService: RefreshService
@@ -104,14 +102,20 @@ export class ExecutionsComponent implements OnInit, OnDestroy {
     this.loading = true;
     this.rows = [];
     if (this.batchId) {
-      this.listingParameters.attributeFilters.set('batchId', '' + this.batchId);
+      this.cooTableListingService.filterTable({
+        column: 'batchId',
+        value: this.batchId
+      });
     }
     if (this.chainId) {
-      this.listingParameters.attributeFilters.set('chainId', '' + this.chainId);
+      this.cooTableListingService.filterTable({
+        column: 'chainId',
+        value: this.chainId
+      });
     }
 
     this.executionService
-      .getJobExecutions(this.listingParameters, this.jobId ? this.jobId : 0)
+      .getJobExecutions(this.cooTableListingService.getListingParameters(), this.jobId ? this.jobId : 0)
       .pipe(takeWhile(() => this.alive))
       .subscribe((listingResult: ListingResult<Execution>) => {
         this.rows = listingResult.results;
@@ -126,7 +130,7 @@ export class ExecutionsComponent implements OnInit, OnDestroy {
             this.executionsDone++; // Redo execution / Delete execution
           }
         }
-        const filterStatus = this.listingParameters.attributeFilters.get('status');
+        const filterStatus = this.cooTableListingService.getListingParameters().attributeFilters.get('status');
         this.loading = false;
       });
   }

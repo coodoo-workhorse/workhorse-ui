@@ -4,7 +4,6 @@
 
 .dashboard-row {
   display: flex;
-  margin-bottom: 1rem;
 }
 
 .dashboard-row > * {
@@ -14,6 +13,7 @@
 
 .dashboard-row > div {
   margin-right: 1rem;
+  margin-bottom: 1rem;
 }
 
 .dashboard-row > div:last-child {

@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { CooTableListingService, CooTableSelectionService, ListingParameters, ListingResult, Metadata } from '@coodoo/coo-table';
+import { CooTableListingService, CooTableSelectionService, ListingResult, Metadata } from '@coodoo/coo-table';
 import { NgbModal, NgbModalOptions, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
 import { Subject } from 'rxjs';
@@ -16,7 +16,7 @@ import { CreateExecutionComponent } from '../executions/create-execution/create-
   selector: 'app-jobs',
   templateUrl: './jobs.component.html',
   styleUrls: ['./jobs.component.css'],
-  providers: [CooTableListingService, CooTableSelectionService, ListingParameters]
+  providers: [CooTableListingService, CooTableSelectionService]
 })
 export class JobsComponent implements OnInit, OnDestroy {
   rows: Array<Job> = [];
@@ -39,7 +39,6 @@ export class JobsComponent implements OnInit, OnDestroy {
     private jobService: JobService,
     private modalService: NgbModal,
     private toastrService: ToastrService,
-    private listingParameters: ListingParameters,
     private cooTableListingService: CooTableListingService,
     private cooTableSelectionService: CooTableSelectionService,
     private refreshIntervalService: RefreshIntervalService,
@@ -70,7 +69,7 @@ export class JobsComponent implements OnInit, OnDestroy {
   list() {
     this.loading = true;
     this.rows = [];
-    this.jobService.getJobs(this.listingParameters).pipe(takeUntil(this.unsubscribe)).subscribe((listingResult: ListingResult<Job>) => {
+    this.jobService.getJobs(this.cooTableListingService.getListingParameters()).pipe(takeUntil(this.unsubscribe)).subscribe((listingResult: ListingResult<Job>) => {
       this.rows = listingResult.results;
       this.metadata = listingResult.metadata;
 
@@ -122,7 +121,7 @@ export class JobsComponent implements OnInit, OnDestroy {
           this.list();
         }
       },
-      () => {}
+      () => { }
     );
   }
 
@@ -145,7 +144,7 @@ export class JobsComponent implements OnInit, OnDestroy {
           );
         }
       },
-      () => {}
+      () => { }
     );
   }
 
@@ -168,7 +167,7 @@ export class JobsComponent implements OnInit, OnDestroy {
           );
         }
       },
-      () => {}
+      () => { }
     );
   }
 
@@ -179,7 +178,7 @@ export class JobsComponent implements OnInit, OnDestroy {
       .then(() => {
         this.list();
       })
-      .catch(() => {});
+      .catch(() => { });
   }
 
   showJob(job: Job) {

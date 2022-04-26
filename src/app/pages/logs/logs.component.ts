@@ -21,6 +21,8 @@ export class LogsComponent implements OnInit, OnDestroy {
 
   rows: Array<Log> = [];
   metadata: Metadata;
+  listingParameters: ListingParameters;
+
   limit = 20;
   job: Job;
   loading: boolean;
@@ -34,7 +36,6 @@ export class LogsComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private jobStore: JobStore,
     private logService: LogService,
-    private listingParameters: ListingParameters,
     public cooTableListingService: CooTableListingService,
     private refreshIntervalService: RefreshIntervalService,
     private refreshService: RefreshService
@@ -71,7 +72,7 @@ export class LogsComponent implements OnInit, OnDestroy {
     this.loading = true;
     this.rows = [];
     this.logService
-      .getJobLogs(this.listingParameters)
+      .getJobLogs(this.cooTableListingService.getListingParameters())
       .pipe(takeUntil(this.unsubscribe))
       .subscribe((listingResult: ListingResult<Log>) => {
         this.rows = listingResult.results;
