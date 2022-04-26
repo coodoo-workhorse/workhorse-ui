@@ -4,6 +4,28 @@
     <h5 *ngIf="metadata?.count > 0" class="d-inline-block">{{ metadata.count }} Log Messages</h5>
     <h5 *ngIf="metadata?.count === 0" class="d-inline-block">No Log Messages</h5>
     <div class="refresh d-inline-block">
+      <button
+        class="btn btn-outline-secondary"
+        *ngIf="metadata?.count > 0"
+        [hidden]="loading"
+        [disabled]="workhorseCookieService.cookie.logTextLines <= logTextLinesMin"
+        (click)="lessLogTextLines()"
+        ngbPopover="Show 10 less log lines"
+        triggers="mouseenter:mouseleave"
+      >
+        Show less
+      </button>
+      <button
+        class="btn btn-outline-secondary ml-2"
+        *ngIf="metadata?.count > 0"
+        [hidden]="loading"
+        [disabled]="workhorseCookieService.cookie.logTextLines >= logTextLinesMax"
+        (click)="moreLogTextLines()"
+        ngbPopover="Show 10 more log lines"
+        triggers="mouseenter:mouseleave"
+      >
+        Show more
+      </button>
       <log-button [jobId]="jobId" (newLog)="list()" class="ml-2"></log-button>
       <button
         class="btn btn-outline-secondary action-button ml-2"
@@ -41,13 +63,5 @@
         </span>
       </div>
     </div>
-    <button
-      class="btn btn-outline-secondary mt-3"
-      *ngIf="metadata?.numPages > 1"
-      [hidden]="loading"
-      (click)="listingParameters.limit = listingParameters.limit + metadata.limit; list()"
-    >
-      Show more
-    </button>
   </div>
 </div>

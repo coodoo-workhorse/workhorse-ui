@@ -14,6 +14,8 @@ export class WorkhorseCookie {
   jobPanelLogs: boolean = false;
   jobPanelExecutions: boolean = true;
 
+  logTextLines: number = 20;
+
   // TODO @klemens
   // jobsListingPagesize: number = 20;
   // jobsListingSort: string;
