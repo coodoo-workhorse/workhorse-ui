@@ -1,15 +1,10 @@
 <div class="card h-100">
   <div class="card-header d-flex justify-content-between p-3">
-    <h4 *ngIf="log" class="card-title">
-      Log at {{ log.createdAt | date: 'dd.MM.yyyy HH:mm:ss' }}
-    </h4>
-    <h4 *ngIf="!log" class="card-title">
-      Log {{ logId }}
-    </h4>
+    <h4 *ngIf="log" class="card-title">Log at {{ log.createdAt | date: 'dd.MM.yyyy HH:mm:ss':'UTC' }}</h4>
+    <h4 *ngIf="!log" class="card-title">Log {{ logId }}</h4>
   </div>
 
   <div *ngIf="!loading" class="card-body pt-0">
-
     <!-- Job (if available) -->
     <div *ngIf="log.jobId" class="mb-3">
       <job-summary [job]="job"></job-summary>
@@ -24,17 +19,13 @@
 
     <!-- Context -->
     <div class="mb-3">
-      {{ log.createdAt | timeAgoStatic }} on {{log.hostName}} <span *ngIf="log.byUser">caused by user
-        interaction</span>
-      <div *ngIf="log.jobId">
-        Job status was <job-status [status]="log.jobStatus" [link]="false"></job-status>
-      </div>
+      {{ log.createdAt | timeAgoStatic }} on {{ log.hostName }} <span *ngIf="log.byUser">caused by user interaction</span>
+      <div *ngIf="log.jobId">Job status was <job-status [status]="log.jobStatus" [link]="false"></job-status></div>
     </div>
 
     <!-- Buttons -->
     <div>
-      <button class="btn btn-outline-secondary" (click)="navigateBack()" ngbPopover="Back"
-        triggers="mouseenter:mouseleave">
+      <button class="btn btn-outline-secondary" (click)="navigateBack()" ngbPopover="Back" triggers="mouseenter:mouseleave">
         <i class="ion ion-md-arrow-back"></i>
       </button>
     </div>
@@ -42,7 +33,6 @@
     <!-- <pre>
 {{log|json}}
 </pre> -->
-
   </div>
 </div>
 

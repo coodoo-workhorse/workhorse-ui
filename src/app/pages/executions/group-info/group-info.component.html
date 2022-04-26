@@ -4,8 +4,7 @@
       <span *ngIf="batchId">Batch {{ batchId }}</span>
       <span *ngIf="chainId">Chain {{ chainId }}</span>
     </h4>
-    <refresh-button class="refresh d-inline-block" (click)="init()" [refreshing]="loading">
-    </refresh-button>
+    <refresh-button class="refresh d-inline-block" (click)="init()" [refreshing]="loading"> </refresh-button>
   </div>
 
   <div *ngIf="!loading" class="card-body pt-0">
@@ -34,16 +33,16 @@
         <div *ngIf="groupInfo.startedAt" class="row">
           <div class="col-6"><label for="total"> Started </label></div>
           <div class="col-6">
-            <span class="text-muted">{{ groupInfo.startedAt | date: 'd. MMM' }}</span>
-            {{ groupInfo.startedAt | date: 'HH:mm:ss' }}
+            <span class="text-muted">{{ groupInfo.startedAt | date: 'dd.MM.yyyy':'UTC' }}</span>
+            {{ groupInfo.startedAt | date: 'HH:mm:ss':'UTC' }}
           </div>
         </div>
 
         <div *ngIf="groupInfo.endedAt" class="row">
           <div class="col-6"><label for="total"> Ended </label></div>
           <div class="col-6">
-            <span class="text-muted">{{ groupInfo.endedAt | date: 'd. MMM' }}</span>
-            {{ groupInfo.endedAt | date: 'HH:mm:ss' }}
+            <span class="text-muted">{{ groupInfo.endedAt | date: 'dd.MM.yyyy':'UTC' }}</span>
+            {{ groupInfo.endedAt | date: 'HH:mm:ss':'UTC' }}
           </div>
         </div>
 
@@ -57,8 +56,8 @@
         <div *ngIf="groupInfo.expectedEnd" class="row">
           <div class="col-6"><label for="total"> Expected end </label></div>
           <div class="col-6">
-            <span class="text-muted">{{ groupInfo.expectedEnd | date: 'd. MMM' }}</span>
-            {{ groupInfo.expectedEnd | date: 'HH:mm:ss' }}
+            <span class="text-muted">{{ groupInfo.expectedEnd | date: 'dd.MM.yyyy':'UTC' }}</span>
+            {{ groupInfo.expectedEnd | date: 'HH:mm:ss':'UTC' }}
           </div>
         </div>
 
@@ -71,20 +70,50 @@
 
         <div class="row">
           <div class="col-12 text-right mt-3">
-            <job-execution-status [hidden]="groupInfo.queued === 0" [status]="'QUEUED'" [count]="groupInfo.queued"
-              [jobId]="jobId" [groupId]="groupId" class="ml-3">
+            <job-execution-status
+              [hidden]="groupInfo.queued === 0"
+              [status]="'QUEUED'"
+              [count]="groupInfo.queued"
+              [jobId]="jobId"
+              [groupId]="groupId"
+              class="ml-3"
+            >
             </job-execution-status>
-            <job-execution-status [hidden]="groupInfo.running === 0" [status]="'RUNNING'" [count]="groupInfo.running"
-              [jobId]="jobId" [groupId]="groupId" class="ml-3">
+            <job-execution-status
+              [hidden]="groupInfo.running === 0"
+              [status]="'RUNNING'"
+              [count]="groupInfo.running"
+              [jobId]="jobId"
+              [groupId]="groupId"
+              class="ml-3"
+            >
             </job-execution-status>
-            <job-execution-status [hidden]="groupInfo.finished === 0" [status]="'FINISHED'" [count]="groupInfo.finished"
-              [jobId]="jobId" [groupId]="groupId" class="ml-3">
+            <job-execution-status
+              [hidden]="groupInfo.finished === 0"
+              [status]="'FINISHED'"
+              [count]="groupInfo.finished"
+              [jobId]="jobId"
+              [groupId]="groupId"
+              class="ml-3"
+            >
             </job-execution-status>
-            <job-execution-status [hidden]="groupInfo.failed === 0" [status]="'FAILED'" [count]="groupInfo.failed"
-              [jobId]="jobId" [groupId]="groupId" class="ml-3">
+            <job-execution-status
+              [hidden]="groupInfo.failed === 0"
+              [status]="'FAILED'"
+              [count]="groupInfo.failed"
+              [jobId]="jobId"
+              [groupId]="groupId"
+              class="ml-3"
+            >
             </job-execution-status>
-            <job-execution-status [hidden]="groupInfo.aborted === 0" [status]="'ABORTED'" [count]="groupInfo.aborted"
-              [jobId]="jobId" [groupId]="groupId" class="ml-3">
+            <job-execution-status
+              [hidden]="groupInfo.aborted === 0"
+              [status]="'ABORTED'"
+              [count]="groupInfo.aborted"
+              [jobId]="jobId"
+              [groupId]="groupId"
+              class="ml-3"
+            >
             </job-execution-status>
           </div>
         </div>

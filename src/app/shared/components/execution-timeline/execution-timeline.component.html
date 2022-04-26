@@ -2,23 +2,21 @@
 <ng-container *ngIf="!embedded">
   <span *ngFor="let t of timeline">
     <span [hidden]="t.duration === undefined" class="badge">{{ t.duration | jobDuration: 's' }}</span>
-    <span class="time time-{{t.state}}" ngbPopover="{{ t.label }} {{ t.time | timeAgoStatic }}"
-      triggers="mouseenter:mouseleave">
+    <span class="time time-{{ t.state }}" ngbPopover="{{ t.label }} {{ t.time | timeAgoStatic }}" triggers="mouseenter:mouseleave">
       <strong>{{ t.label }}</strong>
       <hr />
-      <span class=" text-muted">{{ t.time | date: 'd. MMM': 'UTC' }}</span> {{ t.time | date: 'HH:mm:ss': 'UTC' }}
+      <span class="text-muted">{{ t.time | date: 'dd.MM.yyyy':'UTC' }}</span> {{ t.time | date: 'HH:mm:ss':'UTC' }}
     </span>
   </span>
 </ng-container>
 
 <ng-container *ngIf="embedded">
   <span *ngFor="let t of timeline" class="time-embedded-straight">
-    <span [hidden]="t.duration === undefined" class="badge-embedded">{{ t.duration | jobDuration: 's' : true }}</span>
-    <span class="time-embedded time-{{t.state}}" ngbPopover="{{ t.label }} {{ t.time | timeAgoStatic }}"
-      triggers="mouseenter:mouseleave">
-      <span class="text-muted">{{ t.time | date: 'd. MMM': 'UTC' }}</span>
+    <span [hidden]="t.duration === undefined" class="badge-embedded">{{ t.duration | jobDuration: 's':true }}</span>
+    <span class="time-embedded time-{{ t.state }}" ngbPopover="{{ t.label }} {{ t.time | timeAgoStatic }}" triggers="mouseenter:mouseleave">
+      <span class="text-muted">{{ t.time | date: 'dd.MM.yyyy':'UTC' }}</span>
       <hr />
-      {{ t.time | date: 'HH:mm:ss': 'UTC'}}
+      {{ t.time | date: 'HH:mm:ss':'UTC' }}
     </span>
   </span>
 </ng-container>

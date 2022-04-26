@@ -5,7 +5,7 @@
     <h5 *ngIf="metadata?.count === 0" class="d-inline-block">No Log Messages</h5>
     <div class="refresh d-inline-block">
       <button
-        class="btn btn-outline-secondary"
+        class="btn btn-outline-secondary action-button ml-2"
         *ngIf="metadata?.count > 0"
         [hidden]="loading"
         [disabled]="workhorseCookieService.cookie.logTextLines <= logTextLinesMin"
@@ -13,10 +13,10 @@
         ngbPopover="Show 10 less log lines"
         triggers="mouseenter:mouseleave"
       >
-        Show less
+        <i class="ion ion-md-remove"></i>
       </button>
       <button
-        class="btn btn-outline-secondary ml-2"
+        class="btn btn-outline-secondary action-button ml-2"
         *ngIf="metadata?.count > 0"
         [hidden]="loading"
         [disabled]="workhorseCookieService.cookie.logTextLines >= logTextLinesMax"
@@ -24,7 +24,7 @@
         ngbPopover="Show 10 more log lines"
         triggers="mouseenter:mouseleave"
       >
-        Show more
+        <i class="ion ion-md-reorder"></i>
       </button>
       <log-button [jobId]="jobId" (newLog)="list()" class="ml-2"></log-button>
       <button
@@ -48,7 +48,7 @@
     <div *ngFor="let row of rows">
       <div class="log-text">
         <span ngbPopover="{{ row.createdAt | timeAgoStatic }}" triggers="mouseenter:mouseleave">
-          [{{ row.createdAt | date: 'dd.MM.yyyy HH:mm:ss' }}]</span
+          [{{ row.createdAt | date: 'dd.MM.yyyy HH:mm:ss':'UTC' }}]</span
         ><span
           *ngIf="row.jobId && !jobId"
           ngbPopover="{{ row.jobName }}"

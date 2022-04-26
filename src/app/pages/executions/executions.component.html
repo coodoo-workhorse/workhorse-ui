@@ -37,6 +37,10 @@
                       <coo-table-filter-date column="createdAt"></coo-table-filter-date>
                     </th>
                     <th class="row-8em">
+                      <coo-table-sorter label="Planned" column="plannedFor"></coo-table-sorter>
+                      <coo-table-filter-date column="plannedFor"></coo-table-filter-date>
+                    </th>
+                    <th class="row-8em">
                       <coo-table-sorter label="Started" column="startedAt"></coo-table-sorter>
                       <coo-table-filter-date column="startedAt|plannedFor"></coo-table-filter-date>
                     </th>
@@ -155,7 +159,7 @@
                       <i class="ion ion-ios-timer"></i> {{ row.duration | jobDuration }}
                     </span>
                   </td>
-                  <td colspan="3" (dblclick)="showExecution(row)" class="clickable">
+                  <td colspan="4" (dblclick)="showExecution(row)" class="clickable">
                     <job-execution-timeline
                       [status]="row.status"
                       [startedAt]="row.startedAt"

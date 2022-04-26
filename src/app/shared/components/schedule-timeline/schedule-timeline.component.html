@@ -2,14 +2,12 @@
   <i class="ion ion-md-alarm" ngbPopover="Upcoming schedules" triggers="mouseenter:mouseleave"></i>
   <span *ngIf="schedule && !scheduleTimeline" class="text-danger"> Invalid Cron Expression</span>
   <span *ngFor="let t of scheduleTimeline">
-    <small>
-      <span [hidden]="t.duration === undefined" class="badge">{{ t.duration | jobDuration: 's' }}</span>
-      <span class="time">
-        <span class="text-muted">{{ t.time | date: 'd. MMM yy' }}</span>
-        <hr />
-        {{ t.time | date: 'HH:mm:ss' }}
-      </span>
-    </small>
+    <span [hidden]="t.duration === undefined" class="badge">{{ t.duration | jobDuration: 's' }}</span>
+    <span class="time">
+      <span class="text-muted">{{ t.time | date: 'dd.MM.yyyy':'UTC' }}</span>
+      <hr />
+      {{ t.time | date: 'HH:mm:ss':'UTC' }}
+    </span>
   </span>
   <span
     *ngIf="scheduleTimeline"
