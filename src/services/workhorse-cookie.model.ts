@@ -7,7 +7,8 @@ export class WorkhorseCookie {
   dashboardPanelLogs: boolean = true;
   dashboardPanelThreads: boolean = false;
   dashboardPanelLastExecutions: boolean = true;
-  dashboardPanelExecutionsStatusSummary: boolean = true;
+  dashboardPanelExecutionsStatusSummarys: boolean = true;
+  dashboardPanelScheduleTimelines: boolean = false;
 
   jobPanelLastExecutions: boolean = true;
   jobPanelLogs: boolean = false;

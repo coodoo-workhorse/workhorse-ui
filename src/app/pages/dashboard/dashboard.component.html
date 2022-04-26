@@ -50,15 +50,29 @@
         class="btn btn-outline-secondary"
         (click)="
           workhorseCookieService.setCookieValue(
-            'dashboardPanelExecutionsStatusSummary',
-            !workhorseCookieService.cookie.dashboardPanelExecutionsStatusSummary
+            'dashboardPanelExecutionsStatusSummarys',
+            !workhorseCookieService.cookie.dashboardPanelExecutionsStatusSummarys
           )
         "
         ngbPopover="Show execution status summaries"
         triggers="mouseenter:mouseleave"
-        [class.active]="workhorseCookieService.cookie.dashboardPanelExecutionsStatusSummary"
+        [class.active]="workhorseCookieService.cookie.dashboardPanelExecutionsStatusSummarys"
       >
         <i class="ion ion-ios-list"></i>
+      </button>
+      <button
+        class="btn btn-outline-secondary"
+        (click)="
+          workhorseCookieService.setCookieValue(
+            'dashboardPanelScheduleTimelines',
+            !workhorseCookieService.cookie.dashboardPanelScheduleTimelines
+          )
+        "
+        ngbPopover="Show upcoming schedules"
+        triggers="mouseenter:mouseleave"
+        [class.active]="workhorseCookieService.cookie.dashboardPanelScheduleTimelines"
+      >
+        <i class="ion ion-md-alarm"></i>
       </button>
     </div>
   </div>
@@ -77,7 +91,7 @@
   </div>
 </div>
 
-<div *ngIf="workhorseCookieService.cookie.dashboardPanelExecutionsStatusSummary">
+<div *ngIf="workhorseCookieService.cookie.dashboardPanelExecutionsStatusSummarys">
   <div class="dashboard-row">
     <div>
       <job-execution-status-summary [status]="'PLANNED'"> </job-execution-status-summary>
@@ -98,6 +112,14 @@
     </div>
     <div>
       <job-execution-status-summary [status]="'FAILED'"> </job-execution-status-summary>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="workhorseCookieService.cookie.dashboardPanelScheduleTimelines">
+  <div class="dashboard-row">
+    <div>
+      <schedule-timeline-chart> </schedule-timeline-chart>
     </div>
   </div>
 </div>

@@ -45,13 +45,14 @@ import { LogButtonComponent } from './shared/components/log-button/log-button.co
 import { LogTextComponent } from './shared/components/log-text/log-text.component';
 import { ModalComponent } from './shared/components/modal/modal.component';
 import { RefreshButtonComponent } from './shared/components/refresh-button/refresh-button.component';
+import { RefreshIntervalSelectionComponent } from './shared/components/refresh-interval-selection/refresh-interval-selection.component';
 import { SaveButtonComponent } from './shared/components/save-button/save-button.component';
 import { ScheduleEditorComponent } from './shared/components/schedule-editor/schedule-editor.component';
 import { ScheduleInfoComponent } from './shared/components/schedule-editor/schedule-info/schedule-info.component';
+import { ScheduleTimelineChartComponent } from './shared/components/schedule-timeline-chart/schedule-timeline-chart.component';
 import { ScheduleTimelineComponent } from './shared/components/schedule-timeline/schedule-timeline.component';
 import { SwitchComponent } from './shared/components/switch/switch.component';
 import { ThreadsComponent } from './shared/components/threads/threads.component';
-import { RefreshIntervalSelectionComponent } from './shared/components/refresh-interval-selection/refresh-interval-selection.component';
 import { JavaClassNamePipe } from './shared/pipes/java-class-name.pipe';
 import { JobDurationPipe } from './shared/pipes/job-duration.pipe';
 import { TimeAgoStaticPipe } from './shared/pipes/time-ago-static.pipe';
@@ -96,6 +97,7 @@ export function appInit(jobStore: JobStore) {
     ScheduleEditorComponent,
     ScheduleInfoComponent,
     ScheduleTimelineComponent,
+    ScheduleTimelineChartComponent,
     JobExecutionStatusSummaryComponent,
     BreadcrumbComponent
   ],
