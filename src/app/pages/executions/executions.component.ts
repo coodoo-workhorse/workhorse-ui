@@ -70,6 +70,19 @@ export class ExecutionsComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.cooTableListingService.setDefaultLimit(this.limit);
 
+    if (this.batchId) {
+      this.cooTableListingService.filterTable({
+        column: 'batchId',
+        value: this.batchId
+      });
+    }
+    if (this.chainId) {
+      this.cooTableListingService.filterTable({
+        column: 'chainId',
+        value: this.chainId
+      });
+    }
+
     this.jobId = this.route.snapshot.params.jobId;
 
     if (this.jobId && !this.embedded) {
@@ -94,20 +107,6 @@ export class ExecutionsComponent implements OnInit, OnDestroy {
   list() {
     this.loading = true;
     this.rows = [];
-    if (this.batchId) {
-      // FIXME @klemens
-      // this.cooTableListingService.filterTable({
-      //   column: 'batchId',
-      //   value: this.batchId
-      // });
-    }
-    if (this.chainId) {
-      // FIXME @klemens
-      // this.cooTableListingService.filterTable({
-      //   column: 'chainId',
-      //   value: this.chainId
-      // });
-    }
 
     this.executionService
       .getJobExecutions(this.cooTableListingService.getListingParameters(), this.jobId ? this.jobId : 0)
