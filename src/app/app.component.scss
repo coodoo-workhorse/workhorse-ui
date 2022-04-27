@@ -2,9 +2,13 @@
   margin-top: 85px;
 }
 
-.version {
+.version,
+.version a:link,
+.version a:visited,
+.version a:hover,
+.version a:active {
   font-size: 0.6rem;
-  color: rgba(0,0,0,.5) !important;
+  color: rgba(0, 0, 0, 0.5) !important;
 }
 
 .navbar-text {

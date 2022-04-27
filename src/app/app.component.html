@@ -21,19 +21,18 @@
     </div>
 
     <div class="ml-auto d-flex">
-
       <refresh-interval-selection></refresh-interval-selection>
       <refresh-button [global]="true"> </refresh-button>
 
       <button
-      class="btn d-inline-block status-btn ml-2"
-      [ngClass]="statusService.running ? 'btn-outline-secondary' : 'btn-primary'"
-      (click)="statusService.running ? statusService.stopWorkhorse() : statusService.startWorkhorse()">
-      <i class="ion" [ngClass]="statusService.running ? 'ion-md-square' : 'ion-ios-play'"></i
-      ><span class="ml-2">{{ statusService.running ? 'Stop' : 'Start' }}</span>
-    </button>
+        class="btn d-inline-block status-btn ml-2"
+        [ngClass]="statusService.running ? 'btn-outline-secondary' : 'btn-primary'"
+        (click)="statusService.running ? statusService.stopWorkhorse() : statusService.startWorkhorse()"
+      >
+        <i class="ion" [ngClass]="statusService.running ? 'ion-md-square' : 'ion-ios-play'"></i
+        ><span class="ml-2">{{ statusService.running ? 'Stop' : 'Start' }}</span>
+      </button>
     </div>
-
   </div>
 </div>
 
@@ -43,6 +42,9 @@
   <router-outlet></router-outlet>
   <div>
     <!-- corresponding workhorse version -->
-    <span class="version ml-2">Workhorse {{ workhorseVersion }} · {{ persistenceName }} {{ persistenceVersion }}</span>
+    <span class="version ml-2"
+      >© <a href="https://coodoo.de/" target="_blank">coodoo GmbH</a> · UI {{ version }} · Workhorse {{ workhorseVersion }} ·
+      {{ persistenceName }} {{ persistenceVersion }}</span
+    >
   </div>
 </div>

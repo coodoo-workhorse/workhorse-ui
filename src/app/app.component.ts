@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CooTableConfig, CooTableService } from '@coodoo/coo-table';
 import { Config } from 'protractor';
+import packageJson from '../../package.json';
 import { ConfigService } from '../services/config.service';
 import { StatusService } from '../services/status.service';
 
@@ -11,6 +12,7 @@ import { StatusService } from '../services/status.service';
 })
 export class AppComponent implements OnInit {
   title = 'workhorse-ui';
+  version: string = packageJson.version;
   workhorseVersion: string;
   persistenceName: string;
   persistenceVersion: string;
