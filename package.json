@@ -9,9 +9,6 @@
   "scripts": {
     "start": "ng serve --port 4202 --host 0.0.0.0  --disable-host-check",
     "start:example": "ng serve --port 4202 --disable-host-check --proxy-config proxy.example.conf.json",
-    "start:halbzeit:local": "ng serve --port 4201 --disable-host-check --proxy-config proxy.halbzeit-app.local.conf.json",
-    "start:halbzeit:stage": "ng serve --port 4203 --disable-host-check --proxy-config proxy.halbzeit-app.stage.conf.json",
-    "start:iz:team-coodoo": "ng serve --port 4202 --disable-host-check --proxy-config proxy.iz.coodoo.conf.json",
     "build": "ng build --configuration production",
     "build:stats": "ng build --configuration production --stats-json",
     "analyze": "webpack-bundle-analyzer dist/workhorse-ui/stats.json",
