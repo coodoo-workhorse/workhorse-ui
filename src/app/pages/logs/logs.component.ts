@@ -14,7 +14,8 @@ import { RefreshService } from '../../../services/refresh.service';
 @Component({
   selector: 'app-logs',
   templateUrl: './logs.component.html',
-  styleUrls: ['./logs.component.css']
+  styleUrls: ['./logs.component.css'],
+  providers: [CooTableListingService]
 })
 export class LogsComponent implements OnInit, OnDestroy {
   @Input() embedded = false;
@@ -51,12 +52,16 @@ export class LogsComponent implements OnInit, OnDestroy {
       sort: this.workhorseCookieService.getWorkhorseCookie().logsListingSort
     } as Metadata);
 
-
     if (!this.jobId) {
       this.jobId = this.route.snapshot.params.jobId;
     }
+
     if (this.jobId) {
-      this.listingParameters.attributeFilters.set('jobId', '' + this.jobId);
+      this.cooTableListingService.filterTable({
+        column: 'jobId',
+        value: this.jobId
+      });
+
       this.jobStore.jobs$.subscribe(() => {
         this.job = this.jobStore.getJob(+this.jobId);
       });
