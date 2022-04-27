@@ -3,10 +3,10 @@
   <span *ngIf="schedule && !scheduleTimeline" class="text-danger"> Invalid Cron Expression</span>
   <span *ngFor="let t of scheduleTimeline">
     <span [hidden]="t.duration === undefined" class="badge">{{ t.duration | jobDuration: 's' }}</span>
-    <span class="time">
-      <span class="text-muted">{{ t.time | date: 'dd.MM.yyyy':'UTC' }}</span>
+    <span class="time" ngbPopover="{{ t.time | timeAgoStatic }}" triggers="mouseenter:mouseleave">
+      <span class="text-muted">{{ t.time | date: 'dd.MM.yyyy' }}</span>
       <hr />
-      {{ t.time | date: 'HH:mm:ss':'UTC' }}
+      {{ t.time | date: 'HH:mm:ss' }}
     </span>
   </span>
   <span

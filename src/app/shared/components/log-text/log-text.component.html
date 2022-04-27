@@ -48,7 +48,7 @@
     <div *ngFor="let row of rows">
       <div class="log-text">
         <span ngbPopover="{{ row.createdAt | timeAgoStatic }}" triggers="mouseenter:mouseleave">
-          [{{ row.createdAt | date: 'dd.MM.yyyy HH:mm:ss':'UTC' }}]</span
+          [{{ row.createdAt | date: 'dd.MM.yyyy HH:mm:ss' }}]</span
         ><span
           *ngIf="row.jobId && !jobId"
           ngbPopover="{{ row.jobName }}"

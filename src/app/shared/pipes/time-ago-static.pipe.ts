@@ -8,9 +8,10 @@ import { Pipe, PipeTransform } from '@angular/core';
 export class TimeAgoStaticPipe implements PipeTransform {
   transform(value: Date): string {
     const date = new Date(value);
-    const dUtc = new Date(date.getTime() + date.getTimezoneOffset() * 60000);
+    // const dUtc = new Date(date.getTime() + date.getTimezoneOffset() * 60000);
     const now = new Date();
-    const seconds = Math.round((now.getTime() - dUtc.getTime()) / 1000);
+    // const seconds = Math.round((now.getTime() - dUtc.getTime()) / 1000);
+    const seconds = Math.round((now.getTime() - date.getTime()) / 1000);
 
     if (Number.isNaN(seconds)) {
       return '';

@@ -61,7 +61,7 @@
                         <button
                           *ngIf="rowSelectionEnabled"
                           class="btn btn-outline-secondary action-button ml-2"
-                          [ngClass]="{'disabled': selectedRows.length === 0}"
+                          [ngClass]="{ disabled: selectedRows.length === 0 }"
                           ngbPopover="Redo {{ selectedRows.length }} selected executions"
                           triggers="mouseenter:mouseleave"
                           placement="left"
@@ -72,7 +72,7 @@
                         <button
                           *ngIf="rowSelectionEnabled"
                           class="btn btn-outline-secondary action-button ml-2"
-                          [ngClass]="{'disabled': selectedRows.length === 0}"
+                          [ngClass]="{ disabled: selectedRows.length === 0 }"
                           ngbPopover="Abort {{ selectedRows.length }} selected executions"
                           triggers="mouseenter:mouseleave"
                           placement="left"
@@ -83,7 +83,7 @@
                         <button
                           *ngIf="rowSelectionEnabled"
                           class="btn btn-outline-secondary action-button ml-2"
-                          [ngClass]="{'disabled': selectedRows.length === 0}"
+                          [ngClass]="{ disabled: selectedRows.length === 0 }"
                           ngbPopover="Delete {{ selectedRows.length }} selected executions"
                           triggers="mouseenter:mouseleave"
                           placement="left"
@@ -97,7 +97,7 @@
                           [ngbPopover]="(rowSelectionEnabled ? 'Disable' : 'Enable') + ' selection'"
                           triggers="mouseenter:mouseleave"
                           placement="left"
-                          >
+                        >
                           <i class="ion ion-md-checkbox-outline"></i>
                         </button>
                         <refresh-button class="ml-2" (click)="list()" [refreshing]="loading"> </refresh-button>
@@ -124,8 +124,8 @@
                       <i class="ion ion-ios-star-outline"></i>
                     </span>
                     <span
+                      [routerLink]="['/jobs', row.jobId, 'executions', row.batchId, 'batch']"
                       *ngIf="row.batchId"
-                      (dblclick)="showBatch(row)"
                       class="badge mr-2 clickable"
                       ngbPopover="Batch"
                       triggers="mouseenter:mouseleave"
@@ -133,8 +133,8 @@
                       <i class="ion ion-md-menu"></i> {{ row.batchId }}
                     </span>
                     <span
+                      [routerLink]="['/jobs', row.jobId, 'executions', row.chainId, 'chain']"
                       *ngIf="row.chainId"
-                      (dblclick)="showChain(row)"
                       class="badge mr-2 clickable"
                       ngbPopover="Chain"
                       triggers="mouseenter:mouseleave"

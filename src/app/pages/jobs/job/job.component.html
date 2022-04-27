@@ -340,9 +340,9 @@
             </div>
 
             <div class="mb-3 mt-3">
-              <div>Created {{ job.createdAt | timeAgoStatic }}: {{ job.createdAt | date: 'dd.MM.yyyy HH:mm:ss':'UTC' }}</div>
+              <div>Created {{ job.createdAt | timeAgoStatic }}: {{ job.createdAt | date: 'dd.MM.yyyy HH:mm:ss' }}</div>
               <div *ngIf="job.updatedAt">
-                Last updated {{ job.updatedAt | timeAgoStatic }}: {{ job.updatedAt | date: 'dd.MM.yyyy HH:mm:ss':'UTC' }}
+                Last updated {{ job.updatedAt | timeAgoStatic }}: {{ job.updatedAt | date: 'dd.MM.yyyy HH:mm:ss' }}
               </div>
             </div>
           </div>

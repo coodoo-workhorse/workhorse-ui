@@ -145,14 +145,6 @@ export class ExecutionsComponent implements OnInit, OnDestroy {
     this.router.navigate([`jobs/${execution.jobId}`]);
   }
 
-  showBatch(execution: Execution) {
-    this.router.navigate([`jobs/${execution.jobId}/executions/${execution.batchId}/batch`]);
-  }
-
-  showChain(execution: Execution) {
-    this.router.navigate([`jobs/${execution.jobId}/executions/${execution.chainId}/chain`]);
-  }
-
   showExecution(execution: Execution) {
     this.router.navigate([`jobs/${execution.jobId}/executions/${execution.id}`]);
   }

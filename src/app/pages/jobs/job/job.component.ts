@@ -165,7 +165,11 @@ export class JobComponent implements OnInit {
   createExecution() {
     const modalRef: NgbModalRef = this.modalService.open(CreateExecutionComponent, this.config);
     modalRef.componentInstance.job = this.job;
-    modalRef.result.then(() => {}).catch(() => {});
+    modalRef.result
+      .then(() => {
+        this.refreshService.refresh();
+      })
+      .catch(() => {});
   }
 
   triggerScheduledJobExecution() {
@@ -176,6 +180,7 @@ export class JobComponent implements OnInit {
         if (closeResult) {
           this.jobService.triggerScheduledExecutionCreation(this.job).subscribe(
             () => {
+              this.refreshService.refresh();
               this.toastrService.success('Scheduled job execution created');
             },
             (error: any) => {

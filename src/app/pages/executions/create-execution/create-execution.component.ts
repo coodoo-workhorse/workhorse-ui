@@ -31,7 +31,7 @@ export class CreateExecutionComponent implements OnInit {
     private dateTimeAdapter: DateTimeAdapter<any>
   ) {
     this.dateTimeAdapter.setLocale('en-GB');
-    this.minPlannedFor = this.patchDate(this.minPlannedFor);
+    this.updateDisplayDates();
   }
 
   ngOnInit() {
@@ -93,13 +93,12 @@ export class CreateExecutionComponent implements OnInit {
     this.newExecution.plannedFor = null;
     this.updateDisplayDates();
   }
+
   updateDisplayDates() {
-    this.minPlannedFor = new Date();
+    const nowUtc = new Date();
+    this.minPlannedFor = new Date(nowUtc.getTime() + this.timezoneOffsetMillis);
     this.displayCreatedAt = this.patchDate(this.minPlannedFor);
-    this.displayPlannedFor = this.patchDate(this.newExecution.plannedFor);
-    if (this.displayCreatedAt && this.displayPlannedFor && this.displayCreatedAt > this.displayPlannedFor) {
-      this.displayCreatedAt = this.displayPlannedFor;
-    }
+    this.displayPlannedFor = this.newExecution.plannedFor;
   }
 
   patchDate(date: Date) {
@@ -108,7 +107,6 @@ export class CreateExecutionComponent implements OnInit {
     }
     return null;
   }
-
   createExecution() {
     this.newExecution.plannedFor = this.patchDate(this.newExecution.plannedFor);
     this.loading = true;

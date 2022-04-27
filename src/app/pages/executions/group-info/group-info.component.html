@@ -33,16 +33,16 @@
         <div *ngIf="groupInfo.startedAt" class="row">
           <div class="col-6"><label for="total"> Started </label></div>
           <div class="col-6">
-            <span class="text-muted">{{ groupInfo.startedAt | date: 'dd.MM.yyyy':'UTC' }}</span>
-            {{ groupInfo.startedAt | date: 'HH:mm:ss':'UTC' }}
+            <span class="text-muted">{{ groupInfo.startedAt | date: 'dd.MM.yyyy' }}</span>
+            {{ groupInfo.startedAt | date: 'HH:mm:ss' }}
           </div>
         </div>
 
         <div *ngIf="groupInfo.endedAt" class="row">
           <div class="col-6"><label for="total"> Ended </label></div>
           <div class="col-6">
-            <span class="text-muted">{{ groupInfo.endedAt | date: 'dd.MM.yyyy':'UTC' }}</span>
-            {{ groupInfo.endedAt | date: 'HH:mm:ss':'UTC' }}
+            <span class="text-muted">{{ groupInfo.endedAt | date: 'dd.MM.yyyy' }}</span>
+            {{ groupInfo.endedAt | date: 'HH:mm:ss' }}
           </div>
         </div>
 
@@ -56,8 +56,8 @@
         <div *ngIf="groupInfo.expectedEnd" class="row">
           <div class="col-6"><label for="total"> Expected end </label></div>
           <div class="col-6">
-            <span class="text-muted">{{ groupInfo.expectedEnd | date: 'dd.MM.yyyy':'UTC' }}</span>
-            {{ groupInfo.expectedEnd | date: 'HH:mm:ss':'UTC' }}
+            <span class="text-muted">{{ groupInfo.expectedEnd | date: 'dd.MM.yyyy' }}</span>
+            {{ groupInfo.expectedEnd | date: 'HH:mm:ss' }}
           </div>
         </div>
 
