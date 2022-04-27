@@ -4,10 +4,11 @@ import { CooTableListingService, CooTableSelectionService, ListingResult, Metada
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
 import { Subject } from 'rxjs';
-import { takeUntil, takeWhile } from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
 import { ModalComponent } from 'src/app/shared/components/modal/modal.component';
 import { Execution } from 'src/services/execution.model';
 import { Job } from 'src/services/job.model';
+import { WorkhorseCookieService } from 'src/services/workhorse-cookie.service';
 import { ExecutionService } from '../../../services/execution.service';
 import { JobStore } from '../../../services/job.store';
 import { RefreshIntervalService } from '../../../services/refresh-interval.service';
@@ -29,16 +30,12 @@ export class ExecutionsComponent implements OnInit, OnDestroy {
 
   jobId: number;
   rows: Array<Execution> = [];
-  meta = {};
   metadata: Metadata;
-  limit = 20;
+
   executionsOpen = 0;
   executionsDone = 0;
 
   job: Job;
-
-  alive = true;
-  config: any = { size: 'md' };
 
   loading = false;
   status: Array<string> = ['PLANNED', 'QUEUED', 'RUNNING', 'FINISHED', 'FAILED', 'ABORTED'];
@@ -58,7 +55,8 @@ export class ExecutionsComponent implements OnInit, OnDestroy {
     private cooTableListingService: CooTableListingService,
     private cooTableSelectionService: CooTableSelectionService,
     private refreshIntervalService: RefreshIntervalService,
-    private refreshService: RefreshService
+    private refreshService: RefreshService,
+    private workhorseCookieService: WorkhorseCookieService
   ) {
     this.loading = true;
 
@@ -68,7 +66,10 @@ export class ExecutionsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.cooTableListingService.setDefaultLimit(this.limit);
+    this.cooTableListingService.setMetadata({
+      limit: this.workhorseCookieService.getWorkhorseCookie().executionsListingLimit,
+      sort: this.workhorseCookieService.getWorkhorseCookie().executionsListingSort
+    } as Metadata);
 
     if (this.batchId) {
       this.cooTableListingService.filterTable({
@@ -102,6 +103,11 @@ export class ExecutionsComponent implements OnInit, OnDestroy {
     this.cooTableListingService.list$.pipe(takeUntil(this.unsubscribe)).subscribe(() => {
       this.list();
     });
+
+    this.cooTableListingService.metadata$.pipe(takeUntil(this.unsubscribe)).subscribe(metadata => {
+      this.workhorseCookieService.setCookieValue('executionsListingLimit', metadata.limit);
+      this.workhorseCookieService.setCookieValue('executionsListingSort', metadata.sort);
+    });
   }
 
   list() {
@@ -110,7 +116,7 @@ export class ExecutionsComponent implements OnInit, OnDestroy {
 
     this.executionService
       .getJobExecutions(this.cooTableListingService.getListingParameters(), this.jobId ? this.jobId : 0)
-      .pipe(takeWhile(() => this.alive))
+      .pipe(takeUntil(this.unsubscribe))
       .subscribe((listingResult: ListingResult<Execution>) => {
         this.rows = listingResult.results;
         this.metadata = listingResult.metadata;
@@ -163,7 +169,7 @@ export class ExecutionsComponent implements OnInit, OnDestroy {
   }
 
   createExecution(execution: Execution) {
-    const modalRef: NgbModalRef = this.modalService.open(CreateExecutionComponent, this.config);
+    const modalRef: NgbModalRef = this.modalService.open(CreateExecutionComponent, { size: 'md' });
     modalRef.componentInstance.job = this.job;
     modalRef.componentInstance.execution = execution;
     modalRef.result
@@ -333,7 +339,6 @@ export class ExecutionsComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.alive = false;
     this.unsubscribe.next();
     this.unsubscribe.complete();
   }

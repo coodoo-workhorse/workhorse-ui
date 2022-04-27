@@ -16,11 +16,10 @@ export class WorkhorseCookie {
 
   logTextLines: number = 20;
 
-  // TODO @klemens
-  // jobsListingPagesize: number = 20;
-  // jobsListingSort: string;
-  // executionsListingPagesize: number = 20;
-  // executionsListingSort: string;
-  // logsListingPagesize: number = 20;
-  // logsListingSort: string;
+  jobsListingLimit: number = 20;
+  jobsListingSort: string = '';
+  executionsListingLimit: number = 20;
+  executionsListingSort: string = '';
+  logsListingLimit: number = 20;
+  logsListingSort: string = '';
 }

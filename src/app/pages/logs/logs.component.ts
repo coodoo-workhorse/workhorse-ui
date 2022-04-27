@@ -4,6 +4,7 @@ import { CooTableListingService, ListingParameters, ListingResult, Metadata } fr
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Job } from 'src/services/job.model';
+import { WorkhorseCookieService } from 'src/services/workhorse-cookie.service';
 import { JobStore } from '../../../services/job.store';
 import { Log } from '../../../services/log.model';
 import { LogService } from '../../../services/logs.service';
@@ -23,7 +24,6 @@ export class LogsComponent implements OnInit, OnDestroy {
   metadata: Metadata;
   listingParameters: ListingParameters;
 
-  limit = 20;
   job: Job;
   loading: boolean;
   hostname: boolean;
@@ -36,15 +36,21 @@ export class LogsComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private jobStore: JobStore,
     private logService: LogService,
-    public cooTableListingService: CooTableListingService,
+    private cooTableListingService: CooTableListingService,
     private refreshIntervalService: RefreshIntervalService,
-    private refreshService: RefreshService
+    private refreshService: RefreshService,
+    private workhorseCookieService: WorkhorseCookieService
   ) {}
 
   ngOnInit() {
     this.loading = false;
     this.hostname = false;
-    this.cooTableListingService.setDefaultLimit(this.limit);
+
+    this.cooTableListingService.setMetadata({
+      limit: this.workhorseCookieService.getWorkhorseCookie().logsListingLimit,
+      sort: this.workhorseCookieService.getWorkhorseCookie().logsListingSort
+    } as Metadata);
+
 
     if (!this.jobId) {
       this.jobId = this.route.snapshot.params.jobId;
@@ -55,6 +61,7 @@ export class LogsComponent implements OnInit, OnDestroy {
         this.job = this.jobStore.getJob(+this.jobId);
       });
     }
+
     this.cooTableListingService.list$.pipe(takeUntil(this.unsubscribe)).subscribe(() => {
       this.list();
     });
@@ -65,6 +72,11 @@ export class LogsComponent implements OnInit, OnDestroy {
 
     this.refreshService.refreshChanged$.pipe(takeUntil(this.unsubscribe)).subscribe(() => {
       this.list();
+    });
+
+    this.cooTableListingService.metadata$.pipe(takeUntil(this.unsubscribe)).subscribe((metadata) => {
+      this.workhorseCookieService.setCookieValue('logsListingLimit', metadata.limit);
+      this.workhorseCookieService.setCookieValue('logsListingSort', metadata.sort);
     });
   }
 
