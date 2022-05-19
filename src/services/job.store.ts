@@ -30,7 +30,7 @@ export class JobStore {
 
   getJob(jobId: number): Job {
     for (const job of this.getJobs()) {
-      if (jobId === job.id) {
+      if (+jobId === job.id) {
         return job;
       }
     }
