@@ -1,6 +1,6 @@
 {
   "name": "workhorse-ui",
-  "version": "2.0.0-RC5",
+  "version": "2.0.0",
   "description": "Out of the box modern User Interface, so you can see and manage your Workhorse jobs in realtime.",
   "license": "MIT",
   "engines": {
