@@ -16,7 +16,7 @@
     "lint": "ng lint",
     "e2e": "ng e2e",
     "docker:build": "docker build -t coodoogmbh/workhorse-ui:$npm_package_version -t coodoogmbh/workhorse-ui:latest .",
-    "docker:build-release": "docker buildx build --platform linux/amd64,linux/arm64 --push -t coodoogmbh/workhorse-ui:$npm_package_version -t coodoogmbh/workhorse-ui:latest .",
+    "docker:build-release": "docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7 -t coodoogmbh/workhorse-ui:$npm_package_version -t coodoogmbh/workhorse-ui:latest  --push .",
     "docker:run": "docker run -p 80:80 coodoogmbh/workhorse-ui:latest",
     "docker:push": "docker push coodoogmbh/workhorse-ui:$npm_package_version && docker push coodoogmbh/workhorse-ui:latest",
     "docker:release": "npm run build && npm run docker:build-release && npm run docker:push"
